@@ -1,0 +1,12 @@
+{
+  "capture": {
+    "defaultFps": 1,
+    "defaultDurationSec": 10,
+    "defaultOutDir": "./screenshots"
+  },
+  "record": {
+    "defaultFps": 30,
+    "defaultDurationSec": 10,
+    "defaultOutFile": "./screenrecord.mp4"
+  }
+}

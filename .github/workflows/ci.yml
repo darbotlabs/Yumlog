@@ -1,0 +1,19 @@
+name: darbot.yumlog CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-yumlog-skills:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up PowerShell
+        uses: actions/setup-powershell@v2
+      - name: Run install.ps1 (FFmpeg cache)
+        run: pwsh launchers/install.ps1
+      - name: Run Pester tests for yumlog skills
+        run: pwsh -Command "Invoke-Pester -Path Skills/Test-ScreenSkills.Tests.ps1 -Output Detailed"
