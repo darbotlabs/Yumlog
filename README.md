@@ -4,6 +4,16 @@
 
 darbot.yumlog provides PowerShell-based tools for desktop screen capture and recording, leveraging FFmpeg for high performance and flexibility. These tools are useful for creating demo assets, bug reports, or automated test evidence.
 
+### Web Interface
+
+For a visual interface to manage, configure, and use Yumlog, open `yumlog-manager.html` in your web browser. The HTML interface provides:
+- Easy command generation for recording and capturing
+- Statistics overview
+- Configuration viewer
+- PowerShell command reference
+
+Simply double-click `yumlog-manager.html` to launch the interface in your default browser.
+
 ### Usage Examples
 
 #### Capture Periodic Screenshots
@@ -70,9 +80,13 @@ darbot.yumlog/
 ├── launchers/
 │   ├── capture.ps1
 │   ├── install.ps1
-│   └── record.ps1
+│   ├── record.ps1
+│   └── yumlog.ps1
 ├── config/
 │   └── tools.json
+├── .github/
+│   └── copilot-instructions.md
+├── yumlog-manager.html
 └── ...
 ```
 

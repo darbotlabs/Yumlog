@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yumlog Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .section h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        
+        .control-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 600;
+        }
+        
+        input[type="number"],
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="number"]:focus,
+        input[type="text"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-right: 10px;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button.secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        button.danger {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-card .value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        
+        .stat-card .label {
+            color: #777;
+            font-size: 0.9em;
+        }
+        
+        .recordings-list {
+            margin-top: 15px;
+        }
+        
+        .recording-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: box-shadow 0.3s;
+        }
+        
+        .recording-item:hover {
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .recording-info {
+            flex: 1;
+        }
+        
+        .recording-info .name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .recording-info .details {
+            font-size: 0.85em;
+            color: #777;
+        }
+        
+        .recording-actions button {
+            padding: 8px 16px;
+            font-size: 14px;
+            margin-left: 5px;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+        
+        .alert.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .alert.warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .alert.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .command-display {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            margin-top: 10px;
+            overflow-x: auto;
+        }
+        
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            
+            header h1 {
+                font-size: 2em;
+            }
+        }
+        
+        .config-editor {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            margin-top: 10px;
+            min-height: 200px;
+        }
+        
+        textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            background: #2d2d2d;
+            color: #f8f8f2;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎥 Yumlog Manager</h1>
+            <p>Screen Capture & Recording Management Interface</p>
+        </header>
+        
+        <div class="content">
+            <div class="alert info">
+                <strong>ℹ️ Welcome to Yumlog Manager!</strong><br>
+                This interface helps you manage, configure, and use your screen recordings. 
+                Note: Recording operations require PowerShell execution from the launchers directory.
+            </div>
+            
+            <!-- Quick Start Section -->
+            <div class="section">
+                <h2>🚀 Quick Start</h2>
+                <p style="margin-bottom: 15px;">Start recording or capturing screenshots with custom settings:</p>
+                
+                <div class="grid-2">
+                    <div class="control-group">
+                        <label for="fps">FPS (Frames Per Second)</label>
+                        <input type="number" id="fps" value="30" min="1" max="60">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="duration">Duration (Seconds)</label>
+                        <input type="number" id="duration" value="10" min="1" max="3600">
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <label for="outputPath">Output Path</label>
+                    <input type="text" id="outputPath" value="./yumlogs/yumlog.mp4" placeholder="./yumlogs/yumlog.mp4">
+                </div>
+                
+                <button onclick="generateRecordCommand()">🎬 Generate Record Command</button>
+                <button onclick="generateCaptureCommand()" class="secondary">📸 Generate Capture Command</button>
+                
+                <div id="commandOutput" class="command-display" style="display: none; margin-top: 15px;"></div>
+            </div>
+            
+            <!-- Statistics Section -->
+            <div class="section">
+                <h2>📊 Statistics</h2>
+                <p style="margin-bottom: 15px;">Overview of your recordings:</p>
+                
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="value" id="statCount">0</div>
+                        <div class="label">Total Recordings</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="value" id="statSize">0 MB</div>
+                        <div class="label">Total Size</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="value" id="statLatest">N/A</div>
+                        <div class="label">Latest Recording</div>
+                    </div>
+                </div>
+                
+                <button onclick="loadStatistics()" style="margin-top: 15px;">🔄 Refresh Statistics</button>
+                
+                <div class="command-display" style="margin-top: 15px;">
+                    <strong>PowerShell Commands for Statistics:</strong><br>
+                    .\launchers\yumlog.ps1 count<br>
+                    .\launchers\yumlog.ps1 size<br>
+                    .\launchers\yumlog.ps1 get
+                </div>
+            </div>
+            
+            <!-- Recordings Management Section -->
+            <div class="section">
+                <h2>📁 Recordings Management</h2>
+                <p style="margin-bottom: 15px;">Browse and manage your recording files:</p>
+                
+                <div class="control-group">
+                    <label for="recordingsPath">Recordings Directory</label>
+                    <input type="text" id="recordingsPath" value="./yumlogs" placeholder="./yumlogs">
+                </div>
+                
+                <button onclick="browseRecordings()">📂 Browse Recordings</button>
+                <button onclick="openRecordingsFolder()" class="secondary">🗂️ Open Folder</button>
+                
+                <div id="recordingsList" class="recordings-list"></div>
+                
+                <div class="alert warning" style="margin-top: 15px;">
+                    <strong>⚠️ Note:</strong> File operations require manual access to the file system. 
+                    Use Windows Explorer to view, play, or delete recordings.
+                </div>
+            </div>
+            
+            <!-- Configuration Section -->
+            <div class="section">
+                <h2>⚙️ Configuration</h2>
+                <p style="margin-bottom: 15px;">View and edit the configuration file (config/tools.json):</p>
+                
+                <textarea id="configEditor" placeholder="Configuration will appear here..."></textarea>
+                
+                <button onclick="loadConfig()">📖 Load Config</button>
+                <button onclick="showSaveConfigCommand()" class="secondary">💾 Generate Save Command</button>
+                
+                <div id="configCommandOutput" class="command-display" style="display: none; margin-top: 15px;"></div>
+                
+                <div class="alert info" style="margin-top: 15px;">
+                    <strong>Default Configuration Structure:</strong>
+                    <pre style="margin-top: 10px; font-family: 'Courier New', monospace;">
+{
+  "capture": {
+    "defaultFps": 1,
+    "defaultDurationSec": 10,
+    "defaultOutDir": "./screenshots"
+  },
+  "record": {
+    "defaultFps": 30,
+    "defaultDurationSec": 10,
+    "defaultOutFile": "./screenrecord.mp4"
+  }
+}</pre>
+                </div>
+            </div>
+            
+            <!-- PowerShell Commands Reference -->
+            <div class="section">
+                <h2>💻 PowerShell Commands Reference</h2>
+                <p style="margin-bottom: 15px;">Essential commands for working with Yumlog:</p>
+                
+                <div class="command-display">
+                    <strong># Start a screen recording</strong><br>
+                    .\launchers\record.ps1 -Fps 30 -DurationSec 10 -OutFile .\myvideo.mp4<br><br>
+                    
+                    <strong># Capture periodic screenshots</strong><br>
+                    .\launchers\capture.ps1 -Fps 2 -DurationSec 5 -OutDir .\myscreens<br><br>
+                    
+                    <strong># Using the unified CLI</strong><br>
+                    .\launchers\yumlog.ps1 start -Fps 30 -DurationSec 15<br>
+                    .\launchers\yumlog.ps1 get<br>
+                    .\launchers\yumlog.ps1 count<br>
+                    .\launchers\yumlog.ps1 size<br>
+                    .\launchers\yumlog.ps1 config<br><br>
+                    
+                    <strong># Install FFmpeg (if needed)</strong><br>
+                    .\launchers\install.ps1<br><br>
+                    
+                    <strong># Run tests</strong><br>
+                    .\launchers\run-tests.ps1
+                </div>
+            </div>
+            
+            <!-- About Section -->
+            <div class="section">
+                <h2>ℹ️ About Yumlog</h2>
+                <p style="margin-bottom: 10px;">
+                    <strong>Darbot Yumlog</strong> is a lightweight PowerShell-based screen capture and recording utility 
+                    that acts as "vision" for AI by taking screenshots at set intervals and analyzing them.
+                </p>
+                <p style="margin-bottom: 10px;">
+                    <strong>Key Features:</strong>
+                </p>
+                <ul style="margin-left: 20px; margin-bottom: 10px;">
+                    <li>High-performance screen recording using FFmpeg</li>
+                    <li>Periodic screenshot capture at configurable intervals</li>
+                    <li>Simple PowerShell CLI interface</li>
+                    <li>No telemetry - 100% local execution</li>
+                    <li>Auto-installs FFmpeg if not present</li>
+                    <li>Configurable FPS, duration, and output locations</li>
+                </ul>
+                <p>
+                    <strong>License:</strong> MIT<br>
+                    <strong>Repository:</strong> <a href="https://github.com/darbotlabs/Yumlog" target="_blank">github.com/darbotlabs/Yumlog</a>
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Generate record command
+        function generateRecordCommand() {
+            const fps = document.getElementById('fps').value;
+            const duration = document.getElementById('duration').value;
+            const output = document.getElementById('outputPath').value;
+            
+            const command = `.\\launchers\\record.ps1 -Fps ${fps} -DurationSec ${duration} -OutFile "${output}"`;
+            
+            const outputDiv = document.getElementById('commandOutput');
+            outputDiv.style.display = 'block';
+            outputDiv.innerHTML = `<strong>PowerShell Command:</strong><br>${command}<br><br>
+                <em>Copy and run this command in PowerShell from the Yumlog directory.</em>`;
+        }
+        
+        // Generate capture command
+        function generateCaptureCommand() {
+            const fps = document.getElementById('fps').value;
+            const duration = document.getElementById('duration').value;
+            const outputDir = document.getElementById('recordingsPath').value;
+            
+            const command = `.\\launchers\\capture.ps1 -Fps ${fps} -DurationSec ${duration} -OutDir "${outputDir}"`;
+            
+            const outputDiv = document.getElementById('commandOutput');
+            outputDiv.style.display = 'block';
+            outputDiv.innerHTML = `<strong>PowerShell Command:</strong><br>${command}<br><br>
+                <em>Copy and run this command in PowerShell from the Yumlog directory.</em>`;
+        }
+        
+        // Load statistics (placeholder - requires PowerShell integration)
+        function loadStatistics() {
+            document.getElementById('statCount').textContent = '?';
+            document.getElementById('statSize').textContent = '? MB';
+            document.getElementById('statLatest').textContent = 'Run commands';
+            
+            alert('To get actual statistics, run these PowerShell commands:\n\n' +
+                  '.\\launchers\\yumlog.ps1 count\n' +
+                  '.\\launchers\\yumlog.ps1 size\n' +
+                  '.\\launchers\\yumlog.ps1 get\n\n' +
+                  'Then update the values manually in this interface.');
+        }
+        
+        // Browse recordings (placeholder)
+        function browseRecordings() {
+            const path = document.getElementById('recordingsPath').value;
+            const listDiv = document.getElementById('recordingsList');
+            
+            listDiv.innerHTML = `
+                <div class="alert info">
+                    <strong>To browse recordings:</strong><br>
+                    1. Open File Explorer<br>
+                    2. Navigate to: ${path}<br>
+                    3. View your .mp4 files and .png screenshots<br><br>
+                    Or run: <code>explorer "${path}"</code> in PowerShell
+                </div>
+            `;
+        }
+        
+        // Open recordings folder
+        function openRecordingsFolder() {
+            const path = document.getElementById('recordingsPath').value;
+            alert(`To open the recordings folder, run this in PowerShell:\n\nexplorer "${path}"`);
+        }
+        
+        // Load configuration
+        function loadConfig() {
+            const defaultConfig = {
+                "capture": {
+                    "defaultFps": 1,
+                    "defaultDurationSec": 10,
+                    "defaultOutDir": "./screenshots"
+                },
+                "record": {
+                    "defaultFps": 30,
+                    "defaultDurationSec": 10,
+                    "defaultOutFile": "./screenrecord.mp4"
+                }
+            };
+            
+            document.getElementById('configEditor').value = JSON.stringify(defaultConfig, null, 2);
+            
+            alert('To load the actual configuration, run:\n\n.\\launchers\\yumlog.ps1 config\n\n' +
+                  'Then paste the output into the editor above.');
+        }
+        
+        // Show save config command
+        function showSaveConfigCommand() {
+            const config = document.getElementById('configEditor').value;
+            
+            if (!config.trim()) {
+                alert('Please load or enter configuration first.');
+                return;
+            }
+            
+            const outputDiv = document.getElementById('configCommandOutput');
+            outputDiv.style.display = 'block';
+            outputDiv.innerHTML = `<strong>To save the configuration:</strong><br><br>
+                1. Validate the JSON above is correct<br>
+                2. Save it manually to: config/tools.json<br>
+                3. Or use PowerShell:<br><br>
+                <code>@"<br>${config.replace(/\n/g, '<br>')}<br>"@ | Set-Content -Path config\\tools.json</code>`;
+        }
+        
+        // Initialize on load
+        window.onload = function() {
+            console.log('Yumlog Manager initialized');
+        };
+    </script>
+</body>
+</html>
