@@ -19,6 +19,7 @@ darbot.yumlog is a PowerShell-based screen capture and logging utility for Windo
     * [Cloning the Repository](#cloning-the-repository)
 4.  [Installation](#installation)
 5.  [Usage](#usage)
+    * [Web Interface](#web-interface)
     * [Screen Recording](#screen-recording)
     * [Screenshot Capture](#screenshot-capture)
     * [Run Unit Tests](#run-unit-tests)
@@ -58,6 +59,9 @@ darbot.yumlog/
 │   └── yumlog.ps1          # Unified yumlog CLI (see below)
 ├── config/                 # Configuration files
 │   └── tools.json          # Default yumlog configuration
+├── .github/                # GitHub configuration
+│   └── copilot-instructions.md  # GitHub Copilot instructions
+├── yumlog-manager.html     # Web-based management interface
 └── ...
 ```
 
@@ -85,6 +89,19 @@ cd darbot.yumlog
 ```
 
 ## Usage
+
+### Web Interface
+
+Yumlog includes a web-based management interface for easy access to all features. To use it:
+
+1. Open `yumlog-manager.html` in your web browser (double-click the file)
+2. Use the visual interface to:
+   - Generate PowerShell commands with custom settings
+   - View recording statistics
+   - Manage recordings and configuration
+   - Access command reference
+
+The web interface is completely local and requires no server setup.
 
 ### Screen Recording
 
