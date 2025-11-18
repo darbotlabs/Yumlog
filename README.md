@@ -7,6 +7,7 @@ darbot.yumlog provides PowerShell-based tools for desktop screen capture and rec
 ### Web Interface
 
 For a visual interface to manage, configure, and use Yumlog, open `yumlog-manager.html` in your web browser. The HTML interface provides:
+
 - Easy command generation for recording and capturing
 - Statistics overview
 - Configuration viewer
@@ -16,42 +17,44 @@ Simply double-click `yumlog-manager.html` to launch the interface in your defaul
 
 ### Usage Examples
 
-#### Capture Periodic Screenshots
-
-```powershell
-# Capture screenshots at 5 FPS for 30 seconds
-.\launchers\capture.ps1 -Fps 5 -DurationSec 30
-```
-
-#### Record Full-Motion Desktop Video
+#### Using the Unified CLI
 
 ```powershell
 # Record the desktop at 30 FPS for 15 seconds
-.\launchers\record.ps1 -Fps 30 -DurationSec 15
+.\launchers\yumlog.ps1 start -Fps 30 -DurationSec 15
+
+# Get the latest recording
+.\launchers\yumlog.ps1 get
+
+# Check recording count and total size
+.\launchers\yumlog.ps1 count
+.\launchers\yumlog.ps1 size
+
+# View configuration
+.\launchers\yumlog.ps1 config
 ```
 
 #### Run Unit Tests
 
 ```powershell
 # Executes Pester with detailed output
-.\launchers\run-tests.ps1
+.\Skills\Simple.Tests.ps1
 ```
 
-- Output files are saved to the current directory by default, or as specified by parameters.
-- Both scripts support custom FPS and duration.
+- Output files are saved to `./yumlogs` by default, or as specified by parameters.
 - FFmpeg is automatically installed if not present (via `install.ps1`).
 
 ---
 
 ### Testing
 
-- The test launcher supports a `-Verbosity` parameter: `None`, `Minimal`, `Normal`, `Detailed`, or `Diagnostic` (default: `Detailed`).
-- Compatible with Pester 3.4.0 (included in Windows PowerShell).
-- Example:
+Run tests directly with Pester or PowerShell:
 
 ```powershell
-.\launchers\run-tests.ps1 -Verbosity Minimal
+.\Skills\Simple.Tests.ps1
 ```
+
+Compatible with Pester 3.4.0+ (included in Windows PowerShell).
 
 ---
 
@@ -71,16 +74,14 @@ Simply double-click `yumlog-manager.html` to launch the interface in your defaul
 
 ## Project Tree (excerpt)
 
-```
+```text
 darbot.yumlog/
 ├── Skills/
 │   ├── Capture-Screens.ps1
 │   ├── Record-Screen.ps1
 │   └── Run-FFmpeg.ps1
 ├── launchers/
-│   ├── capture.ps1
 │   ├── install.ps1
-│   ├── record.ps1
 │   └── yumlog.ps1
 ├── config/
 │   └── tools.json

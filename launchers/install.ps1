@@ -8,22 +8,42 @@ if (-not (Test-Path $ffmpegDir)) {
     New-Item -ItemType Directory -Path $ffmpegDir -Force | Out-Null
 }
 
-# Check for ffmpeg in PATH
+# Check for ffmpeg in PATH or local installation
+$ffmpegExe = Join-Path $ffmpegDir 'ffmpeg.exe'
 $ffmpeg = Get-Command ffmpeg -ErrorAction SilentlyContinue
-if (-not $ffmpeg) {
-    Write-Host "FFmpeg not found in PATH. Downloading static build..."
+
+if (-not $ffmpeg -and -not (Test-Path $ffmpegExe)) {
+    Write-Host "FFmpeg not found. Downloading static build..."
     $ffmpegZip = Join-Path $ffmpegDir 'ffmpeg.zip'
-    $ffmpegExe = Join-Path $ffmpegDir 'ffmpeg.exe'
     $ffmpegUrl = "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip"
     Invoke-WebRequest -Uri $ffmpegUrl -OutFile $ffmpegZip
+    
+    # Extract to temp location first
+    $tempExtract = Join-Path $ffmpegDir 'temp_extract'
+    if (Test-Path $tempExtract) {
+        Remove-Item $tempExtract -Recurse -Force
+    }
+    New-Item -ItemType Directory -Path $tempExtract -Force | Out-Null
+    
     Add-Type -AssemblyName System.IO.Compression.FileSystem
-    [System.IO.Compression.ZipFile]::ExtractToDirectory($ffmpegZip, $ffmpegDir)
+    [System.IO.Compression.ZipFile]::ExtractToDirectory($ffmpegZip, $tempExtract)
     Remove-Item $ffmpegZip
-    $exe = Get-ChildItem -Path $ffmpegDir -Recurse -Filter ffmpeg.exe | Select-Object -First 1
+    
+    # Find and copy ffmpeg.exe to the bin directory
+    $exe = Get-ChildItem -Path $tempExtract -Recurse -Filter ffmpeg.exe | Select-Object -First 1
     if ($exe) {
         Copy-Item $exe.FullName $ffmpegExe -Force
+        Write-Host "FFmpeg downloaded to $ffmpegExe"
+    } else {
+        Write-Host "Warning: Could not find ffmpeg.exe in downloaded package"
     }
-    Write-Host "FFmpeg downloaded to $ffmpegExe"
+    
+    # Clean up temp extraction
+    Remove-Item $tempExtract -Recurse -Force
+} elseif (Test-Path $ffmpegExe) {
+    Write-Host "FFmpeg already installed at $ffmpegExe"
+} else {
+    Write-Host "FFmpeg found in system PATH"
 }
 
 # Prepend .tools/ffmpeg/bin to PATH for this session

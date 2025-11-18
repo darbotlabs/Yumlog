@@ -5,6 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Yumlog Manager</title>
     <style>
+        :root {
+            --bg-gradient-start: #0078d4;
+            --bg-gradient-end: #106ebe;
+            --container-bg: #ffffff;
+            --text-primary: #201f1e;
+            --text-secondary: #323130;
+            --text-muted: #605e5c;
+            --section-bg: #faf9f8;
+            --border-color: #edebe9;
+            --command-bg: #282828;
+            --command-text: #f0f0f0;
+            --stat-card-bg: #ffffff;
+            --accent-color: #0078d4;
+            --accent-hover: #106ebe;
+            --shadow-sm: 0 1.6px 3.6px rgba(0, 0, 0, 0.13), 0 0.3px 0.9px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 3.2px 7.2px rgba(0, 0, 0, 0.13), 0 0.6px 1.8px rgba(0, 0, 0, 0.11);
+            --shadow-lg: 0 6.4px 14.4px rgba(0, 0, 0, 0.13), 0 1.2px 3.6px rgba(0, 0, 0, 0.11);
+        }
+        
+        body.dark-mode {
+            --bg-gradient-start: #1b1a19;
+            --bg-gradient-end: #292827;
+            --container-bg: #1b1a19;
+            --text-primary: #ffffff;
+            --text-secondary: #d0d0d0;
+            --text-muted: #a19f9d;
+            --section-bg: #252423;
+            --border-color: #3b3a39;
+            --command-bg: #1e1e1e;
+            --command-text: #d4d4d4;
+            --stat-card-bg: #292827;
+            --accent-color: #4a9eff;
+            --accent-hover: #6cb4ff;
+            --shadow-sm: 0 1.6px 3.6px rgba(0, 0, 0, 0.3), 0 0.3px 0.9px rgba(0, 0, 0, 0.25);
+            --shadow-md: 0 3.2px 7.2px rgba(0, 0, 0, 0.3), 0 0.6px 1.8px rgba(0, 0, 0, 0.25);
+            --shadow-lg: 0 6.4px 14.4px rgba(0, 0, 0, 0.3), 0 1.2px 3.6px rgba(0, 0, 0, 0.25);
+        }
+        
         * {
             margin: 0;
             padding: 0;
@@ -12,94 +50,223 @@
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Helvetica Neue', sans-serif;
+            background: var(--container-bg);
             min-height: 100vh;
-            padding: 20px;
+            padding: 0;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            color: var(--text-primary);
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
+            background: var(--container-bg);
+            min-height: 100vh;
         }
         
         header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            color: whitevar(--accent-color);
             color: white;
-            padding: 30px;
-            text-align: center;
+            padding: 24px 48px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow-md);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            flex: 1;
         }
         
         header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
         
-        header p {
-            font-size: 1.1em;
-            opacity: 0.9;
+        .theme-toggle label {
+            color: white;
+            font-size: 14px;
+            font-weight: 500
+        
+        .theme-toggle {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            display: flex;
+            align-items: center;
+            gap: 1044px;
+            height: 20px;
         }
         
-        .content {
-            padding: 30px;
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.3);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 10px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 50%;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+        
+        input:checked + .slider {
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+        
+        .slider:hover {
+            background-color: rgba(255, 255, 255, 0.4);
+        }
+        
+        input:checked + .slider:hover {
+            background-color: rgba(255, 255, 255, 0.6
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: rgba(102, 126, 234, 0.8);
+        }2px 48px 48px;
         }
         
         .section {
-            margin-bottom: 30px;
-            padding: 20px;
-            background: #f8f9fa;
+            margin-bottom: 24px;
+            padding: 24px;
+            background: var(--section-bg);
             border-radius: 8px;
-            border-left: 4px solid #667eea;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            transition: box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .section:hover {
+            box-shadow: var(--shadow-md);
         }
         
         .section h2 {
-            color: #333;
-            margin-bottom: 15px;
-            font-size: 1.5em;
-        }
-        
-        .control-group {
-            margin-bottom: 15px;
+            color: var(--tex6px;
         }
         
         label {
             display: block;
-            margin-bottom: 5px;
-            color: #555;
+            margin-bottom: 8px;
+            color: var(--text-primary);
             font-weight: 600;
+            font-size: 14px;
         }
         
         input[type="number"],
         input[type="text"],
         select {
             width: 100%;
-            padding: 10px;
-            border: 2px solid #ddd;
-            border-radius: 6px;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
             font-size: 14px;
-            transition: border-color 0.3s;
+            font-family: 'Segoe UI', sans-serif;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            background: var(--container-bg);
+            color: var(--text-primary);
         }
         
-        input[type="number"]:focus,
-        input[type="text"]:focus,
-        select:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        
-        button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        input[type="number"]:hover,
+        input[type="text"]:hover,
+        select:hover {
+            border-color: var(--text-muted);
+        }var(--accent-color);
             color: white;
             border: none;
-            padding: 12px 24px;
-            border-radius: 6px;
-            font-size: 16px;
+            padding: 8px 20px;
+            border-radius: 4px;
+            font-size: 14px;
             font-weight: 600;
+            font-family: 'Segoe UI', sans-serif;
             cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-right: 8px;
+            margin-top: 8px;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        button:hover {
+            background: var(--accent-hover);
+            box-shadow: var(--shadow-md);
+        }
+        
+        button:active {
+            transform: scale(0.98);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        button.secondary {
+            background: var(--section-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+        
+        button.secondary:hover {
+            background: var(--border-color);20px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+        
+        .stat-card {
+            background: var(--stat-card-bg);
+            padding: 24px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .stat-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+        
+        .stat-card .value {
+            font-size: 32px;
+            font-weight: 600;
+            color: var(--accent-color);
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+        }
+        
+        .stat-card .label {
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500
             transition: transform 0.2s, box-shadow 0.2s;
             margin-right: 10px;
             margin-top: 10px;
@@ -130,7 +297,7 @@
         }
         
         .stat-card {
-            background: white;
+            background: var(--stat-card-bg);
             padding: 20px;
             border-radius: 8px;
             text-align: center;
@@ -140,65 +307,148 @@
         .stat-card .value {
             font-size: 2em;
             font-weight: bold;
-            color: #667eea;
+            color: var(--bg-gradient-start);
             margin-bottom: 5px;
         }
         
-        .stat-card .label {
-            color: #777;
-            font-size: 0.9em;
+        .stat-card .la2px 16px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            line-height: 20px;
+            border-left: 3px solid;
         }
         
-        .recordings-list {
-            margin-top: 15px;
+        .alert.info {
+            background: #f3f9fd;
+            color: #004e8c;
+            border-left-color: #0078d4;
         }
         
-        .recording-item {
-            background: white;
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 6px;
-            border: 1px solid #ddd;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: box-shadow 0.3s;
+        body.dark-mode .alert.info {
+            background: #1a2940;
+            color: #6cb4ff;
+            border-left-color: #4a9eff;
         }
         
+        .alert.warning {
+            background: #fff9e6;
+            color: #8a6d3b;
+            border-left-color: #ffc83d;
+        }
+        
+        body.dark-mode6px;
+            border-radius: 4px;
+            font-family: 'Cascadia Code', 'Consolas', 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 20px;
+            margin-top: 12px;
+            overflow-x: auto;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .command-display strong {
+            color: var(--command-text);
+            opacity: 0.9;
+        }
+        
+        .command-display code {
+            font-family: inherit
+        
+        .alert.success {
+            background: #f1faf1;
+            color: #107c10;
+            border-left-color: #107c10;
+        }
+        
+        body.dark-mode .alert.success {
+            background: #1f3b1f;
+            color: #9ad29a;
+            border-left-color: #6cbd6c
         .recording-item:hover {
             box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
         }
         
-        .recording-info {
-            flex: 1;
+        .recording-{
+                padding: 16px 24px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+            
+            .theme-toggle {
+                align-self: flex-end;
+            }
+            
+            .content {
+                padding: 24px 16px;
+            }
+            
+            .section {
+                padding: 16px;
+            }
         }
+        
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--section-bg);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 5px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+        
+        /* Selection styling */
+        ::selection {
+            background: var(--accent-color);
+            color: white;
         
         .recording-info .name {
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 5px;
-        }
-        
-        .recording-info .details {
-            font-size: 0.85em;
-            color: #777;
-        }
+            font-weight:header-content">
+                <h1>Yumlog Manager</h1>
+                <p>Screen Capture & Recording Management Interface</p>
+            </div>
+            <div class="theme-toggle">
+                <label>Dark Mode</label>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="darkModeToggle">
+                    <span class="slider"></span>
+                </label>
+            </div
         
         .recording-actions button {
-            padding: 8px 16px;
-            font-size: 14px;
-            margin-left: 5px;
+            padding: 8px 16px;</strong><br>
+                This interface helps you manage, configure, and use your screen recordings.f2px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-family: 'Cascadia Code', 'Consolas', 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 20px;
+            background: var(--command-bg);
+            color: var(--command-text);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            resize: vertical;
         }
         
-        .alert {
-            padding: 15px;
-            border-radius: 6px;
-            margin-bottom: 15px;
+        textarea:hover {
+            border-color: var(--text-muted);
         }
         
-        .alert.info {
-            background: #d1ecf1;
-            color: #0c5460;
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 1px var(--accent-color
             border: 1px solid #bee5eb;
         }
         
@@ -215,8 +465,8 @@
         }
         
         .command-display {
-            background: #2d2d2d;
-            color: #f8f8f2;
+            background: var(--command-bg);
+            color: var(--command-text);
             padding: 15px;
             border-radius: 6px;
             font-family: 'Courier New', monospace;
@@ -254,37 +504,44 @@
             width: 100%;
             min-height: 200px;
             padding: 10px;
-            border: 2px solid #ddd;
-            border-radius: 6px;
-            font-family: 'Courier New', monospace;
+            border: 2px solid var(--border-color);>Refresh Statistics</button>
+                
+                <div class="command-display
             font-size: 14px;
-            background: #2d2d2d;
-            color: #f8f8f2;
+            background: var(--command-bg);
+            color: var(--command-text);
         }
         
         textarea:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: var(--bg-gradient-start);
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>🎥 Yumlog Manager</h1>
+            <div class="theme-toggle">
+                <label>Dark Mode</label>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="darkModeToggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <h1>Yumlog Manager</h1>
             <p>Screen Capture & Recording Management Interface</p>
         </header>
         
         <div class="content">
             <div class="alert info">
-                <strong>ℹ️ Welcome to Yumlog Manager!</strong><br>
+                <strong>Welcome to Yumlog Manager!</strong><br>
                 This interface helps you manage, configure, and use your screen recordings. 
                 Note: Recording operations require PowerShell execution from the launchers directory.
             </div>
             
             <!-- Quick Start Section -->
             <div class="section">
-                <h2>🚀 Quick Start</h2>
+                <h2>Quick Start</h2>
                 <p style="margin-bottom: 15px;">Start recording or capturing screenshots with custom settings:</p>
                 
                 <div class="grid-2">
@@ -293,9 +550,8 @@
                         <input type="number" id="fps" value="30" min="1" max="60">
                     </div>
                     
-                    <div class="control-group">
-                        <label for="duration">Duration (Seconds)</label>
-                        <input type="number" id="duration" value="10" min="1" max="3600">
+                    <div class="control-gr>
+                    <strong>Note:</strong> File operations require manual access to the file system.     <input type="number" id="duration" value="10" min="1" max="3600">
                     </div>
                 </div>
                 
@@ -304,15 +560,15 @@
                     <input type="text" id="outputPath" value="./yumlogs/yumlog.mp4" placeholder="./yumlogs/yumlog.mp4">
                 </div>
                 
-                <button onclick="generateRecordCommand()">🎬 Generate Record Command</button>
-                <button onclick="generateCaptureCommand()" class="secondary">📸 Generate Capture Command</button>
+                <button onclick="generateRecordCommand()">Generate Record Command</button>
+                <button onclick="generateCaptureCommand()" class="secondary">Generate Capture Command</button>
                 
                 <div id="commandOutput" class="command-display" style="display: none; margin-top: 15px;"></div>
             </div>
             
             <!-- Statistics Section -->
             <div class="section">
-                <h2>📊 Statistics</h2>
+                <h2>Statistics</h2>
                 <p style="margin-bottom: 15px;">Overview of your recordings:</p>
                 
                 <div class="stats">
@@ -323,14 +579,14 @@
                     <div class="stat-card">
                         <div class="value" id="statSize">0 MB</div>
                         <div class="label">Total Size</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="value" id="statLatest">N/A</div>
+                    </div>"></div>
+                
+                <div class="alert infodiv>
                         <div class="label">Latest Recording</div>
                     </div>
                 </div>
                 
-                <button onclick="loadStatistics()" style="margin-top: 15px;">🔄 Refresh Statistics</button>
+                <button onclick="loadStatistics()" style="margin-top: 15px;">Refresh Statistics</button>
                 
                 <div class="command-display" style="margin-top: 15px;">
                     <strong>PowerShell Commands for Statistics:</strong><br>
@@ -342,34 +598,28 @@
             
             <!-- Recordings Management Section -->
             <div class="section">
-                <h2>📁 Recordings Management</h2>
+                <h2>Recordings Management</h2>
                 <p style="margin-bottom: 15px;">Browse and manage your recording files:</p>
                 
                 <div class="control-group">
-                    <label for="recordingsPath">Recordings Directory</label>
-                    <input type="text" id="recordingsPath" value="./yumlogs" placeholder="./yumlogs">
-                </div>
+                  >Essential commands for working with Yumlog:</p>
                 
-                <button onclick="browseRecordings()">📂 Browse Recordings</button>
-                <button onclick="openRecordingsFolder()" class="secondary">🗂️ Open Folder</button>
+                <div class="command-display">
+                    <strong># Using the unified CLI</strong><br>
+                    .\launchers\yumlog.ps1 start -Fps 30 -DurationSec 15<br>
+                    .\launchers\yumlog.ps1 get<br>
+                    .\launchers\yumlog.ps1 count<br>
+                    .\launchers\yumlog.ps1 size<br>
+                    .\launchers\yumlog.ps1 config<br><br>
+                    
+                    <strong># Install FFmpeg (if needed)</strong><br>
+                    .\launchers\install.ps1<br><br>
+                    
+                    <strong># Run tests</strong><br>
+                    .\Skills\Simple.Tditor" placeholder="Configuration will appear here..."></textarea>
                 
-                <div id="recordingsList" class="recordings-list"></div>
-                
-                <div class="alert warning" style="margin-top: 15px;">
-                    <strong>⚠️ Note:</strong> File operations require manual access to the file system. 
-                    Use Windows Explorer to view, play, or delete recordings.
-                </div>
-            </div>
-            
-            <!-- Configuration Section -->
-            <div class="section">
-                <h2>⚙️ Configuration</h2>
-                <p style="margin-bottom: 15px;">View and edit the configuration file (config/tools.json):</p>
-                
-                <textarea id="configEditor" placeholder="Configuration will appear here..."></textarea>
-                
-                <button onclick="loadConfig()">📖 Load Config</button>
-                <button onclick="showSaveConfigCommand()" class="secondary">💾 Generate Save Command</button>
+                <button onclick="loadConfig()">Load Config</button>
+                <button onclick="showSaveConfigCommand()" class="secondary">Generate Save Command</button>
                 
                 <div id="configCommandOutput" class="command-display" style="display: none; margin-top: 15px;"></div>
                 
@@ -387,24 +637,21 @@
     "defaultDurationSec": 10,
     "defaultOutFile": "./screenrecord.mp4"
   }
-}</pre>
-                </div>
-            </div>
-            
-            <!-- PowerShell Commands Reference -->
-            <div class="section">
-                <h2>💻 PowerShell Commands Reference</h2>
-                <p style="margin-bottom: 15px;">Essential commands for working with Yumlog:</p>
-                
-                <div class="command-display">
-                    <strong># Start a screen recording</strong><br>
-                    .\launchers\record.ps1 -Fps 30 -DurationSec 10 -OutFile .\myvideo.mp4<br><br>
-                    
-                    <strong># Capture periodic screenshots</strong><br>
-                    .\launchers\capture.ps1 -Fps 2 -DurationSec 5 -OutDir .\myscreens<br><br>
-                    
-                    <strong># Using the unified CLI</strong><br>
-                    .\launchers\yumlog.ps1 start -Fps 30 -DurationSec 15<br>
+}</pre>>
+                    <strong>Darbot Yumlog</strong> is a lightweight PowerShell-based screen capture and recording utility that acts as "vision" for AI by taking screenshots at set intervals and analyzing them.
+                </p>
+                <p><strong>Key Features:</strong></p>
+                <ul style="margin: 12px 0 12px 20px; color: var(--text-secondary); line-height: 24px;">
+                    <li>High-performance screen recording using FFmpeg</li>
+                    <li>Periodic screenshot capture at configurable intervals</li>
+                    <li>Simple PowerShell CLI interface</li>
+                    <li>No telemetry - 100% local execution</li>
+                    <li>Auto-installs FFmpeg if not present</li>
+                    <li>Configurable FPS, duration, and output locations</li>
+                </ul>
+                <p style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-color);">
+                    <strong>License:</strong> MIT<br>
+                    <strong>Repository:</strong> <a href="https://github.com/darbotlabs/Yumlog" target="_blank" style="color: var(--accent-color); text-decoration: none;
                     .\launchers\yumlog.ps1 get<br>
                     .\launchers\yumlog.ps1 count<br>
                     .\launchers\yumlog.ps1 size<br>
@@ -420,7 +667,7 @@
             
             <!-- About Section -->
             <div class="section">
-                <h2>ℹ️ About Yumlog</h2>
+                <h2>About Yumlog</h2>
                 <p style="margin-bottom: 10px;">
                     <strong>Darbot Yumlog</strong> is a lightweight PowerShell-based screen capture and recording utility 
                     that acts as "vision" for AI by taking screenshots at set intervals and analyzing them.
@@ -547,9 +794,31 @@
                 <code>@"<br>${config.replace(/\n/g, '<br>')}<br>"@ | Set-Content -Path config\\tools.json</code>`;
         }
         
+        // Dark mode toggle functionality
+        function initDarkMode() {
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const isDarkMode = localStorage.getItem('darkMode') === 'true';
+            
+            if (isDarkMode) {
+                document.body.classList.add('dark-mode');
+                darkModeToggle.checked = true;
+            }
+            
+            darkModeToggle.addEventListener('change', function() {
+                if (this.checked) {
+                    document.body.classList.add('dark-mode');
+                    localStorage.setItem('darkMode', 'true');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                    localStorage.setItem('darkMode', 'false');
+                }
+            });
+        }
+        
         // Initialize on load
         window.onload = function() {
             console.log('Yumlog Manager initialized');
+            initDarkMode();
         };
     </script>
 </body>
