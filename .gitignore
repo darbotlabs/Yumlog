@@ -15,6 +15,7 @@ tests/
 ffmpeg_error.log
 ffmpeg_output.log
 .tools/ffmpeg/bin/ffmpeg-*-essentials_build/
+.tools/ffmpeg/bin/*.zip
 
 # Recordings and Captures
 *.mp4
