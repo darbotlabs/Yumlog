@@ -27,6 +27,7 @@ public static class PaperboyMcpServer
 
         var service = new PaperboyBundleService();
         var foundry = new FoundryLocalPipelineService();
+        var pmm = new PaperboyModelManagerService();
         var cards = AgentCardCatalog.Default;
 
         while (!cancellationToken.IsCancellationRequested)
@@ -37,7 +38,7 @@ public static class PaperboyMcpServer
                 break;
             }
 
-            var response = await HandleRequestAsync(request, service, foundry, cards, cancellationToken);
+            var response = await HandleRequestAsync(request, service, foundry, pmm, cards, cancellationToken);
             if (response is not null)
             {
                 await WriteMessageAsync(writer, response, cancellationToken);
@@ -45,7 +46,7 @@ public static class PaperboyMcpServer
         }
     }
 
-    private static async Task<JsonObject?> HandleRequestAsync(JsonObject request, PaperboyBundleService service, FoundryLocalPipelineService foundry, AgentCardCatalog cards, CancellationToken cancellationToken)
+    private static async Task<JsonObject?> HandleRequestAsync(JsonObject request, PaperboyBundleService service, FoundryLocalPipelineService foundry, PaperboyModelManagerService pmm, AgentCardCatalog cards, CancellationToken cancellationToken)
     {
         var id = request["id"]?.DeepClone();
         var method = request["method"]?.GetValue<string>() ?? "";
@@ -79,6 +80,11 @@ public static class PaperboyMcpServer
                         Tool("paperboy.bundle.toss", "Copy a Paperboy bundle to a destination."),
                         Tool("paperboy.foundryLocal.analyze", "Analyze media/documents with a local Foundry endpoint and return tags/classifications."),
                         Tool("paperboy.foundryLocal.modelCards", "Return Foundry Local model delivery cards for Paperboy bundles."),
+                        Tool("paperboy.pmm.info", "Read Foundry Local model information via Paperboy Model Manager."),
+                        Tool("paperboy.pmm.download", "Download a Foundry Local model to the local cache."),
+                        Tool("paperboy.pmm.load", "Load a Foundry Local model into the local service."),
+                        Tool("paperboy.pmm.cacheList", "List Foundry Local cached models."),
+                        Tool("paperboy.pmm.run", "Run a short prompt against a Foundry Local model."),
                         Tool("paperboy.cards.list", "Return composable Paperboy agent cards for A2A/livetile UIs."),
                         Tool("paperboy.cards.schema", "Return the Paperboy agent-card JSON schema.")
                     }
@@ -101,7 +107,7 @@ public static class PaperboyMcpServer
                         }
                     }
                 }),
-                "tools/call" => await HandleToolCallAsync(id, request["params"]?.AsObject(), service, foundry, cards, cancellationToken),
+                "tools/call" => await HandleToolCallAsync(id, request["params"]?.AsObject(), service, foundry, pmm, cards, cancellationToken),
                 _ => Error(id, -32601, $"Unsupported method: {method}")
             };
         }
@@ -111,7 +117,7 @@ public static class PaperboyMcpServer
         }
     }
 
-    private static async Task<JsonObject> HandleToolCallAsync(JsonNode? id, JsonObject? parameters, PaperboyBundleService service, FoundryLocalPipelineService foundry, AgentCardCatalog cards, CancellationToken cancellationToken)
+    private static async Task<JsonObject> HandleToolCallAsync(JsonNode? id, JsonObject? parameters, PaperboyBundleService service, FoundryLocalPipelineService foundry, PaperboyModelManagerService pmm, AgentCardCatalog cards, CancellationToken cancellationToken)
     {
         var name = parameters?["name"]?.GetValue<string>() ?? "";
         var args = parameters?["arguments"]?.AsObject() ?? new JsonObject();
@@ -124,6 +130,11 @@ public static class PaperboyMcpServer
             "paperboy.bundle.toss" => ContentResponse(id, await TossAsync(args, service, cancellationToken)),
             "paperboy.foundryLocal.analyze" => ContentResponse(id, await AnalyzeFoundryAsync(args, foundry, cancellationToken)),
             "paperboy.foundryLocal.modelCards" => ContentResponse(id, cards.FoundryModelCardsJson()),
+            "paperboy.pmm.info" => ContentResponse(id, await PmmInfoAsync(args, pmm, cancellationToken)),
+            "paperboy.pmm.download" => ContentResponse(id, await PmmDownloadAsync(args, pmm, cancellationToken)),
+            "paperboy.pmm.load" => ContentResponse(id, await PmmLoadAsync(args, pmm, cancellationToken)),
+            "paperboy.pmm.cacheList" => ContentResponse(id, await PmmCacheListAsync(args, pmm, cancellationToken)),
+            "paperboy.pmm.run" => ContentResponse(id, await PmmRunAsync(args, pmm, cancellationToken)),
             "paperboy.cards.list" => ContentResponse(id, cards.ToJson()),
             "paperboy.cards.schema" => ContentResponse(id, cards.SchemaJson),
             _ => Error(id, -32602, $"Unknown tool: {name}")
@@ -192,6 +203,52 @@ public static class PaperboyMcpServer
         }
 
         return JsonSerializer.Serialize(new { result, sidecar }, JsonOptions);
+    }
+
+    private static async Task<string> PmmInfoAsync(JsonObject args, PaperboyModelManagerService pmm, CancellationToken cancellationToken)
+    {
+        ConfigurePmm(args, pmm);
+        var result = await pmm.ModelInfoAsync(Required(args, "model"), cancellationToken);
+        return JsonSerializer.Serialize(result, JsonOptions);
+    }
+
+    private static async Task<string> PmmDownloadAsync(JsonObject args, PaperboyModelManagerService pmm, CancellationToken cancellationToken)
+    {
+        ConfigurePmm(args, pmm);
+        var result = await pmm.DownloadModelAsync(Required(args, "model"), cancellationToken);
+        return JsonSerializer.Serialize(result, JsonOptions);
+    }
+
+    private static async Task<string> PmmLoadAsync(JsonObject args, PaperboyModelManagerService pmm, CancellationToken cancellationToken)
+    {
+        ConfigurePmm(args, pmm);
+        var result = await pmm.LoadModelAsync(Required(args, "model"), cancellationToken);
+        return JsonSerializer.Serialize(result, JsonOptions);
+    }
+
+    private static async Task<string> PmmCacheListAsync(JsonObject args, PaperboyModelManagerService pmm, CancellationToken cancellationToken)
+    {
+        ConfigurePmm(args, pmm);
+        var result = await pmm.CacheListAsync(cancellationToken);
+        return JsonSerializer.Serialize(result, JsonOptions);
+    }
+
+    private static async Task<string> PmmRunAsync(JsonObject args, PaperboyModelManagerService pmm, CancellationToken cancellationToken)
+    {
+        ConfigurePmm(args, pmm);
+        var result = await pmm.RunPromptAsync(Required(args, "model"), args["prompt"]?.GetValue<string>() ?? "Describe Paperboy model delivery in one sentence.", cancellationToken);
+        return JsonSerializer.Serialize(result, JsonOptions);
+    }
+
+    private static void ConfigurePmm(JsonObject args, PaperboyModelManagerService pmm)
+    {
+        pmm.CliPath = args["cliPath"]?.GetValue<string>() ?? "foundry";
+        pmm.Device = args["device"]?.GetValue<string>() ?? "Auto";
+    }
+
+    private static string Required(JsonObject args, string property)
+    {
+        return args[property]?.GetValue<string>() ?? throw new ArgumentException($"{property} is required.");
     }
 
     private static CompressionLevel ParseCompression(string value) => value switch

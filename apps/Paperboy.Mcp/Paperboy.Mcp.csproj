@@ -15,6 +15,7 @@
   <ItemGroup>
     <Compile Include="..\Paperboy.Desktop\Services\PaperboyBundleService.cs" Link="Services\PaperboyBundleService.cs" />
     <Compile Include="..\Paperboy.Desktop\Services\FoundryLocalPipelineService.cs" Link="Services\FoundryLocalPipelineService.cs" />
+    <Compile Include="..\Paperboy.Desktop\Services\PaperboyModelManagerService.cs" Link="Services\PaperboyModelManagerService.cs" />
     <Compile Include="..\Paperboy.Desktop\Cards\AgentCardCatalog.cs" Link="Cards\AgentCardCatalog.cs" />
     <Compile Include="..\Paperboy.Desktop\Mcp\PaperboyMcpServer.cs" Link="Mcp\PaperboyMcpServer.cs" />
   </ItemGroup>

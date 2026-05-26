@@ -19,6 +19,7 @@ public partial class MainWindow : Window
     private readonly PaperboyBundleService _bundleService = new();
     private readonly AgentCardCatalog _cardCatalog = AgentCardCatalog.Default;
     private readonly FoundryLocalPipelineService _foundryPipeline = new();
+    private readonly PaperboyModelManagerService _modelManager = new();
     private string? _lastFoundrySidecarPath;
 
     public ObservableCollection<SourceItem> Sources { get; } = [];
@@ -403,6 +404,114 @@ public partial class MainWindow : Window
         }
     }
 
+    private async void RefreshPmmCache_Click(object sender, RoutedEventArgs e)
+    {
+        await RunPmmActionAsync("Refreshing Foundry Local cache state...", async () =>
+        {
+            ConfigureModelManager();
+            var location = await _modelManager.CacheLocationAsync();
+            var cache = await _modelManager.CacheListAsync();
+            var cacheLocation = _modelManager.ParseCacheLocation(location.Output);
+            var cachedCount = _cardCatalog.FoundryModelCards.Count(card => _modelManager.IsCached(cache.Output, card.Alias) || _modelManager.IsCached(cache.Output, card.ModelId));
+            PmmCacheStatText.Text = $"{cachedCount}/{_cardCatalog.FoundryModelCards.Count} Paperboy models cached. {cacheLocation}";
+            AppendLog("PMM cache list:");
+            AppendLog(cache.Output.Trim());
+        });
+    }
+
+    private async void DownloadAllModels_Click(object sender, RoutedEventArgs e)
+    {
+        await RunPmmActionAsync("Downloading all Paperboy model cards...", async () =>
+        {
+            ConfigureModelManager();
+            foreach (var card in _cardCatalog.FoundryModelCards)
+            {
+                AppendLog($"PMM download: {card.Alias}");
+                SetStatus($"Downloading {card.Alias}...");
+                var result = await _modelManager.DownloadModelAsync(card.Alias);
+                AppendFoundryResult(result);
+                if (result.ExitCode != 0)
+                {
+                    throw new InvalidOperationException($"Download failed for {card.Alias}.");
+                }
+            }
+            await RefreshCacheAfterPmmActionAsync();
+        });
+    }
+
+    private async void DownloadModel_Click(object sender, RoutedEventArgs e)
+    {
+        var model = GetModelTag(sender);
+        await RunPmmActionAsync($"Downloading {model}...", async () =>
+        {
+            ConfigureModelManager();
+            var result = await _modelManager.DownloadModelAsync(model);
+            AppendFoundryResult(result);
+            if (result.ExitCode != 0)
+            {
+                throw new InvalidOperationException($"Download failed for {model}.");
+            }
+            await RefreshCacheAfterPmmActionAsync();
+        });
+    }
+
+    private async void LoadModel_Click(object sender, RoutedEventArgs e)
+    {
+        var model = GetModelTag(sender);
+        await RunPmmActionAsync($"Loading {model} into Foundry Local service...", async () =>
+        {
+            ConfigureModelManager();
+            var result = await _modelManager.LoadModelAsync(model);
+            AppendFoundryResult(result);
+            if (result.ExitCode != 0)
+            {
+                throw new InvalidOperationException($"Load failed for {model}.");
+            }
+            FoundryModelText.Text = model;
+        });
+    }
+
+    private async void InfoModel_Click(object sender, RoutedEventArgs e)
+    {
+        var model = GetModelTag(sender);
+        await RunPmmActionAsync($"Reading model info for {model}...", async () =>
+        {
+            ConfigureModelManager();
+            var result = await _modelManager.ModelInfoAsync(model);
+            AppendFoundryResult(result);
+            if (result.ExitCode != 0)
+            {
+                throw new InvalidOperationException($"Model info failed for {model}.");
+            }
+        });
+    }
+
+    private async void RunModelSmoke_Click(object sender, RoutedEventArgs e)
+    {
+        var model = GetModelTag(sender);
+        await RunPmmActionAsync($"Running smoke prompt on {model}...", async () =>
+        {
+            ConfigureModelManager();
+            var result = await _modelManager.RunPromptAsync(model, "In one short sentence, describe Paperboy model delivery.");
+            AppendFoundryResult(result);
+            if (result.ExitCode != 0)
+            {
+                throw new InvalidOperationException($"Smoke prompt failed for {model}.");
+            }
+            FoundryModelText.Text = model;
+        });
+    }
+
+    private void UseModelForFoundry_Click(object sender, RoutedEventArgs e)
+    {
+        var model = GetModelTag(sender);
+        FoundryModelText.Text = model;
+        WorkspaceLayer.Visibility = Visibility.Visible;
+        FoundryModelsLayer.Visibility = Visibility.Collapsed;
+        SetStatus($"{model} selected for Foundry Local metadata pipeline.");
+        AppendLog($"Selected Foundry Local model: {model}");
+    }
+
     private void ShowMcpCommand_Click(object sender, RoutedEventArgs e)
     {
         var appDir = AppContext.BaseDirectory;
@@ -413,7 +522,7 @@ public partial class MainWindow : Window
         Clipboard.SetText(command);
         SetStatus("Copied MCP stdio launch command to clipboard.");
         AppendLog($"MCP stdio command: {command}");
-        AppendLog("Tools: paperboy.bundle.pack, inspect, unpack, toss, paperboy.cards.list, paperboy.cards.schema");
+        AppendLog("Tools: paperboy.bundle.*, paperboy.foundryLocal.*, paperboy.pmm.*, paperboy.cards.*");
     }
 
     private void Window_DragOver(object sender, DragEventArgs e)
@@ -515,6 +624,56 @@ public partial class MainWindow : Window
         }
 
         return System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Paperboy", "metadata");
+    }
+
+    private void ConfigureModelManager()
+    {
+        var cliPath = PmmCliPathText.Text.Trim();
+        _modelManager.CliPath = string.IsNullOrWhiteSpace(cliPath) ? "foundry" : cliPath;
+        _modelManager.Device = (PmmDeviceCombo.SelectedItem as System.Windows.Controls.ComboBoxItem)?.Content?.ToString() ?? "Auto";
+    }
+
+    private async Task RefreshCacheAfterPmmActionAsync()
+    {
+        var cache = await _modelManager.CacheListAsync();
+        var cachedCount = _cardCatalog.FoundryModelCards.Count(card => _modelManager.IsCached(cache.Output, card.Alias) || _modelManager.IsCached(cache.Output, card.ModelId));
+        PmmCacheStatText.Text = $"{cachedCount}/{_cardCatalog.FoundryModelCards.Count} Paperboy models cached.";
+    }
+
+    private async Task RunPmmActionAsync(string status, Func<Task> action)
+    {
+        try
+        {
+            SetStatus(status);
+            AppendLog(status);
+            await action();
+            SetStatus("PMM action completed.");
+        }
+        catch (Exception ex)
+        {
+            SetStatus(ex.Message, isError: true);
+            AppendLog($"ERROR: {ex}");
+        }
+    }
+
+    private void AppendFoundryResult(FoundryCliResult result)
+    {
+        if (!string.IsNullOrWhiteSpace(result.Output))
+        {
+            AppendLog(result.Output.Trim());
+        }
+        if (!string.IsNullOrWhiteSpace(result.Error))
+        {
+            AppendLog(result.Error.Trim());
+        }
+        AppendLog($"Foundry CLI exit code: {result.ExitCode}");
+    }
+
+    private static string GetModelTag(object sender)
+    {
+        return sender is FrameworkElement element && element.Tag is string tag && !string.IsNullOrWhiteSpace(tag)
+            ? tag
+            : throw new InvalidOperationException("Model action is missing a model alias.");
     }
 
     private void SetStatus(string message, bool isError = false)

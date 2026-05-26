@@ -4,34 +4,64 @@
     "title": "Fast language model",
     "description": "Compact chat, lightweight metadata summaries, routing labels, and smoke-test prompts.",
     "capabilities": ["chat", "classification", "metadata", "routing"],
-    "deliveryGuidance": "Use for quick bundle descriptions and offline delivery notes."
+    "deliveryGuidance": "Use for quick bundle descriptions and offline delivery notes.",
+    "task": "chat, tools",
+    "device": "GPU",
+    "fileSize": "0.52 GB",
+    "license": "apache-2.0",
+    "modelId": "qwen2.5-0.5b-instruct-cuda-gpu:4",
+    "semanticLinks": ["paperboy.bundle", "paperboy.foundryLocal", "paperboy.mcp"]
   },
   {
     "alias": "qwen3.5-0.8b",
     "title": "Vision-capable responses model",
     "description": "Image understanding, video-frame classification, screenshot summaries, and visual asset tags.",
     "capabilities": ["vision", "image", "video-frame", "classification"],
-    "deliveryGuidance": "Use with Paperboy's Foundry Local image/video metadata pipeline."
+    "deliveryGuidance": "Use with Paperboy's Foundry Local image/video metadata pipeline.",
+    "task": "vision-language-chat, tools",
+    "device": "GPU",
+    "fileSize": "1.32 GB",
+    "license": "apache-2.0",
+    "modelId": "qwen3.5-0.8b-cuda-gpu:2",
+    "semanticLinks": ["paperboy.foundryLocal", "paperboy.livetile", "paperboy.bundle"]
   },
   {
     "alias": "phi-3.5-mini",
     "title": "General local reasoning model",
     "description": "Document summarization, bundle manifests, policy notes, and concise agent instructions.",
     "capabilities": ["chat", "summary", "reasoning", "documents"],
-    "deliveryGuidance": "Use for rich sidecar metadata over text-heavy bundles."
+    "deliveryGuidance": "Use for rich sidecar metadata over text-heavy bundles.",
+    "task": "chat",
+    "device": "GPU",
+    "fileSize": "2.13 GB",
+    "license": "MIT",
+    "modelId": "Phi-3.5-mini-instruct-cuda-gpu:2",
+    "semanticLinks": ["paperboy.bundle", "paperboy.cards", "paperboy.mcp"]
   },
   {
     "alias": "whisper-tiny",
     "title": "Audio transcription model",
     "description": "Fast speech-to-text for lightweight audio clips before bundle tagging.",
     "capabilities": ["audio", "transcription", "speech"],
-    "deliveryGuidance": "Use externally or through a future audio-native Paperboy pipeline."
+    "deliveryGuidance": "Use externally or through a future audio-native Paperboy pipeline.",
+    "task": "automatic-speech-recognition",
+    "device": "GPU",
+    "fileSize": "0.08 GB",
+    "license": "apache-2.0",
+    "modelId": "openai-whisper-tiny-cuda-gpu:3",
+    "semanticLinks": ["paperboy.foundryLocal", "paperboy.bundle"]
   },
   {
-    "alias": "qwen3-0.6b-embedding",
-    "title": "Embedding model",
-    "description": "Local vector fingerprints for bundle search and duplicate detection.",
-    "capabilities": ["embedding", "search", "similarity"],
-    "deliveryGuidance": "Use for future semantic index bundles."
+    "alias": "qwen3-0.6b",
+    "title": "Tiny language/tool model",
+    "description": "Very small chat/tool model for semantic linking hints, cache probes, and lightweight delivery tests.",
+    "capabilities": ["chat", "tools", "semantic-links"],
+    "deliveryGuidance": "Use for semantic-linking sidecars and fast local PMM smoke tests.",
+    "task": "chat, tools",
+    "device": "GPU",
+    "fileSize": "0.48 GB",
+    "license": "apache-2.0",
+    "modelId": "qwen3-0.6b-cuda-gpu:2",
+    "semanticLinks": ["paperboy.modelCards", "paperboy.livetile", "paperboy.mcp"]
   }
 ]

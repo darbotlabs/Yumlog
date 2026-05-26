@@ -44,9 +44,9 @@
     "title": "Foundry Local Model Cards",
     "role": "model-delivery-layer",
     "description": "Displays language-model delivery cards that Paperboy can bundle and toss for offline Foundry Local workflows.",
-    "inputs": ["modelAlias", "modelRole", "endpoint", "deliveryProfile"],
-    "outputs": ["modelCardJson", "recommendedBundle", "mcpToolHints"],
-    "actions": ["showModels", "exportModelCards", "bundleModelCards", "deliverModel"],
+    "inputs": ["modelAlias", "modelRole", "endpoint", "deliveryProfile", "device"],
+    "outputs": ["modelCardJson", "recommendedBundle", "mcpToolHints", "cacheState"],
+    "actions": ["showModels", "downloadModel", "loadModel", "modelInfo", "exportModelCards", "bundleModelCards", "deliverModel"],
     "liveTileState": "catalog|selected|bundled|delivered"
   },
   {

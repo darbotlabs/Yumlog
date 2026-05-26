@@ -376,13 +376,61 @@
                     </StackPanel>
                 </Grid>
 
-                <UniformGrid Grid.Row="1" Columns="5" Rows="1">
+                <Grid Grid.Row="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <Border Grid.Row="0" CornerRadius="16" Padding="12" Background="#FFF7ED" BorderBrush="#FDBA74" BorderThickness="1" Margin="0,0,0,12">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1.3*" />
+                                <ColumnDefinition Width="0.5*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                                <TextBlock Text="PMM CLI" FontWeight="SemiBold" />
+                                <TextBox x:Name="PmmCliPathText" Text="foundry" Margin="0,4,0,0" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Margin="0,0,10,0">
+                                <TextBlock Text="Device" FontWeight="SemiBold" />
+                                <ComboBox x:Name="PmmDeviceCombo" SelectedIndex="0" Margin="0,4,0,0">
+                                    <ComboBoxItem Content="Auto" />
+                                    <ComboBoxItem Content="GPU" />
+                                    <ComboBoxItem Content="CPU" />
+                                    <ComboBoxItem Content="NPU" />
+                                </ComboBox>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Bottom">
+                                <Button Content="Refresh cache" Click="RefreshPmmCache_Click" Background="#FED7AA" />
+                                <Button Content="Download all" Click="DownloadAllModels_Click" Background="#EA580C" Foreground="White" />
+                            </StackPanel>
+                            <TextBlock Grid.Column="3"
+                                       x:Name="PmmCacheStatText"
+                                       Text="PMM cache status not loaded."
+                                       VerticalAlignment="Center"
+                                       TextWrapping="Wrap"
+                                       Foreground="#78350F" />
+                        </Grid>
+                    </Border>
+
+                    <UniformGrid Grid.Row="1" Columns="5" Rows="1">
                     <Border Style="{StaticResource TileBorder}" Background="#FEF3C7" BorderBrush="#F59E0B" Margin="0,0,10,0">
                         <StackPanel>
                             <TextBlock Text="qwen2.5-0.5b" FontWeight="Bold" FontSize="17" />
                             <TextBlock Text="Fast language model" Foreground="#92400E" FontWeight="SemiBold" Margin="0,6,0,8" />
                             <TextBlock Text="Compact chat, metadata summaries, routing labels, and smoke-test prompts." TextWrapping="Wrap" />
-                            <TextBlock Text="Capabilities: chat · classification · metadata" Margin="0,12,0,0" Foreground="{StaticResource PaperboyMuted}" TextWrapping="Wrap" />
+                            <TextBlock Text="Task: chat/tools · 0.52 GB · apache-2.0" Margin="0,10,0,0" Foreground="{StaticResource PaperboyMuted}" TextWrapping="Wrap" />
+                            <TextBlock Text="ID: qwen2.5-0.5b-instruct-cuda-gpu:4" Margin="0,4,0,8" FontSize="11" TextWrapping="Wrap" />
+                            <TextBlock Text="Links: bundle · foundryLocal · mcp" FontSize="11" Foreground="#92400E" Margin="0,0,0,8" TextWrapping="Wrap" />
+                            <WrapPanel>
+                                <Button Content="Download" Tag="qwen2.5-0.5b" Click="DownloadModel_Click" Background="#F59E0B" Foreground="White" />
+                                <Button Content="Load" Tag="qwen2.5-0.5b" Click="LoadModel_Click" />
+                                <Button Content="Info" Tag="qwen2.5-0.5b" Click="InfoModel_Click" />
+                            </WrapPanel>
+                            <Button Content="Use for metadata smoke" Tag="qwen2.5-0.5b" Click="RunModelSmoke_Click" />
                         </StackPanel>
                     </Border>
                     <Border Style="{StaticResource TileBorder}" Background="#FFE4E6" BorderBrush="#FB7185" Margin="0,0,10,0">
@@ -390,7 +438,15 @@
                             <TextBlock Text="qwen3.5-0.8b" FontWeight="Bold" FontSize="17" />
                             <TextBlock Text="Vision-capable responses model" Foreground="#BE123C" FontWeight="SemiBold" Margin="0,6,0,8" />
                             <TextBlock Text="Image understanding, video-frame classification, screenshot summaries, and visual asset tags." TextWrapping="Wrap" />
-                            <TextBlock Text="Capabilities: vision · image · video-frame" Margin="0,12,0,0" Foreground="{StaticResource PaperboyMuted}" TextWrapping="Wrap" />
+                            <TextBlock Text="Task: vision-language/tools · 1.32 GB · apache-2.0" Margin="0,10,0,0" Foreground="{StaticResource PaperboyMuted}" TextWrapping="Wrap" />
+                            <TextBlock Text="ID: qwen3.5-0.8b-cuda-gpu:2" Margin="0,4,0,8" FontSize="11" TextWrapping="Wrap" />
+                            <TextBlock Text="Links: foundryLocal · livetile · bundle" FontSize="11" Foreground="#BE123C" Margin="0,0,0,8" TextWrapping="Wrap" />
+                            <WrapPanel>
+                                <Button Content="Download" Tag="qwen3.5-0.8b" Click="DownloadModel_Click" Background="#FB7185" Foreground="White" />
+                                <Button Content="Load" Tag="qwen3.5-0.8b" Click="LoadModel_Click" />
+                                <Button Content="Info" Tag="qwen3.5-0.8b" Click="InfoModel_Click" />
+                            </WrapPanel>
+                            <Button Content="Use for vision pipeline" Tag="qwen3.5-0.8b" Click="UseModelForFoundry_Click" />
                         </StackPanel>
                     </Border>
                     <Border Style="{StaticResource TileBorder}" Background="#E0F2FE" BorderBrush="#38BDF8" Margin="0,0,10,0">
@@ -398,7 +454,15 @@
                             <TextBlock Text="phi-3.5-mini" FontWeight="Bold" FontSize="17" />
                             <TextBlock Text="General local reasoning model" Foreground="#0369A1" FontWeight="SemiBold" Margin="0,6,0,8" />
                             <TextBlock Text="Document summarization, bundle manifests, policy notes, and concise agent instructions." TextWrapping="Wrap" />
-                            <TextBlock Text="Capabilities: chat · summary · reasoning" Margin="0,12,0,0" Foreground="{StaticResource PaperboyMuted}" TextWrapping="Wrap" />
+                            <TextBlock Text="Task: chat · 2.13 GB · MIT" Margin="0,10,0,0" Foreground="{StaticResource PaperboyMuted}" TextWrapping="Wrap" />
+                            <TextBlock Text="ID: Phi-3.5-mini-instruct-cuda-gpu:2" Margin="0,4,0,8" FontSize="11" TextWrapping="Wrap" />
+                            <TextBlock Text="Links: bundle · cards · mcp" FontSize="11" Foreground="#0369A1" Margin="0,0,0,8" TextWrapping="Wrap" />
+                            <WrapPanel>
+                                <Button Content="Download" Tag="phi-3.5-mini" Click="DownloadModel_Click" Background="#38BDF8" Foreground="White" />
+                                <Button Content="Load" Tag="phi-3.5-mini" Click="LoadModel_Click" />
+                                <Button Content="Info" Tag="phi-3.5-mini" Click="InfoModel_Click" />
+                            </WrapPanel>
+                            <Button Content="Use for documents" Tag="phi-3.5-mini" Click="UseModelForFoundry_Click" />
                         </StackPanel>
                     </Border>
                     <Border Style="{StaticResource TileBorder}" Background="#F3E8FF" BorderBrush="#A855F7" Margin="0,0,10,0">
@@ -406,18 +470,35 @@
                             <TextBlock Text="whisper-tiny" FontWeight="Bold" FontSize="17" />
                             <TextBlock Text="Audio transcription model" Foreground="#7E22CE" FontWeight="SemiBold" Margin="0,6,0,8" />
                             <TextBlock Text="Fast speech-to-text for lightweight audio clips before bundle tagging." TextWrapping="Wrap" />
-                            <TextBlock Text="Capabilities: audio · transcription · speech" Margin="0,12,0,0" Foreground="{StaticResource PaperboyMuted}" TextWrapping="Wrap" />
+                            <TextBlock Text="Task: speech recognition · 0.08 GB · apache-2.0" Margin="0,10,0,0" Foreground="{StaticResource PaperboyMuted}" TextWrapping="Wrap" />
+                            <TextBlock Text="ID: openai-whisper-tiny-cuda-gpu:3" Margin="0,4,0,8" FontSize="11" TextWrapping="Wrap" />
+                            <TextBlock Text="Links: foundryLocal · bundle" FontSize="11" Foreground="#7E22CE" Margin="0,0,0,8" TextWrapping="Wrap" />
+                            <WrapPanel>
+                                <Button Content="Download" Tag="whisper-tiny" Click="DownloadModel_Click" Background="#A855F7" Foreground="White" />
+                                <Button Content="Load" Tag="whisper-tiny" Click="LoadModel_Click" />
+                                <Button Content="Info" Tag="whisper-tiny" Click="InfoModel_Click" />
+                            </WrapPanel>
+                            <Button Content="Use for audio" Tag="whisper-tiny" Click="UseModelForFoundry_Click" />
                         </StackPanel>
                     </Border>
                     <Border Style="{StaticResource TileBorder}" Background="#DCFCE7" BorderBrush="#22C55E">
                         <StackPanel>
-                            <TextBlock Text="qwen3-0.6b-embedding" FontWeight="Bold" FontSize="17" />
-                            <TextBlock Text="Embedding model" Foreground="#15803D" FontWeight="SemiBold" Margin="0,6,0,8" />
-                            <TextBlock Text="Local vector fingerprints for bundle search and duplicate detection." TextWrapping="Wrap" />
-                            <TextBlock Text="Capabilities: embedding · search · similarity" Margin="0,12,0,0" Foreground="{StaticResource PaperboyMuted}" TextWrapping="Wrap" />
+                            <TextBlock Text="qwen3-0.6b" FontWeight="Bold" FontSize="17" />
+                            <TextBlock Text="Tiny language/tool model" Foreground="#15803D" FontWeight="SemiBold" Margin="0,6,0,8" />
+                            <TextBlock Text="Very small model for semantic-linking hints, cache probes, and lightweight delivery tests." TextWrapping="Wrap" />
+                            <TextBlock Text="Task: chat/tools · 0.48 GB · apache-2.0" Margin="0,10,0,0" Foreground="{StaticResource PaperboyMuted}" TextWrapping="Wrap" />
+                            <TextBlock Text="ID: qwen3-0.6b-cuda-gpu:2" Margin="0,4,0,8" FontSize="11" TextWrapping="Wrap" />
+                            <TextBlock Text="Links: modelCards · livetile · mcp" FontSize="11" Foreground="#15803D" Margin="0,0,0,8" TextWrapping="Wrap" />
+                            <WrapPanel>
+                                <Button Content="Download" Tag="qwen3-0.6b" Click="DownloadModel_Click" Background="#22C55E" Foreground="White" />
+                                <Button Content="Load" Tag="qwen3-0.6b" Click="LoadModel_Click" />
+                                <Button Content="Info" Tag="qwen3-0.6b" Click="InfoModel_Click" />
+                            </WrapPanel>
+                            <Button Content="Use for semantic links" Tag="qwen3-0.6b" Click="UseModelForFoundry_Click" />
                         </StackPanel>
                     </Border>
-                </UniformGrid>
+                    </UniformGrid>
+                </Grid>
 
                 <Border Grid.Row="2" CornerRadius="16" Padding="14" Background="#FEF3C7" Margin="0,16,0,0">
                     <TextBlock Text="Delivery pattern: export these model cards, pack them with prompts/config, then toss the bundle to an offline Foundry Local workspace. Paperboy does not redistribute model weights; it delivers model metadata, aliases, cards, prompts, and pipeline instructions."

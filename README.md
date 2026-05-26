@@ -147,6 +147,20 @@ Use **Foundry Models** in the desktop app to export or bundle the model-card
 catalog as a `.paperboy.zip`. The MCP host exposes the same catalog through
 `paperboy.foundryLocal.modelCards`.
 
+The **Paperboy Model Manager (PMM)** controls in that layer call the local
+`foundry` CLI to manage the model lifecycle:
+
+- `Download` caches the selected model locally.
+- `Load` loads the selected model into the Foundry Local service.
+- `Info` displays the model's Foundry catalog metadata.
+- `Download all` hydrates the Paperboy model-card set.
+- `Refresh cache` shows which model cards are already cached.
+
+PMM settings include the CLI path (`foundry` by default) and target device
+(`Auto`, `GPU`, `CPU`, or `NPU`). The same operations are exposed through MCP as
+`paperboy.pmm.info`, `paperboy.pmm.download`, `paperboy.pmm.load`,
+`paperboy.pmm.cacheList`, and `paperboy.pmm.run`.
+
 #### Run Unit Tests
 
 ```powershell

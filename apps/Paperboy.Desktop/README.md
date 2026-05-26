@@ -113,6 +113,24 @@ for delivery to an offline Foundry Local workspace. Model weights are not
 redistributed by Paperboy; the cards describe which aliases and pipeline roles a
 receiving workspace should load locally.
 
+## Paperboy Model Manager
+
+The model-card layer includes PMM controls backed by the local Foundry CLI:
+
+- `Download` runs `foundry model download <model> --device <device>`.
+- `Load` runs `foundry model load <model> --device <device>`.
+- `Info` runs `foundry model info <model>`.
+- `Download all` caches every Paperboy model card.
+- `Refresh cache` runs `foundry cache list`.
+
+MCP exposes the same operations:
+
+- `paperboy.pmm.info`
+- `paperboy.pmm.download`
+- `paperboy.pmm.load`
+- `paperboy.pmm.cacheList`
+- `paperboy.pmm.run`
+
 ## Agent-card schema
 
 The app marks major UI surfaces with composable card metadata and ships the card
