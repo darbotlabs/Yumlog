@@ -9,6 +9,7 @@ bin/
 obj/
 .vs/
 publish/
+.dotnet*/
 
 # Playwright
 playwright-report/

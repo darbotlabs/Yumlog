@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net11.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>Paperboy.Mcp</AssemblyName>
+    <RootNamespace>Paperboy.Mcp</RootNamespace>
+    <Version>0.1.0</Version>
+    <Authors>Darbot Labs</Authors>
+    <Description>MCP stdio server for Paperboy bundle and agent-card workflows.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Paperboy.Desktop\Services\PaperboyBundleService.cs" Link="Services\PaperboyBundleService.cs" />
+    <Compile Include="..\Paperboy.Desktop\Cards\AgentCardCatalog.cs" Link="Cards\AgentCardCatalog.cs" />
+    <Compile Include="..\Paperboy.Desktop\Mcp\PaperboyMcpServer.cs" Link="Mcp\PaperboyMcpServer.cs" />
+  </ItemGroup>
+
+</Project>

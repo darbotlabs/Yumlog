@@ -1,4 +1,5 @@
 using Microsoft.Win32;
+using Paperboy.Desktop.Cards;
 using Paperboy.Desktop.Services;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -16,6 +17,7 @@ public sealed class SourceItem
 public partial class MainWindow : Window
 {
     private readonly PaperboyBundleService _bundleService = new();
+    private readonly AgentCardCatalog _cardCatalog = AgentCardCatalog.Default;
 
     public ObservableCollection<SourceItem> Sources { get; } = [];
 
@@ -247,6 +249,44 @@ public partial class MainWindow : Window
             SetStatus(ex.Message, isError: true);
             AppendLog($"ERROR: {ex}");
         }
+    }
+
+    private void CopyCardSchema_Click(object sender, RoutedEventArgs e)
+    {
+        Clipboard.SetText(_cardCatalog.SchemaJson);
+        SetStatus("Copied Paperboy agent-card schema to clipboard.");
+        AppendLog("Agent-card schema copied to clipboard.");
+    }
+
+    private void ExportCards_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new SaveFileDialog
+        {
+            Title = "Export Paperboy agent card catalog",
+            Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*",
+            FileName = "paperboy.cards.json",
+            OverwritePrompt = true
+        };
+
+        if (dialog.ShowDialog(this) == true)
+        {
+            File.WriteAllText(dialog.FileName, _cardCatalog.ToJson());
+            SetStatus($"Exported card catalog to {dialog.FileName}.");
+            AppendLog($"Exported cards: {dialog.FileName}");
+        }
+    }
+
+    private void ShowMcpCommand_Click(object sender, RoutedEventArgs e)
+    {
+        var appDir = AppContext.BaseDirectory;
+        var mcpExe = System.IO.Path.Combine(appDir, "Paperboy.Mcp.exe");
+        var command = File.Exists(mcpExe)
+            ? $"\"{mcpExe}\""
+            : "dotnet run --project .\\apps\\Paperboy.Mcp\\Paperboy.Mcp.csproj";
+        Clipboard.SetText(command);
+        SetStatus("Copied MCP stdio launch command to clipboard.");
+        AppendLog($"MCP stdio command: {command}");
+        AppendLog("Tools: paperboy.bundle.pack, inspect, unpack, toss, paperboy.cards.list, paperboy.cards.schema");
     }
 
     private void Window_DragOver(object sender, DragEventArgs e)

@@ -74,8 +74,9 @@ timestamps, and SHA-256 hashes. They are ordinary ZIP archives with a
 #### Using the native Paperboy desktop app
 
 ```powershell
-# Build the Windows-native .NET 10 desktop app
+# Build the Windows-native .NET 11 desktop app
 dotnet build .\apps\Paperboy.Desktop\Paperboy.Desktop.csproj -c Release
+dotnet build .\apps\Paperboy.Mcp\Paperboy.Mcp.csproj -c Release
 
 # Publish a self-contained win-x64 app folder
 dotnet publish .\apps\Paperboy.Desktop\Paperboy.Desktop.csproj `
@@ -89,6 +90,9 @@ dotnet publish .\apps\Paperboy.Desktop\Paperboy.Desktop.csproj `
 The desktop app provides a modern drag-and-drop UI for selecting files and
 folders, choosing compression, creating `.paperboy.zip` bundles, inspecting
 manifests, unpacking bundles, and tossing bundles to an outbox folder.
+It uses Windows App SDK visual assets for its showcase shell and ships
+composable agent-card metadata for A2A/livetile surfaces plus a companion
+`Paperboy.Mcp` stdio host for agent tool calls.
 
 #### Run Unit Tests
 
@@ -154,6 +158,8 @@ darbot.yumlog/
 │   └── Paperboy.Desktop/
 │       ├── MainWindow.xaml
 │       └── Services/PaperboyBundleService.cs
+│   └── Paperboy.Mcp/
+│       └── Program.cs
 ├── bisect-test/
 │   ├── bisect-extractor.html
 │   ├── library.html

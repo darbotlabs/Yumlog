@@ -1,0 +1,42 @@
+[
+  {
+    "id": "paperboy.payload",
+    "title": "Payload",
+    "role": "source-picker",
+    "description": "Collects files and folders for a tossable bundle.",
+    "inputs": ["fileDrop", "filePicker", "folderPicker"],
+    "outputs": ["sourcePaths[]"],
+    "actions": ["addFiles", "addFolder", "removeSelected", "clear"],
+    "liveTileState": "empty|ready|changed"
+  },
+  {
+    "id": "paperboy.bundle",
+    "title": "Bundle",
+    "role": "bundle-builder",
+    "description": "Configures compression, destination, and bundle creation.",
+    "inputs": ["sourcePaths[]", "outputPath", "compressionLevel", "includeHidden", "overwrite"],
+    "outputs": ["bundlePath", "manifest", "compressionRatio"],
+    "actions": ["pack", "inspect", "unpack", "toss"],
+    "liveTileState": "idle|packing|packed|error"
+  },
+  {
+    "id": "paperboy.mcp",
+    "title": "MCP Bridge",
+    "role": "tool-surface",
+    "description": "Exposes Paperboy pack/list/unpack/toss as agent-callable MCP tools.",
+    "inputs": ["jsonRpc", "toolName", "arguments"],
+    "outputs": ["toolResult", "manifest", "agentCardCatalog"],
+    "actions": ["initialize", "tools/list", "tools/call"],
+    "liveTileState": "offline|stdio-ready|serving"
+  },
+  {
+    "id": "paperboy.livetile",
+    "title": "Live Tile",
+    "role": "a2a-card",
+    "description": "Composable UI card schema for A2A interactive surfaces.",
+    "inputs": ["cardId", "state", "actions"],
+    "outputs": ["cardJson", "tileState", "nextActions"],
+    "actions": ["render", "exportCards", "copySchema"],
+    "liveTileState": "draft|active|shared"
+  }
+]

@@ -11,10 +11,11 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Set up .NET 10
+      - name: Set up .NET 11
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 10.0.x
+          dotnet-version: 11.0.x
+          dotnet-quality: preview
       - name: Run install.ps1 (FFmpeg cache)
         run: pwsh launchers/install.ps1
       - name: Run Pester tests for yumlog skills
@@ -23,3 +24,5 @@ jobs:
         run: pwsh -Command "Invoke-Pester -Path Skills/Test-PaperboyBundle.Tests.ps1 -Output Detailed"
       - name: Build Paperboy desktop app
         run: dotnet build apps/Paperboy.Desktop/Paperboy.Desktop.csproj -c Release
+      - name: Build Paperboy MCP app
+        run: dotnet build apps/Paperboy.Mcp/Paperboy.Mcp.csproj -c Release
