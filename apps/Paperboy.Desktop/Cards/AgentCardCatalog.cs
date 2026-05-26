@@ -12,6 +12,13 @@ public sealed record AgentCardDefinition(
     string[] Actions,
     string LiveTileState);
 
+public sealed record FoundryLocalModelCard(
+    string Alias,
+    string Title,
+    string Description,
+    string[] Capabilities,
+    string DeliveryGuidance);
+
 public sealed class AgentCardCatalog
 {
     private static readonly JsonSerializerOptions JsonOptions = new()
@@ -66,6 +73,15 @@ public sealed class AgentCardCatalog
             ["analyze", "writeSidecar", "bundleMetadata"],
             "offline|ready|analyzing|tagged|error"),
         new(
+            "paperboy.modelCards",
+            "Foundry Local Model Cards",
+            "model-delivery-layer",
+            "Displays language-model delivery cards that Paperboy can bundle and toss for offline Foundry Local workflows.",
+            ["modelAlias", "modelRole", "endpoint", "deliveryProfile"],
+            ["modelCardJson", "recommendedBundle", "mcpToolHints"],
+            ["showModels", "exportModelCards", "bundleModelCards", "deliverModel"],
+            "catalog|selected|bundled|delivered"),
+        new(
             "paperboy.livetile",
             "Live Tile",
             "a2a-card",
@@ -77,6 +93,42 @@ public sealed class AgentCardCatalog
     ]);
 
     public string ToJson() => JsonSerializer.Serialize(Cards, JsonOptions);
+
+    public IReadOnlyList<FoundryLocalModelCard> FoundryModelCards { get; } =
+    [
+        new(
+            "qwen2.5-0.5b",
+            "Fast language model",
+            "Compact chat, lightweight metadata summaries, routing labels, and smoke-test prompts.",
+            ["chat", "classification", "metadata", "routing"],
+            "Use for quick bundle descriptions and offline delivery notes."),
+        new(
+            "qwen3.5-0.8b",
+            "Vision-capable responses model",
+            "Image understanding, video-frame classification, screenshot summaries, and visual asset tags.",
+            ["vision", "image", "video-frame", "classification"],
+            "Use with Paperboy's Foundry Local image/video metadata pipeline."),
+        new(
+            "phi-3.5-mini",
+            "General local reasoning model",
+            "Document summarization, bundle manifests, policy notes, and concise agent instructions.",
+            ["chat", "summary", "reasoning", "documents"],
+            "Use for rich sidecar metadata over text-heavy bundles."),
+        new(
+            "whisper-tiny",
+            "Audio transcription model",
+            "Fast speech-to-text for lightweight audio clips before bundle tagging.",
+            ["audio", "transcription", "speech"],
+            "Use externally or through a future audio-native Paperboy pipeline."),
+        new(
+            "qwen3-0.6b-embedding",
+            "Embedding model",
+            "Local vector fingerprints for bundle search and duplicate detection.",
+            ["embedding", "search", "similarity"],
+            "Use for future semantic index bundles.")
+    ];
+
+    public string FoundryModelCardsJson() => JsonSerializer.Serialize(FoundryModelCards, JsonOptions);
 
     public string SchemaJson => """
     {

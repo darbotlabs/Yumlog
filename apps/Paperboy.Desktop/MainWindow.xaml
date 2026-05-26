@@ -42,6 +42,16 @@
                     </StackPanel>
                 </StackPanel>
                 <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Content="Workspace"
+                            Click="ShowWorkspace_Click"
+                            Background="#DBEAFE"
+                            Foreground="#1E3A8A"
+                            Margin="0,0,8,0" />
+                    <Button Content="Foundry Models"
+                            Click="ShowFoundryModels_Click"
+                            Background="#FEF3C7"
+                            Foreground="#92400E"
+                            Margin="0,0,12,0" />
                     <Border CornerRadius="999" Background="#2563EB" Padding="18,10" Margin="0,0,8,0">
                         <TextBlock Text=".paperboy.zip" Foreground="White" FontWeight="SemiBold" />
                     </Border>
@@ -55,7 +65,7 @@
             </Grid>
         </Border>
 
-        <Grid Grid.Row="1" Margin="0,18,0,18">
+        <Grid x:Name="WorkspaceLayer" Grid.Row="1" Margin="0,18,0,18">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1.12*" />
                 <ColumnDefinition Width="0.94*" />
@@ -321,6 +331,101 @@
                 </Grid>
             </Border>
         </Grid>
+
+        <Border x:Name="FoundryModelsLayer"
+                Grid.Row="1"
+                Visibility="Collapsed"
+                cards:AgentCard.Id="paperboy.modelCards"
+                cards:AgentCard.Role="model-delivery-layer"
+                Style="{StaticResource TileBorder}"
+                BorderBrush="#FDE68A"
+                Background="#FFFBEB"
+                Margin="0,18,0,18">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <TextBlock Text="Foundry Local Model Delivery Cards"
+                                   FontSize="28"
+                                   FontWeight="Bold"
+                                   Foreground="#92400E" />
+                        <TextBlock Text="Full-page layer for delivering local language, vision, audio, and embedding models as Paperboy bundles."
+                                   Margin="0,4,0,18"
+                                   Foreground="{StaticResource PaperboyMuted}" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Top">
+                        <Button Content="Export model cards"
+                                cards:AgentCard.Action="exportModelCards"
+                                Click="ExportModelCards_Click"
+                                Background="#F59E0B"
+                                Foreground="White" />
+                        <Button Content="Bundle model cards"
+                                cards:AgentCard.Action="bundleModelCards"
+                                Click="BundleModelCards_Click"
+                                Background="#EA580C"
+                                Foreground="White" />
+                    </StackPanel>
+                </Grid>
+
+                <UniformGrid Grid.Row="1" Columns="5" Rows="1">
+                    <Border Style="{StaticResource TileBorder}" Background="#FEF3C7" BorderBrush="#F59E0B" Margin="0,0,10,0">
+                        <StackPanel>
+                            <TextBlock Text="qwen2.5-0.5b" FontWeight="Bold" FontSize="17" />
+                            <TextBlock Text="Fast language model" Foreground="#92400E" FontWeight="SemiBold" Margin="0,6,0,8" />
+                            <TextBlock Text="Compact chat, metadata summaries, routing labels, and smoke-test prompts." TextWrapping="Wrap" />
+                            <TextBlock Text="Capabilities: chat · classification · metadata" Margin="0,12,0,0" Foreground="{StaticResource PaperboyMuted}" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource TileBorder}" Background="#FFE4E6" BorderBrush="#FB7185" Margin="0,0,10,0">
+                        <StackPanel>
+                            <TextBlock Text="qwen3.5-0.8b" FontWeight="Bold" FontSize="17" />
+                            <TextBlock Text="Vision-capable responses model" Foreground="#BE123C" FontWeight="SemiBold" Margin="0,6,0,8" />
+                            <TextBlock Text="Image understanding, video-frame classification, screenshot summaries, and visual asset tags." TextWrapping="Wrap" />
+                            <TextBlock Text="Capabilities: vision · image · video-frame" Margin="0,12,0,0" Foreground="{StaticResource PaperboyMuted}" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource TileBorder}" Background="#E0F2FE" BorderBrush="#38BDF8" Margin="0,0,10,0">
+                        <StackPanel>
+                            <TextBlock Text="phi-3.5-mini" FontWeight="Bold" FontSize="17" />
+                            <TextBlock Text="General local reasoning model" Foreground="#0369A1" FontWeight="SemiBold" Margin="0,6,0,8" />
+                            <TextBlock Text="Document summarization, bundle manifests, policy notes, and concise agent instructions." TextWrapping="Wrap" />
+                            <TextBlock Text="Capabilities: chat · summary · reasoning" Margin="0,12,0,0" Foreground="{StaticResource PaperboyMuted}" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource TileBorder}" Background="#F3E8FF" BorderBrush="#A855F7" Margin="0,0,10,0">
+                        <StackPanel>
+                            <TextBlock Text="whisper-tiny" FontWeight="Bold" FontSize="17" />
+                            <TextBlock Text="Audio transcription model" Foreground="#7E22CE" FontWeight="SemiBold" Margin="0,6,0,8" />
+                            <TextBlock Text="Fast speech-to-text for lightweight audio clips before bundle tagging." TextWrapping="Wrap" />
+                            <TextBlock Text="Capabilities: audio · transcription · speech" Margin="0,12,0,0" Foreground="{StaticResource PaperboyMuted}" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource TileBorder}" Background="#DCFCE7" BorderBrush="#22C55E">
+                        <StackPanel>
+                            <TextBlock Text="qwen3-0.6b-embedding" FontWeight="Bold" FontSize="17" />
+                            <TextBlock Text="Embedding model" Foreground="#15803D" FontWeight="SemiBold" Margin="0,6,0,8" />
+                            <TextBlock Text="Local vector fingerprints for bundle search and duplicate detection." TextWrapping="Wrap" />
+                            <TextBlock Text="Capabilities: embedding · search · similarity" Margin="0,12,0,0" Foreground="{StaticResource PaperboyMuted}" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+                </UniformGrid>
+
+                <Border Grid.Row="2" CornerRadius="16" Padding="14" Background="#FEF3C7" Margin="0,16,0,0">
+                    <TextBlock Text="Delivery pattern: export these model cards, pack them with prompts/config, then toss the bundle to an offline Foundry Local workspace. Paperboy does not redistribute model weights; it delivers model metadata, aliases, cards, prompts, and pipeline instructions."
+                               TextWrapping="Wrap"
+                               Foreground="#78350F" />
+                </Border>
+            </Grid>
+        </Border>
 
         <Border Grid.Row="2" CornerRadius="14" Padding="12" Background="#DCEBFF">
             <TextBlock x:Name="StatusText"

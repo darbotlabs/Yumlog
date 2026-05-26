@@ -128,6 +128,25 @@ Recommended offline model roles:
 The MCP host also exposes `paperboy.foundryLocal.analyze` for agent-driven
 offline tagging.
 
+#### Delivering Foundry Local language models with Paperboy
+
+Paperboy includes a full-page **Foundry Local Model Delivery Cards** layer. It
+does not redistribute model weights. Instead, it packages model aliases, roles,
+recommended prompts/config, and MCP tool hints so an offline Foundry Local
+workspace can pull/load the right local model:
+
+| Model card | Delivery role |
+|---|---|
+| `qwen2.5-0.5b` | Fast language model for chat, metadata, and routing |
+| `qwen3.5-0.8b` | Vision-capable responses model for image/video-frame tagging |
+| `phi-3.5-mini` | General local reasoning and document summarization |
+| `whisper-tiny` | Audio transcription workflow |
+| `qwen3-0.6b-embedding` | Semantic search and similarity fingerprints |
+
+Use **Foundry Models** in the desktop app to export or bundle the model-card
+catalog as a `.paperboy.zip`. The MCP host exposes the same catalog through
+`paperboy.foundryLocal.modelCards`.
+
 #### Run Unit Tests
 
 ```powershell

@@ -1,0 +1,37 @@
+[
+  {
+    "alias": "qwen2.5-0.5b",
+    "title": "Fast language model",
+    "description": "Compact chat, lightweight metadata summaries, routing labels, and smoke-test prompts.",
+    "capabilities": ["chat", "classification", "metadata", "routing"],
+    "deliveryGuidance": "Use for quick bundle descriptions and offline delivery notes."
+  },
+  {
+    "alias": "qwen3.5-0.8b",
+    "title": "Vision-capable responses model",
+    "description": "Image understanding, video-frame classification, screenshot summaries, and visual asset tags.",
+    "capabilities": ["vision", "image", "video-frame", "classification"],
+    "deliveryGuidance": "Use with Paperboy's Foundry Local image/video metadata pipeline."
+  },
+  {
+    "alias": "phi-3.5-mini",
+    "title": "General local reasoning model",
+    "description": "Document summarization, bundle manifests, policy notes, and concise agent instructions.",
+    "capabilities": ["chat", "summary", "reasoning", "documents"],
+    "deliveryGuidance": "Use for rich sidecar metadata over text-heavy bundles."
+  },
+  {
+    "alias": "whisper-tiny",
+    "title": "Audio transcription model",
+    "description": "Fast speech-to-text for lightweight audio clips before bundle tagging.",
+    "capabilities": ["audio", "transcription", "speech"],
+    "deliveryGuidance": "Use externally or through a future audio-native Paperboy pipeline."
+  },
+  {
+    "alias": "qwen3-0.6b-embedding",
+    "title": "Embedding model",
+    "description": "Local vector fingerprints for bundle search and duplicate detection.",
+    "capabilities": ["embedding", "search", "similarity"],
+    "deliveryGuidance": "Use for future semantic index bundles."
+  }
+]

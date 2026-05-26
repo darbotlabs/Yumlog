@@ -78,6 +78,7 @@ public static class PaperboyMcpServer
                         Tool("paperboy.bundle.unpack", "Expand a Paperboy bundle."),
                         Tool("paperboy.bundle.toss", "Copy a Paperboy bundle to a destination."),
                         Tool("paperboy.foundryLocal.analyze", "Analyze media/documents with a local Foundry endpoint and return tags/classifications."),
+                        Tool("paperboy.foundryLocal.modelCards", "Return Foundry Local model delivery cards for Paperboy bundles."),
                         Tool("paperboy.cards.list", "Return composable Paperboy agent cards for A2A/livetile UIs."),
                         Tool("paperboy.cards.schema", "Return the Paperboy agent-card JSON schema.")
                     }
@@ -122,6 +123,7 @@ public static class PaperboyMcpServer
             "paperboy.bundle.unpack" => ContentResponse(id, await UnpackAsync(args, service, cancellationToken)),
             "paperboy.bundle.toss" => ContentResponse(id, await TossAsync(args, service, cancellationToken)),
             "paperboy.foundryLocal.analyze" => ContentResponse(id, await AnalyzeFoundryAsync(args, foundry, cancellationToken)),
+            "paperboy.foundryLocal.modelCards" => ContentResponse(id, cards.FoundryModelCardsJson()),
             "paperboy.cards.list" => ContentResponse(id, cards.ToJson()),
             "paperboy.cards.schema" => ContentResponse(id, cards.SchemaJson),
             _ => Error(id, -32602, $"Unknown tool: {name}")

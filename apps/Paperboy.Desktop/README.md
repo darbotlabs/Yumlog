@@ -15,6 +15,8 @@ lightweight `.paperboy.zip` bundles.
 - Copy the MCP stdio launch command for agent integration.
 - Use Windows App SDK imagery and modern card/tile styling for showcase demos.
 - Run offline Foundry Local metadata tagging for images, videos, audio, and documents.
+- Switch to a full-page Foundry Local model-card layer for delivering language,
+  vision, audio, and embedding model metadata as Paperboy bundles.
 - Preserve SHA-256 hashes, byte counts, and source metadata in
   `paperboy-manifest.json`.
 
@@ -71,6 +73,7 @@ It exposes these tools over stdio JSON-RPC/MCP:
 - `paperboy.bundle.unpack`
 - `paperboy.bundle.toss`
 - `paperboy.foundryLocal.analyze`
+- `paperboy.foundryLocal.modelCards`
 - `paperboy.cards.list`
 - `paperboy.cards.schema`
 
@@ -94,6 +97,21 @@ Supported pipeline behavior:
 
 The result is saved as `paperboy-foundry-metadata-*.json` and can be bundled
 with the original payload for offline routing/search.
+
+## Foundry Local model-card delivery
+
+The **Foundry Models** viewport layer represents local model delivery as cards:
+
+- `qwen2.5-0.5b` for fast language metadata and routing
+- `qwen3.5-0.8b` for vision-capable image/video frame tagging
+- `phi-3.5-mini` for document reasoning and summaries
+- `whisper-tiny` for audio transcription workflows
+- `qwen3-0.6b-embedding` for semantic indexing/search
+
+Paperboy can export these cards as JSON or bundle them into a `.paperboy.zip`
+for delivery to an offline Foundry Local workspace. Model weights are not
+redistributed by Paperboy; the cards describe which aliases and pipeline roles a
+receiving workspace should load locally.
 
 ## Agent-card schema
 

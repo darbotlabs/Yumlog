@@ -324,6 +324,20 @@ public partial class MainWindow : Window
         AppendLog("Agent-card schema copied to clipboard.");
     }
 
+    private void ShowWorkspace_Click(object sender, RoutedEventArgs e)
+    {
+        WorkspaceLayer.Visibility = Visibility.Visible;
+        FoundryModelsLayer.Visibility = Visibility.Collapsed;
+        SetStatus("Workspace layer active.");
+    }
+
+    private void ShowFoundryModels_Click(object sender, RoutedEventArgs e)
+    {
+        WorkspaceLayer.Visibility = Visibility.Collapsed;
+        FoundryModelsLayer.Visibility = Visibility.Visible;
+        SetStatus("Foundry Local model-card delivery layer active.");
+    }
+
     private void ExportCards_Click(object sender, RoutedEventArgs e)
     {
         var dialog = new SaveFileDialog
@@ -339,6 +353,53 @@ public partial class MainWindow : Window
             File.WriteAllText(dialog.FileName, _cardCatalog.ToJson());
             SetStatus($"Exported card catalog to {dialog.FileName}.");
             AppendLog($"Exported cards: {dialog.FileName}");
+        }
+    }
+
+    private void ExportModelCards_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new SaveFileDialog
+        {
+            Title = "Export Foundry Local model cards",
+            Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*",
+            FileName = "foundry-local.model-cards.json",
+            OverwritePrompt = true
+        };
+
+        if (dialog.ShowDialog(this) == true)
+        {
+            File.WriteAllText(dialog.FileName, _cardCatalog.FoundryModelCardsJson());
+            SetStatus($"Exported model cards to {dialog.FileName}.");
+            AppendLog($"Exported model cards: {dialog.FileName}");
+        }
+    }
+
+    private async void BundleModelCards_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            var outputRoot = GetMetadataOutputDirectory();
+            Directory.CreateDirectory(outputRoot);
+            var modelCardsPath = System.IO.Path.Combine(outputRoot, "foundry-local.model-cards.json");
+            await File.WriteAllTextAsync(modelCardsPath, _cardCatalog.FoundryModelCardsJson());
+
+            var bundlePath = System.IO.Path.Combine(outputRoot, $"foundry-local-model-cards-{DateTime.Now:yyyyMMdd-HHmmss}.paperboy.zip");
+            var result = await _bundleService.CreateBundleAsync(
+                [modelCardsPath],
+                bundlePath,
+                CompressionLevel.Optimal,
+                includeHidden: false,
+                overwrite: true,
+                tossDestination: TossPathText.Text.Trim());
+
+            AddSources([bundlePath]);
+            SetStatus($"Bundled Foundry Local model cards into {System.IO.Path.GetFileName(bundlePath)}.");
+            AppendLog($"Model-card bundle: {result.BundlePath}");
+        }
+        catch (Exception ex)
+        {
+            SetStatus(ex.Message, isError: true);
+            AppendLog($"ERROR: {ex}");
         }
     }
 

@@ -40,6 +40,16 @@
     "liveTileState": "offline|ready|analyzing|tagged|error"
   },
   {
+    "id": "paperboy.modelCards",
+    "title": "Foundry Local Model Cards",
+    "role": "model-delivery-layer",
+    "description": "Displays language-model delivery cards that Paperboy can bundle and toss for offline Foundry Local workflows.",
+    "inputs": ["modelAlias", "modelRole", "endpoint", "deliveryProfile"],
+    "outputs": ["modelCardJson", "recommendedBundle", "mcpToolHints"],
+    "actions": ["showModels", "exportModelCards", "bundleModelCards", "deliverModel"],
+    "liveTileState": "catalog|selected|bundled|delivered"
+  },
+  {
     "id": "paperboy.livetile",
     "title": "Live Tile",
     "role": "a2a-card",
