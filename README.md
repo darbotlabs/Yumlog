@@ -34,6 +34,18 @@ Simply double-click `yumlog-manager.html` to launch the interface in your defaul
 .\launchers\yumlog.ps1 config
 ```
 
+#### Recording terminal windows with Paperboy frames
+
+```powershell
+# Record visible terminal windows, extract binary-search frame samples,
+# and write a manifest for the HTML viewer.
+.\launchers\Record-Terminals.ps1 -DurationSec 10 -Depth 4 -Fps 15
+```
+
+The terminal recorder uses the `Paperboy` half-step navigation engine to choose
+representative timestamps across a recording. The generated manifest can be
+loaded by the bundled terminal viewer for quick inspection of frame changes.
+
 #### Run Unit Tests
 
 ```powershell
@@ -69,6 +81,7 @@ Compatible with Pester 3.4.0+ (included in Windows PowerShell).
 | yumlog count           | Number of yumlog files in the default folder     |
 | yumlog size            | Cumulative size of all yumlog files              |
 | yumlog config          | Show current yumlog configuration (tools.json)   |
+| Record-Terminals.ps1   | Record terminal windows and extract Paperboy frames |
 
 ---
 
@@ -78,11 +91,18 @@ Compatible with Pester 3.4.0+ (included in Windows PowerShell).
 darbot.yumlog/
 ├── Skills/
 │   ├── Capture-Screens.ps1
+│   ├── Paperboy.ps1
+│   ├── paperboy.js
 │   ├── Record-Screen.ps1
 │   └── Run-FFmpeg.ps1
 ├── launchers/
 │   ├── install.ps1
+│   ├── Record-Terminals.ps1
 │   └── yumlog.ps1
+├── bisect-test/
+│   ├── bisect-extractor.html
+│   ├── library.html
+│   └── terminal-viewer.html
 ├── config/
 │   └── tools.json
 ├── .github/

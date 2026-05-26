@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bisection Frame Extractor</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #1a1a2e; color: #e0e0e0; padding: 20px; }
+        h1 { color: #8be9fd; margin-bottom: 10px; }
+        #status { margin: 10px 0; padding: 10px; background: #16213e; border-radius: 6px; font-family: monospace; white-space: pre-wrap; max-height: 300px; overflow-y: auto; }
+        #controls { margin: 15px 0; }
+        button { padding: 10px 20px; margin-right: 10px; background: #0f3460; color: #e0e0e0; border: 1px solid #8be9fd; border-radius: 4px; cursor: pointer; font-size: 14px; }
+        button:hover { background: #1a5276; }
+        button:disabled { opacity: 0.4; cursor: not-allowed; }
+        #gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 10px; margin-top: 15px; }
+        .frame-card { background: #16213e; border-radius: 6px; overflow: hidden; }
+        .frame-card img { width: 100%; display: block; }
+        .frame-card .label { padding: 6px 10px; font-size: 12px; font-family: monospace; color: #8be9fd; }
+        video { display: none; }
+        #metrics { margin: 15px 0; padding: 10px; background: #0a0a1a; border: 1px solid #333; border-radius: 6px; font-family: monospace; }
+        #drop-zone { border: 2px dashed #8be9fd; padding: 30px; text-align: center; border-radius: 8px; margin: 10px 0; cursor: pointer; }
+        #drop-zone.dragover { background: #16213e; border-color: #50fa7b; }
+    </style>
+</head>
+<body>
+    <h1>Bisection Frame Extractor (Canvas API)</h1>
+    <div id="drop-zone">
+        Drop a video file here, or click to select
+        <input type="file" id="file-input" accept="video/*" style="display:none">
+    </div>
+    <div id="controls">
+        <label>Max depth: <input type="number" id="depth" value="4" min="1" max="7" style="width:60px; padding:4px;"></label>
+        <button id="btn-extract" disabled>Extract Frames</button>
+        <button id="btn-download" disabled>Download All as ZIP</button>
+    </div>
+    <div id="metrics"></div>
+    <div id="status">Waiting for video...</div>
+    <div id="gallery"></div>
+    <video id="video" crossorigin="anonymous"></video>
+
+<script>
+const video = document.getElementById('video');
+const status = document.getElementById('status');
+const gallery = document.getElementById('gallery');
+const metrics = document.getElementById('metrics');
+const btnExtract = document.getElementById('btn-extract');
+const btnDownload = document.getElementById('btn-download');
+const dropZone = document.getElementById('drop-zone');
+const fileInput = document.getElementById('file-input');
+
+let extractedFrames = [];
+let videoFileName = '';
+
+function log(msg) {
+    status.textContent += msg + '\n';
+    status.scrollTop = status.scrollHeight;
+}
+
+// -- Drop zone handling --
+dropZone.addEventListener('click', () => fileInput.click());
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+dropZone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+    if (e.dataTransfer.files.length > 0) loadVideo(e.dataTransfer.files[0]);
+});
+fileInput.addEventListener('change', e => {
+    if (e.target.files.length > 0) loadVideo(e.target.files[0]);
+});
+
+function loadVideo(file) {
+    videoFileName = file.name;
+    const url = URL.createObjectURL(file);
+    video.src = url;
+    status.textContent = '';
+    log('Loading: ' + file.name + ' (' + (file.size / 1024 / 1024).toFixed(1) + ' MB)');
+    video.addEventListener('loadedmetadata', () => {
+        log('Duration: ' + video.duration.toFixed(2) + 's');
+        log('Resolution: ' + video.videoWidth + 'x' + video.videoHeight);
+        btnExtract.disabled = false;
+        dropZone.style.display = 'none';
+    }, { once: true });
+}
+
+// -- Bisection timestamp generation --
+function generateBisectTimestamps(start, end, maxDepth) {
+    const timestamps = new Map();
+
+    function bisect(lo, hi, depth) {
+        const mid = (lo + hi) / 2;
+        const key = mid.toFixed(3);
+        if (!timestamps.has(key)) {
+            timestamps.set(key, { time: mid, depth: depth });
+        }
+        if (depth < maxDepth) {
+            bisect(lo, mid, depth + 1);
+            bisect(mid, hi, depth + 1);
+        }
+    }
+
+    // Start and end first
+    timestamps.set(start.toFixed(3), { time: start, depth: -1 });
+    timestamps.set(end.toFixed(3), { time: Math.max(0, end - 0.05), depth: -1 });
+
+    bisect(start, end, 1);
+
+    // Sort by time
+    return Array.from(timestamps.values()).sort((a, b) => a.time - b.time);
+}
+
+// -- Frame extraction via Canvas API --
+function seekAndCapture(targetTime) {
+    return new Promise((resolve, reject) => {
+        video.currentTime = targetTime;
+        video.addEventListener('seeked', () => {
+            try {
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                const dataUrl = canvas.toDataURL('image/png');
+                resolve({ time: targetTime, dataUrl: dataUrl, width: canvas.width, height: canvas.height });
+            } catch (err) {
+                reject(err);
+            }
+        }, { once: true });
+    });
+}
+
+// -- Main extraction loop --
+btnExtract.addEventListener('click', async () => {
+    btnExtract.disabled = true;
+    gallery.innerHTML = '';
+    extractedFrames = [];
+
+    const maxDepth = parseInt(document.getElementById('depth').value);
+    const duration = video.duration;
+    const timestamps = generateBisectTimestamps(0, duration, maxDepth);
+
+    log('--- Starting bisection extraction ---');
+    log('Depth: ' + maxDepth + ', Frames: ' + timestamps.length);
+
+    const t0 = performance.now();
+    let totalBytes = 0;
+
+    for (let i = 0; i < timestamps.length; i++) {
+        const ts = timestamps[i];
+        const frameT0 = performance.now();
+
+        try {
+            const frame = await seekAndCapture(ts.time);
+            const frameMs = (performance.now() - frameT0).toFixed(0);
+
+            // Estimate PNG size from data URL
+            const base64Len = frame.dataUrl.length - 'data:image/png;base64,'.length;
+            const byteSize = Math.ceil(base64Len * 3 / 4);
+            totalBytes += byteSize;
+
+            const padded = String(i).padStart(3, '0');
+            const label = padded + ' | ' + ts.time.toFixed(2) + 's | d' + ts.depth + ' | ' + frameMs + 'ms | ' + (byteSize/1024).toFixed(0) + 'KB';
+            log('  [' + padded + '] ' + ts.time.toFixed(2) + 's -> ' + frameMs + 'ms');
+
+            extractedFrames.push({ index: i, time: ts.time, dataUrl: frame.dataUrl, label: label });
+
+            // Render to gallery
+            const card = document.createElement('div');
+            card.className = 'frame-card';
+            const img = document.createElement('img');
+            img.src = frame.dataUrl;
+            const lbl = document.createElement('div');
+            lbl.className = 'label';
+            lbl.textContent = label;
+            card.appendChild(img);
+            card.appendChild(lbl);
+            gallery.appendChild(card);
+        } catch (err) {
+            log('  [' + String(i).padStart(3, '0') + '] FAILED at ' + ts.time.toFixed(2) + 's: ' + err.message);
+        }
+    }
+
+    const elapsed = ((performance.now() - t0) / 1000).toFixed(2);
+    const avgMs = ((performance.now() - t0) / timestamps.length).toFixed(0);
+
+    const metricsText = [
+        '--- Browser Canvas API Results ---',
+        'Frames extracted: ' + extractedFrames.length,
+        'Total size: ' + (totalBytes / 1024).toFixed(1) + ' KB',
+        'Elapsed: ' + elapsed + 's',
+        'Avg per frame: ' + avgMs + 'ms'
+    ].join('\n');
+
+    log('\n' + metricsText);
+    metrics.textContent = metricsText;
+
+    // Expose results for Playwright/copilotbrowser to read
+    window.__bisectResults = {
+        frameCount: extractedFrames.length,
+        totalBytes: totalBytes,
+        elapsedSec: parseFloat(elapsed),
+        avgFrameMs: parseInt(avgMs),
+        timestamps: extractedFrames.map(f => f.time)
+    };
+
+    btnExtract.disabled = false;
+    btnDownload.disabled = false;
+});
+
+// -- Download all frames --
+btnDownload.addEventListener('click', () => {
+    extractedFrames.forEach((frame, i) => {
+        const a = document.createElement('a');
+        a.href = frame.dataUrl;
+        a.download = 'frame_' + String(i).padStart(3, '0') + '_' + frame.time.toFixed(2) + 's.png';
+        a.click();
+    });
+});
+</script>
+</body>
+</html>

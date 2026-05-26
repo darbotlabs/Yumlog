@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Yumlog Library</title>
+<style>
+:root {
+    --bg-primary: #0d1117;
+    --bg-card: #161b22;
+    --bg-strip: #0d1117;
+    --bg-hover: #1c2333;
+    --border: #30363d;
+    --accent: #58a6ff;
+    --accent-dim: #1f3a5f;
+    --text: #c9d1d9;
+    --text-dim: #8b949e;
+    --text-bright: #f0f6fc;
+    --success: #3fb950;
+    --warning: #d29922;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: 'Segoe UI', -apple-system, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text);
+    min-height: 100vh;
+}
+
+/* ---- Top bar ---- */
+.topbar {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; gap: 16px;
+    padding: 12px 24px;
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border);
+}
+.topbar h1 { font-size: 16px; color: var(--text-bright); white-space: nowrap; }
+.topbar .stats { font-size: 13px; color: var(--text-dim); font-family: monospace; }
+.topbar .actions { margin-left: auto; display: flex; gap: 8px; }
+
+button {
+    padding: 6px 14px; font-size: 13px;
+    background: var(--accent-dim); color: var(--accent);
+    border: 1px solid var(--accent); border-radius: 6px;
+    cursor: pointer; white-space: nowrap;
+}
+button:hover { background: #1a4a7a; }
+button:disabled { opacity: 0.35; cursor: not-allowed; }
+button.primary { background: var(--accent); color: var(--bg-primary); font-weight: 600; }
+button.primary:hover { background: #79c0ff; }
+
+/* ---- Drop zone ---- */
+.drop-zone {
+    margin: 24px;
+    padding: 48px 24px;
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.drop-zone:hover, .drop-zone.dragover {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+}
+.drop-zone h2 { font-size: 18px; color: var(--text-bright); margin-bottom: 8px; }
+.drop-zone p { color: var(--text-dim); font-size: 14px; }
+.drop-zone.hidden { display: none; }
+
+/* ---- Controls bar ---- */
+.controls {
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    padding: 12px 24px;
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border);
+}
+.controls label { font-size: 13px; color: var(--text-dim); display: flex; align-items: center; gap: 6px; }
+.controls input[type="range"] { width: 100px; accent-color: var(--accent); }
+.controls select, .controls input[type="number"] {
+    background: var(--bg-primary); color: var(--text); border: 1px solid var(--border);
+    border-radius: 4px; padding: 4px 8px; font-size: 13px;
+}
+.progress-bar {
+    flex: 1; min-width: 120px; height: 6px;
+    background: var(--bg-primary); border-radius: 3px; overflow: hidden;
+}
+.progress-bar .fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.3s; }
+
+/* ---- Library grid ---- */
+.library { padding: 16px 24px; }
+
+/* ---- Video card ---- */
+.video-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+}
+.video-card:hover { border-color: var(--accent); }
+.video-card.processing { border-color: var(--warning); }
+.video-card.done { border-color: var(--success); }
+
+.video-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px;
+    cursor: pointer;
+    user-select: none;
+}
+.video-header:hover { background: var(--bg-hover); }
+.video-header .expand-icon {
+    font-size: 12px; color: var(--text-dim);
+    transition: transform 0.2s; width: 16px; text-align: center;
+}
+.video-card.expanded .video-header .expand-icon { transform: rotate(90deg); }
+.video-header .title { font-size: 14px; font-weight: 600; color: var(--text-bright); flex: 1; }
+.video-header .meta { font-size: 12px; color: var(--text-dim); font-family: monospace; display: flex; gap: 12px; }
+.video-header .badge {
+    font-size: 11px; padding: 2px 8px; border-radius: 10px;
+    font-family: monospace;
+}
+.badge.pending { background: var(--bg-primary); color: var(--text-dim); border: 1px solid var(--border); }
+.badge.processing { background: #2d1f00; color: var(--warning); border: 1px solid var(--warning); }
+.badge.done { background: #0d2818; color: var(--success); border: 1px solid var(--success); }
+
+/* ---- Filmstrip ---- */
+.filmstrip-container {
+    display: none;
+    padding: 0 16px 16px 16px;
+}
+.video-card.expanded .filmstrip-container { display: block; }
+
+.filmstrip {
+    display: flex;
+    overflow-x: auto;
+    gap: 2px;
+    padding: 8px 0;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+}
+.filmstrip::-webkit-scrollbar { height: 6px; }
+.filmstrip::-webkit-scrollbar-track { background: transparent; }
+.filmstrip::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+.frame-thumb {
+    flex-shrink: 0;
+    position: relative;
+    cursor: pointer;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 2px solid transparent;
+    transition: border-color 0.15s, transform 0.15s;
+}
+.frame-thumb:hover { border-color: var(--accent); transform: translateY(-2px); }
+.frame-thumb img { display: block; height: var(--thumb-h, 120px); width: auto; }
+.frame-thumb .ts {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: rgba(0,0,0,0.75);
+    font-size: 10px; font-family: monospace; color: #fff;
+    padding: 2px 4px; text-align: center;
+}
+.frame-thumb .depth-dot {
+    position: absolute; top: 3px; right: 3px;
+    width: 8px; height: 8px; border-radius: 50%;
+}
+
+/* ---- Expanded preview ---- */
+.preview-panel {
+    display: none;
+    padding: 12px 16px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+}
+.preview-panel.visible { display: block; }
+.preview-panel img { max-width: 100%; max-height: 60vh; border-radius: 6px; }
+.preview-panel .info { margin-top: 8px; font-size: 12px; color: var(--text-dim); font-family: monospace; }
+
+/* ---- View modes ---- */
+.library.view-stack .filmstrip { flex-wrap: wrap; overflow-x: visible; }
+.library.view-stack .frame-thumb img { height: var(--thumb-h, 120px); }
+
+.library.view-grid .filmstrip {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    overflow-x: visible;
+}
+.library.view-grid .frame-thumb img { width: 100%; height: auto; }
+
+/* ---- Depth colors ---- */
+.depth-0 { background: #58a6ff; }
+.depth-1 { background: #3fb950; }
+.depth-2 { background: #d29922; }
+.depth-3 { background: #f85149; }
+.depth-4 { background: #bc8cff; }
+.depth-start { background: #f0f6fc; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+    <h1>Yumlog Library</h1>
+    <span class="stats" id="global-stats">No videos loaded</span>
+    <div class="actions">
+        <button id="btn-add-more">+ Add Videos</button>
+        <button id="btn-extract-all" class="primary" disabled>Extract All</button>
+    </div>
+</div>
+
+<div class="drop-zone" id="drop-zone">
+    <h2>Drop video files here</h2>
+    <p>Select one or more .mp4 files to analyze with bisection frame extraction</p>
+    <input type="file" id="file-input" accept="video/*" multiple style="display:none">
+</div>
+
+<div class="controls" id="controls-bar" style="display:none">
+    <label>Depth:
+        <input type="number" id="opt-depth" value="4" min="1" max="7" style="width:50px">
+    </label>
+    <label>Thumb height:
+        <input type="range" id="opt-thumb-h" min="60" max="300" value="120">
+        <span id="opt-thumb-h-val">120px</span>
+    </label>
+    <label>View:
+        <select id="opt-view">
+            <option value="strip" selected>Filmstrip</option>
+            <option value="stack">Wrapped</option>
+            <option value="grid">Grid</option>
+        </select>
+    </label>
+    <div class="progress-bar" id="progress-bar"><div class="fill" id="progress-fill"></div></div>
+</div>
+
+<div class="library" id="library"></div>
+
+<!-- Hidden video element reused for extraction -->
+<video id="shared-video" style="display:none" crossorigin="anonymous"></video>
+
+<script>
+// ============================================================
+// State
+// ============================================================
+const state = {
+    videos: [],       // { id, file, name, size, duration, width, height, frames[], status }
+    processing: false,
+    nextId: 0
+};
+
+const DOM = {
+    dropZone: document.getElementById('drop-zone'),
+    fileInput: document.getElementById('file-input'),
+    library: document.getElementById('library'),
+    controls: document.getElementById('controls-bar'),
+    btnExtractAll: document.getElementById('btn-extract-all'),
+    btnAddMore: document.getElementById('btn-add-more'),
+    globalStats: document.getElementById('global-stats'),
+    optDepth: document.getElementById('opt-depth'),
+    optThumbH: document.getElementById('opt-thumb-h'),
+    optThumbHVal: document.getElementById('opt-thumb-h-val'),
+    optView: document.getElementById('opt-view'),
+    progressFill: document.getElementById('progress-fill'),
+    video: document.getElementById('shared-video')
+};
+
+// ============================================================
+// Bisection logic
+// ============================================================
+function generateBisectTimestamps(duration, maxDepth) {
+    const map = new Map();
+
+    function bisect(lo, hi, depth) {
+        const mid = (lo + hi) / 2;
+        const key = mid.toFixed(3);
+        if (!map.has(key)) map.set(key, { time: mid, depth });
+        if (depth < maxDepth) {
+            bisect(lo, mid, depth + 1);
+            bisect(mid, hi, depth + 1);
+        }
+    }
+
+    map.set('0.000', { time: 0, depth: -1 });
+    map.set(Math.max(0, duration - 0.05).toFixed(3), { time: Math.max(0, duration - 0.05), depth: -1 });
+    bisect(0, duration, 1);
+
+    return Array.from(map.values()).sort((a, b) => a.time - b.time);
+}
+
+function seekAndCapture(videoEl, targetTime) {
+    return new Promise((resolve, reject) => {
+        const onError = () => reject(new Error('seek-error'));
+        videoEl.addEventListener('error', onError, { once: true });
+        videoEl.currentTime = targetTime;
+        videoEl.addEventListener('seeked', () => {
+            videoEl.removeEventListener('error', onError);
+            try {
+                const c = document.createElement('canvas');
+                c.width = videoEl.videoWidth;
+                c.height = videoEl.videoHeight;
+                const ctx = c.getContext('2d');
+                ctx.drawImage(videoEl, 0, 0);
+                resolve(c.toDataURL('image/jpeg', 0.85));
+            } catch (e) { reject(e); }
+        }, { once: true });
+    });
+}
+
+// ============================================================
+// Video loading
+// ============================================================
+function loadVideoMeta(file) {
+    return new Promise((resolve, reject) => {
+        const url = URL.createObjectURL(file);
+        const v = document.createElement('video');
+        v.preload = 'metadata';
+        v.src = url;
+        v.addEventListener('loadedmetadata', () => {
+            resolve({ duration: v.duration, width: v.videoWidth, height: v.videoHeight, url });
+        }, { once: true });
+        v.addEventListener('error', () => reject(new Error('Cannot load ' + file.name)), { once: true });
+    });
+}
+
+async function addFiles(files) {
+    for (const file of files) {
+        if (!file.type.startsWith('video/')) continue;
+        try {
+            const meta = await loadVideoMeta(file);
+            const entry = {
+                id: state.nextId++,
+                file, url: meta.url,
+                name: file.name,
+                size: file.size,
+                duration: meta.duration,
+                width: meta.width, height: meta.height,
+                frames: [],
+                status: 'pending'
+            };
+            state.videos.push(entry);
+            renderVideoCard(entry);
+        } catch (e) {
+            console.warn('Skipped:', file.name, e);
+        }
+    }
+    updateGlobalStats();
+    DOM.controls.style.display = 'flex';
+    DOM.btnExtractAll.disabled = false;
+    if (state.videos.length > 0) DOM.dropZone.classList.add('hidden');
+}
+
+// ============================================================
+// Rendering
+// ============================================================
+function formatDuration(sec) {
+    const m = Math.floor(sec / 60);
+    const s = Math.floor(sec % 60);
+    return m + ':' + String(s).padStart(2, '0');
+}
+function formatSize(bytes) {
+    if (bytes > 1024*1024) return (bytes/1024/1024).toFixed(1) + ' MB';
+    return (bytes/1024).toFixed(0) + ' KB';
+}
+function depthClass(d) {
+    if (d === -1) return 'depth-start';
+    return 'depth-' + Math.min(d, 4);
+}
+
+function renderVideoCard(entry) {
+    const card = document.createElement('div');
+    card.className = 'video-card expanded';
+    card.id = 'vc-' + entry.id;
+    card.innerHTML = `
+        <div class="video-header" data-id="${entry.id}">
+            <span class="expand-icon">&#9654;</span>
+            <span class="title">${entry.name}</span>
+            <span class="meta">
+                <span>${formatDuration(entry.duration)}</span>
+                <span>${entry.width}x${entry.height}</span>
+                <span>${formatSize(entry.size)}</span>
+            </span>
+            <span class="badge pending" id="badge-${entry.id}">pending</span>
+        </div>
+        <div class="filmstrip-container">
+            <div class="filmstrip" id="strip-${entry.id}"></div>
+        </div>
+        <div class="preview-panel" id="preview-${entry.id}">
+            <img id="preview-img-${entry.id}">
+            <div class="info" id="preview-info-${entry.id}"></div>
+        </div>
+    `;
+    DOM.library.appendChild(card);
+
+    card.querySelector('.video-header').addEventListener('click', () => {
+        card.classList.toggle('expanded');
+    });
+}
+
+function addFrameThumb(entry, frame, index) {
+    const strip = document.getElementById('strip-' + entry.id);
+    const thumb = document.createElement('div');
+    thumb.className = 'frame-thumb';
+    thumb.innerHTML = `
+        <img src="${frame.dataUrl}" loading="lazy">
+        <span class="ts">${frame.time.toFixed(1)}s</span>
+        <span class="depth-dot ${depthClass(frame.depth)}"></span>
+    `;
+    thumb.addEventListener('click', () => showPreview(entry.id, frame, index));
+    strip.appendChild(thumb);
+}
+
+function showPreview(videoId, frame, index) {
+    const panel = document.getElementById('preview-' + videoId);
+    const img = document.getElementById('preview-img-' + videoId);
+    const info = document.getElementById('preview-info-' + videoId);
+    img.src = frame.dataUrl;
+    info.textContent = 'Frame ' + index + ' | ' + frame.time.toFixed(2) + 's | depth ' + frame.depth;
+    panel.classList.add('visible');
+}
+
+function setBadge(id, status) {
+    const badge = document.getElementById('badge-' + id);
+    const card = document.getElementById('vc-' + id);
+    badge.className = 'badge ' + status;
+    badge.textContent = status;
+    card.className = 'video-card expanded ' + status;
+}
+
+function updateGlobalStats() {
+    const total = state.videos.length;
+    const done = state.videos.filter(v => v.status === 'done').length;
+    const totalFrames = state.videos.reduce((s, v) => s + v.frames.length, 0);
+    DOM.globalStats.textContent = total + ' videos | ' + done + ' processed | ' + totalFrames + ' frames';
+}
+
+// ============================================================
+// Extraction pipeline
+// ============================================================
+async function extractOne(entry) {
+    entry.status = 'processing';
+    setBadge(entry.id, 'processing');
+
+    const depth = parseInt(DOM.optDepth.value);
+    const timestamps = generateBisectTimestamps(entry.duration, depth);
+    const videoEl = DOM.video;
+
+    return new Promise((resolve, reject) => {
+        videoEl.src = entry.url;
+        videoEl.addEventListener('loadeddata', async () => {
+            try {
+                for (let i = 0; i < timestamps.length; i++) {
+                    const ts = timestamps[i];
+                    const dataUrl = await seekAndCapture(videoEl, ts.time);
+                    const frame = { time: ts.time, depth: ts.depth, dataUrl };
+                    entry.frames.push(frame);
+                    addFrameThumb(entry, frame, i);
+                }
+                entry.status = 'done';
+                setBadge(entry.id, 'done');
+                resolve();
+            } catch (e) {
+                entry.status = 'done';
+                setBadge(entry.id, 'done');
+                resolve();
+            }
+        }, { once: true });
+        videoEl.addEventListener('error', () => {
+            entry.status = 'done';
+            setBadge(entry.id, 'done');
+            resolve();
+        }, { once: true });
+    });
+}
+
+async function extractAll() {
+    if (state.processing) return;
+    state.processing = true;
+    DOM.btnExtractAll.disabled = true;
+
+    const pending = state.videos.filter(v => v.status === 'pending');
+    for (let i = 0; i < pending.length; i++) {
+        DOM.progressFill.style.width = ((i / pending.length) * 100) + '%';
+        await extractOne(pending[i]);
+        updateGlobalStats();
+    }
+    DOM.progressFill.style.width = '100%';
+    state.processing = false;
+    DOM.btnExtractAll.disabled = false;
+    updateGlobalStats();
+
+    // Expose for automation
+    window.__libraryResults = {
+        videos: state.videos.map(v => ({
+            name: v.name, duration: v.duration,
+            frameCount: v.frames.length, status: v.status
+        }))
+    };
+}
+
+// ============================================================
+// Event wiring
+// ============================================================
+DOM.dropZone.addEventListener('click', () => DOM.fileInput.click());
+DOM.dropZone.addEventListener('dragover', e => { e.preventDefault(); DOM.dropZone.classList.add('dragover'); });
+DOM.dropZone.addEventListener('dragleave', () => DOM.dropZone.classList.remove('dragover'));
+DOM.dropZone.addEventListener('drop', e => { e.preventDefault(); DOM.dropZone.classList.remove('dragover'); addFiles(e.dataTransfer.files); });
+DOM.fileInput.addEventListener('change', e => addFiles(e.target.files));
+
+DOM.btnAddMore.addEventListener('click', () => {
+    DOM.dropZone.classList.remove('hidden');
+    DOM.fileInput.click();
+});
+
+DOM.btnExtractAll.addEventListener('click', extractAll);
+
+DOM.optThumbH.addEventListener('input', () => {
+    const v = DOM.optThumbH.value;
+    DOM.optThumbHVal.textContent = v + 'px';
+    document.documentElement.style.setProperty('--thumb-h', v + 'px');
+});
+
+DOM.optView.addEventListener('change', () => {
+    const lib = DOM.library;
+    lib.classList.remove('view-strip', 'view-stack', 'view-grid');
+    lib.classList.add('view-' + DOM.optView.value);
+});
+
+// Keyboard: Escape closes preview
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+        document.querySelectorAll('.preview-panel.visible').forEach(p => p.classList.remove('visible'));
+    }
+});
+</script>
+</body>
+</html>

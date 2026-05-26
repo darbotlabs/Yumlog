@@ -1,0 +1,119 @@
+﻿{
+    "windows":  [
+                    {
+                        "frameCount":  8,
+                        "video":  "recording_1_DAYOURBOT-SWE_Agent_Specification.mp4",
+                        "index":  1,
+                        "title":  "DAYOURBOT-SWE Agent Specification",
+                        "frames":  [
+                                       {
+                                           "sizeKB":  211.1,
+                                           "depth":  -1,
+                                           "address":  "lo",
+                                           "index":  0,
+                                           "time":  0,
+                                           "file":  "frames/win1/frame_000_0s_lo.png"
+                                       },
+                                       {
+                                           "sizeKB":  173.4,
+                                           "depth":  3,
+                                           "address":  "--",
+                                           "index":  1,
+                                           "time":  0.75,
+                                           "file":  "frames/win1/frame_001_0.75s_--.png"
+                                       },
+                                       {
+                                           "sizeKB":  173.5,
+                                           "depth":  2,
+                                           "address":  "-",
+                                           "index":  2,
+                                           "time":  1.5,
+                                           "file":  "frames/win1/frame_002_1.5s_-.png"
+                                       },
+                                       {
+                                           "sizeKB":  173.4,
+                                           "depth":  3,
+                                           "address":  "-+",
+                                           "index":  3,
+                                           "time":  2.25,
+                                           "file":  "frames/win1/frame_003_2.25s_-+.png"
+                                       },
+                                       {
+                                           "sizeKB":  287.3,
+                                           "depth":  1,
+                                           "address":  "pb",
+                                           "index":  4,
+                                           "time":  3,
+                                           "file":  "frames/win1/frame_004_3s_pb.png"
+                                       },
+                                       {
+                                           "sizeKB":  243.8,
+                                           "depth":  3,
+                                           "address":  "+-",
+                                           "index":  5,
+                                           "time":  3.75,
+                                           "file":  "frames/win1/frame_005_3.75s_+-.png"
+                                       },
+                                       {
+                                           "sizeKB":  244.2,
+                                           "depth":  2,
+                                           "address":  "+",
+                                           "index":  6,
+                                           "time":  4.5,
+                                           "file":  "frames/win1/frame_006_4.5s_+.png"
+                                       },
+                                       {
+                                           "sizeKB":  244.1,
+                                           "depth":  3,
+                                           "address":  "++",
+                                           "index":  7,
+                                           "time":  5.25,
+                                           "file":  "frames/win1/frame_007_5.25s_++.png"
+                                       }
+                                   ],
+                        "videoSizeKB":  645.5,
+                        "region":  {
+                                       "y":  130,
+                                       "w":  1128,
+                                       "h":  634,
+                                       "x":  122
+                                   },
+                        "changes":  [
+                                        {
+                                            "fromIndex":  0,
+                                            "fromAddress":  "lo",
+                                            "pctChange":  17.9,
+                                            "toTime":  0.75,
+                                            "fromTime":  0,
+                                            "type":  "moderate",
+                                            "toAddress":  "--",
+                                            "toIndex":  1
+                                        },
+                                        {
+                                            "fromIndex":  3,
+                                            "fromAddress":  "-+",
+                                            "pctChange":  65.7,
+                                            "toTime":  3,
+                                            "fromTime":  2.25,
+                                            "type":  "major",
+                                            "toAddress":  "pb",
+                                            "toIndex":  4
+                                        },
+                                        {
+                                            "fromIndex":  4,
+                                            "fromAddress":  "pb",
+                                            "pctChange":  15.1,
+                                            "toTime":  3.75,
+                                            "fromTime":  3,
+                                            "type":  "moderate",
+                                            "toAddress":  "+-",
+                                            "toIndex":  5
+                                        }
+                                    ]
+                    }
+                ],
+    "depth":  3,
+    "fps":  15,
+    "timestamp":  "2026-03-13T01:19:27.0941277-07:00",
+    "duration":  6
+}

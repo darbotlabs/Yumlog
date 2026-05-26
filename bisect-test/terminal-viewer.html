@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Paperboy Terminal Viewer</title>
+<style>
+:root {
+    --bg: #0d1117; --card: #161b22; --card-hover: #1c2333;
+    --border: #30363d; --accent: #58a6ff; --green: #3fb950;
+    --yellow: #d29922; --red: #f85149; --purple: #bc8cff;
+    --text: #c9d1d9; --dim: #8b949e; --bright: #f0f6fc;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); }
+
+/* Top bar */
+.topbar {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; gap: 16px;
+    padding: 10px 20px; background: var(--card); border-bottom: 1px solid var(--border);
+}
+.topbar h1 { font-size: 15px; color: var(--bright); }
+.topbar .meta { font-size: 12px; color: var(--dim); font-family: monospace; }
+.topbar .actions { margin-left: auto; display: flex; gap: 8px; }
+button {
+    padding: 5px 12px; font-size: 12px; cursor: pointer;
+    background: #1f3a5f; color: var(--accent); border: 1px solid var(--accent); border-radius: 5px;
+}
+button:hover { background: #1a4a7a; }
+button.primary { background: var(--accent); color: var(--bg); font-weight: 600; }
+
+/* Adaptive Card container */
+.ac-container { padding: 16px 20px; }
+
+/* Window card -- styled like an Adaptive Card */
+.ac-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+    margin-bottom: 16px; overflow: hidden;
+}
+.ac-card-header {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 16px; border-bottom: 1px solid var(--border);
+    cursor: pointer; user-select: none;
+}
+.ac-card-header:hover { background: var(--card-hover); }
+.ac-card-header .icon { font-size: 18px; color: var(--accent); width: 24px; text-align: center; }
+.ac-card-header .title { font-size: 14px; font-weight: 600; color: var(--bright); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ac-card-header .badges { display: flex; gap: 6px; }
+.badge {
+    font-size: 11px; padding: 2px 8px; border-radius: 10px; font-family: monospace;
+}
+.badge-frames { background: #0d2818; color: var(--green); border: 1px solid var(--green); }
+.badge-changes { background: #2d1f00; color: var(--yellow); border: 1px solid var(--yellow); }
+.badge-size { background: var(--bg); color: var(--dim); border: 1px solid var(--border); }
+
+/* Card body */
+.ac-card-body { display: none; }
+.ac-card.expanded .ac-card-body { display: block; }
+
+/* Timeline strip */
+.timeline {
+    padding: 12px 16px;
+    position: relative;
+}
+.timeline-track {
+    display: flex; align-items: stretch; gap: 0;
+    overflow-x: auto; padding-bottom: 8px;
+    scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+}
+.timeline-track::-webkit-scrollbar { height: 6px; }
+.timeline-track::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+.tl-frame {
+    flex-shrink: 0; position: relative;
+    border: 2px solid transparent; border-radius: 4px;
+    cursor: pointer; transition: all 0.15s;
+}
+.tl-frame:hover { border-color: var(--accent); transform: translateY(-2px); }
+.tl-frame.selected { border-color: var(--accent); box-shadow: 0 0 8px rgba(88,166,255,0.3); }
+.tl-frame img { display: block; height: 100px; width: auto; }
+.tl-frame .ts-label {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: rgba(0,0,0,0.8); font-size: 9px; font-family: monospace;
+    color: #fff; padding: 2px 4px; text-align: center;
+}
+.tl-frame .addr-label {
+    position: absolute; top: 2px; left: 2px;
+    background: rgba(0,0,0,0.7); font-size: 9px; font-family: monospace;
+    color: var(--accent); padding: 1px 4px; border-radius: 2px;
+}
+.tl-frame .depth-dot {
+    position: absolute; top: 3px; right: 3px;
+    width: 7px; height: 7px; border-radius: 50%;
+}
+
+/* Change markers between frames */
+.tl-change {
+    flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    width: 20px; font-size: 10px; font-family: monospace; font-weight: 700;
+}
+.tl-change.major { color: var(--red); }
+.tl-change.moderate { color: var(--yellow); }
+.tl-change.minor { color: var(--dim); }
+
+/* Detail panel */
+.detail-panel {
+    padding: 12px 16px; border-top: 1px solid var(--border);
+    display: none;
+}
+.detail-panel.visible { display: flex; gap: 16px; }
+.detail-panel .preview { flex: 1; text-align: center; }
+.detail-panel .preview img { max-width: 100%; max-height: 50vh; border-radius: 6px; }
+.detail-panel .info {
+    width: 260px; flex-shrink: 0;
+    font-size: 12px; font-family: monospace; color: var(--dim);
+}
+.detail-panel .info .row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid var(--border); }
+.detail-panel .info .label { color: var(--bright); }
+
+/* Chain of thought stream */
+.cot-stream {
+    padding: 0 16px 12px; border-top: 1px solid var(--border);
+}
+.cot-stream h3 { font-size: 12px; color: var(--dim); padding: 8px 0 6px; }
+.cot-event {
+    display: flex; align-items: flex-start; gap: 8px;
+    padding: 6px 0; border-bottom: 1px solid rgba(48,54,61,0.5);
+    font-size: 12px;
+}
+.cot-event .cot-time { width: 50px; flex-shrink: 0; color: var(--accent); font-family: monospace; }
+.cot-event .cot-addr { width: 60px; flex-shrink: 0; color: var(--purple); font-family: monospace; }
+.cot-event .cot-type {
+    width: 60px; flex-shrink: 0; font-family: monospace; font-weight: 600;
+}
+.cot-type.major { color: var(--red); }
+.cot-type.moderate { color: var(--yellow); }
+.cot-type.minor { color: var(--dim); }
+.cot-event .cot-desc { color: var(--text); flex: 1; }
+
+/* Depth colors */
+.d-start { background: var(--bright); }
+.d-0 { background: var(--accent); }
+.d-1 { background: var(--green); }
+.d-2 { background: var(--yellow); }
+.d-3 { background: var(--red); }
+.d-4 { background: var(--purple); }
+
+/* Drop zone */
+.drop-zone {
+    margin: 40px 20px; padding: 40px; text-align: center;
+    border: 2px dashed var(--border); border-radius: 10px; cursor: pointer;
+}
+.drop-zone:hover { border-color: var(--accent); background: #1f3a5f22; }
+.drop-zone h2 { color: var(--bright); font-size: 16px; margin-bottom: 6px; }
+.drop-zone p { color: var(--dim); font-size: 13px; }
+.drop-zone.hidden { display: none; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+    <h1>Paperboy Terminal Viewer</h1>
+    <span class="meta" id="global-meta">No session loaded</span>
+    <div class="actions">
+        <button id="btn-load">Load manifest.json</button>
+        <button id="btn-play" disabled>Playback</button>
+    </div>
+</div>
+
+<div class="drop-zone" id="drop-zone">
+    <h2>Load a Paperboy session</h2>
+    <p>Drop a manifest.json (from Record-Terminals.ps1) or select one.</p>
+    <input type="file" id="file-input" accept=".json" style="display:none">
+</div>
+
+<div class="ac-container" id="cards"></div>
+
+<script>
+const DOM = {
+    cards: document.getElementById('cards'),
+    meta: document.getElementById('global-meta'),
+    dropZone: document.getElementById('drop-zone'),
+    fileInput: document.getElementById('file-input'),
+    btnLoad: document.getElementById('btn-load'),
+    btnPlay: document.getElementById('btn-play'),
+};
+
+let manifest = null;
+let basePath = '';
+
+// -- File loading --
+DOM.dropZone.addEventListener('click', () => DOM.fileInput.click());
+DOM.btnLoad.addEventListener('click', () => DOM.fileInput.click());
+DOM.dropZone.addEventListener('dragover', e => { e.preventDefault(); DOM.dropZone.style.borderColor = 'var(--accent)'; });
+DOM.dropZone.addEventListener('dragleave', () => { DOM.dropZone.style.borderColor = ''; });
+DOM.dropZone.addEventListener('drop', e => { e.preventDefault(); if (e.dataTransfer.files[0]) loadManifest(e.dataTransfer.files[0]); });
+DOM.fileInput.addEventListener('change', e => { if (e.target.files[0]) loadManifest(e.target.files[0]); });
+
+async function loadManifest(file) {
+    const text = await file.text();
+    manifest = JSON.parse(text);
+    // Derive base path: assume frames are relative to manifest location
+    // For HTTP serving, use current URL base
+    basePath = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1);
+    // If manifest has a custom base, allow override
+    if (manifest.basePath) basePath = manifest.basePath;
+
+    render();
+    DOM.dropZone.classList.add('hidden');
+    DOM.btnPlay.disabled = false;
+}
+
+// -- Render --
+function depthClass(d) {
+    if (d === -1) return 'd-start';
+    return 'd-' + Math.min(d, 4);
+}
+
+function render() {
+    DOM.cards.innerHTML = '';
+    const totalFrames = manifest.windows.reduce((s, w) => s + w.frameCount, 0);
+    const totalChanges = manifest.windows.reduce((s, w) => s + w.changes.length, 0);
+    DOM.meta.textContent = manifest.windows.length + ' window(s) | ' +
+        totalFrames + ' frames | ' + totalChanges + ' changes | depth ' + manifest.depth +
+        ' | ' + manifest.duration + 's';
+
+    manifest.windows.forEach((win, wi) => renderWindowCard(win, wi));
+}
+
+function renderWindowCard(win, wi) {
+    const card = document.createElement('div');
+    card.className = 'ac-card expanded';
+    card.id = 'card-' + wi;
+
+    // Header
+    const header = document.createElement('div');
+    header.className = 'ac-card-header';
+    header.innerHTML = `
+        <span class="icon">&gt;_</span>
+        <span class="title">${esc(win.title)}</span>
+        <span class="badges">
+            <span class="badge badge-frames">${win.frameCount} frames</span>
+            <span class="badge badge-changes">${win.changes.length} changes</span>
+            <span class="badge badge-size">${win.videoSizeKB} KB</span>
+        </span>
+    `;
+    header.addEventListener('click', () => card.classList.toggle('expanded'));
+
+    // Body
+    const body = document.createElement('div');
+    body.className = 'ac-card-body';
+
+    // Timeline
+    const timeline = document.createElement('div');
+    timeline.className = 'timeline';
+    const track = document.createElement('div');
+    track.className = 'timeline-track';
+
+    // Build change lookup: toIndex -> change
+    const changeMap = {};
+    win.changes.forEach(c => { changeMap[c.toIndex] = c; });
+
+    win.frames.forEach((frame, fi) => {
+        // Insert change marker before this frame if applicable
+        if (changeMap[fi]) {
+            const ch = changeMap[fi];
+            const marker = document.createElement('div');
+            marker.className = 'tl-change ' + ch.type;
+            marker.textContent = ch.pctChange > 30 ? '||' : ch.pctChange > 15 ? '|' : '.';
+            marker.title = ch.type + ' change: ' + ch.pctChange + '%';
+            track.appendChild(marker);
+        }
+
+        const el = document.createElement('div');
+        el.className = 'tl-frame';
+        el.innerHTML = `
+            <img src="${basePath}${frame.file}" loading="lazy">
+            <span class="ts-label">${frame.time}s</span>
+            <span class="addr-label">pb${frame.address}</span>
+            <span class="depth-dot ${depthClass(frame.depth)}"></span>
+        `;
+        el.addEventListener('click', () => selectFrame(wi, fi, el));
+        track.appendChild(el);
+    });
+
+    timeline.appendChild(track);
+    body.appendChild(timeline);
+
+    // Detail panel
+    const detail = document.createElement('div');
+    detail.className = 'detail-panel';
+    detail.id = 'detail-' + wi;
+    detail.innerHTML = `
+        <div class="preview"><img id="detail-img-${wi}"></div>
+        <div class="info" id="detail-info-${wi}"></div>
+    `;
+    body.appendChild(detail);
+
+    // Chain of thought stream
+    if (win.changes.length > 0) {
+        const cot = document.createElement('div');
+        cot.className = 'cot-stream';
+        let html = '<h3>Chain of Thought -- Detected Activity</h3>';
+        win.changes.forEach(ch => {
+            html += `<div class="cot-event">
+                <span class="cot-time">${ch.fromTime}s</span>
+                <span class="cot-addr">pb${ch.fromAddress}</span>
+                <span class="cot-type ${ch.type}">${ch.type.toUpperCase()}</span>
+                <span class="cot-desc">Content changed ${ch.pctChange}% between pb${ch.fromAddress} (${ch.fromTime}s) and pb${ch.toAddress} (${ch.toTime}s)</span>
+            </div>`;
+        });
+        cot.innerHTML = html;
+        body.appendChild(cot);
+    }
+
+    card.appendChild(header);
+    card.appendChild(body);
+    DOM.cards.appendChild(card);
+}
+
+function selectFrame(wi, fi, el) {
+    // Deselect all in this card
+    const card = document.getElementById('card-' + wi);
+    card.querySelectorAll('.tl-frame.selected').forEach(f => f.classList.remove('selected'));
+    el.classList.add('selected');
+
+    const win = manifest.windows[wi];
+    const frame = win.frames[fi];
+    const detail = document.getElementById('detail-' + wi);
+    const img = document.getElementById('detail-img-' + wi);
+    const info = document.getElementById('detail-info-' + wi);
+
+    img.src = basePath + frame.file;
+    detail.classList.add('visible');
+
+    const rows = [
+        ['Frame', fi + ' of ' + win.frameCount],
+        ['Time', frame.time + 's'],
+        ['Address', 'pb' + frame.address],
+        ['Depth', frame.depth === -1 ? 'boundary' : frame.depth],
+        ['Size', frame.sizeKB + ' KB'],
+        ['Window', win.title.substring(0, 40)],
+        ['Region', win.region.w + 'x' + win.region.h],
+    ];
+
+    // Check if this frame is part of a change
+    const ch = win.changes.find(c => c.toIndex === fi || c.fromIndex === fi);
+    if (ch) {
+        rows.push(['Change', ch.type + ' (' + ch.pctChange + '%)']);
+    }
+
+    info.innerHTML = rows.map(r =>
+        `<div class="row"><span class="label">${r[0]}</span><span>${r[1]}</span></div>`
+    ).join('');
+}
+
+// -- Playback --
+DOM.btnPlay.addEventListener('click', () => {
+    if (!manifest || manifest.windows.length === 0) return;
+    const win = manifest.windows[0];
+    const track = document.querySelector('#card-0 .timeline-track');
+    const frames = track.querySelectorAll('.tl-frame');
+    let i = 0;
+    const interval = setInterval(() => {
+        if (i >= frames.length) { clearInterval(interval); return; }
+        frames[i].click();
+        frames[i].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        i++;
+    }, 400);
+});
+
+function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+// Auto-load if manifest.json exists at server root
+fetch('paperboy-session/manifest.json').then(r => { if (r.ok) return r.json(); throw 0; })
+    .then(data => { manifest = data; basePath = 'paperboy-session/'; render(); DOM.dropZone.classList.add('hidden'); DOM.btnPlay.disabled = false; })
+    .catch(() => {});
+</script>
+</body>
+</html>
