@@ -7,85 +7,67 @@
         Height="820"
         MinWidth="1120"
         MinHeight="680"
-        Background="#EEF2FF"
+        Background="#EAF0FF"
         AllowDrop="True"
         Drop="Window_Drop"
         DragOver="Window_DragOver">
     <Grid Margin="24">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="120" />
             <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="42" />
         </Grid.RowDefinitions>
 
         <Border Grid.Row="0"
                 cards:AgentCard.Id="paperboy.hero"
                 cards:AgentCard.Role="showcase"
-                CornerRadius="24"
+                CornerRadius="28"
                 Padding="24"
-                Background="#111827">
+                Background="#0F172A">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <StackPanel Orientation="Horizontal">
-                    <Border Width="56"
-                            Height="56"
-                            CornerRadius="18"
-                            Background="#1D4ED8"
-                            Margin="0,0,16,0">
-                        <Image Source="Assets/WindowsAppSDK128.png"
-                               Width="34"
-                               Height="34"
-                               Stretch="Uniform" />
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Border Width="60" Height="60" CornerRadius="18" Background="#2563EB" Margin="0,0,18,0">
+                        <Image Source="Assets/WindowsAppSDK128.png" Width="36" Height="36" Stretch="Uniform" />
                     </Border>
                     <StackPanel>
-                        <TextBlock Text="Paperboy"
-                                   FontSize="34"
-                                   FontWeight="Bold"
-                                   Foreground="White" />
-                        <TextBlock Text="Pack files into lightweight manifest-backed bundles, then toss them wherever they need to go."
+                        <TextBlock Text="Paperboy" FontSize="36" FontWeight="Bold" Foreground="White" />
+                        <TextBlock Text="Bundle, tag, classify, and toss offline assets with Foundry Local + MCP."
                                    Margin="0,6,0,0"
                                    FontSize="15"
                                    Foreground="#CBD5E1" />
                     </StackPanel>
                 </StackPanel>
-                <StackPanel Grid.Column="1"
-                            Orientation="Horizontal"
-                            VerticalAlignment="Center">
-                    <Border CornerRadius="999"
-                            Background="#2563EB"
-                            Padding="18,10"
-                            Margin="0,0,8,0">
-                        <TextBlock Text=".paperboy.zip"
-                                   Foreground="White"
-                                   FontWeight="SemiBold" />
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Border CornerRadius="999" Background="#2563EB" Padding="18,10" Margin="0,0,8,0">
+                        <TextBlock Text=".paperboy.zip" Foreground="White" FontWeight="SemiBold" />
                     </Border>
-                    <Border CornerRadius="999"
-                            Background="#7C3AED"
-                            Padding="18,10">
-                        <TextBlock Text="MCP + Agent Cards"
-                                   Foreground="White"
-                                   FontWeight="SemiBold" />
+                    <Border CornerRadius="999" Background="#7C3AED" Padding="18,10" Margin="0,0,8,0">
+                        <TextBlock Text="MCP" Foreground="White" FontWeight="SemiBold" />
+                    </Border>
+                    <Border CornerRadius="999" Background="#EA580C" Padding="18,10">
+                        <TextBlock Text="Foundry Local" Foreground="White" FontWeight="SemiBold" />
                     </Border>
                 </StackPanel>
             </Grid>
         </Border>
 
-        <Grid Grid.Row="1" Margin="0,20,0,20">
+        <Grid Grid.Row="1" Margin="0,18,0,18">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1.1*" />
-                <ColumnDefinition Width="0.9*" />
-                <ColumnDefinition Width="0.72*" />
+                <ColumnDefinition Width="1.12*" />
+                <ColumnDefinition Width="0.94*" />
+                <ColumnDefinition Width="0.74*" />
             </Grid.ColumnDefinitions>
 
             <Border Grid.Column="0"
                     cards:AgentCard.Id="paperboy.payload"
                     cards:AgentCard.Role="source-picker"
-                    CornerRadius="18"
-                    Padding="18"
-                    Background="White">
+                    Style="{StaticResource TileBorder}"
+                    BorderBrush="#BFDBFE"
+                    Background="#F8FBFF">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -99,265 +81,248 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <StackPanel>
-                            <TextBlock Text="Payload"
-                                       FontSize="22"
-                                       FontWeight="Bold"
-                                       Foreground="{StaticResource PaperboyInk}" />
-                            <TextBlock Text="Drop files or folders here, or use the buttons. Paperboy keeps a manifest of every tossed item."
-                                       Margin="0,4,0,14"
+                            <TextBlock Text="Payload" FontSize="23" FontWeight="Bold" Foreground="#1D4ED8" />
+                            <TextBlock Text="Files and folders to bundle. Drop assets here for offline routing."
+                                       Margin="0,3,0,12"
                                        Foreground="{StaticResource PaperboyMuted}" />
                         </StackPanel>
                         <StackPanel Grid.Column="1" Orientation="Horizontal">
-                            <Button Content="Add files"
-                                    cards:AgentCard.Action="addFiles"
-                                    Click="AddFiles_Click" />
-                            <Button Content="Add folder"
-                                    cards:AgentCard.Action="addFolder"
-                                    Click="AddFolder_Click" />
+                            <Button Content="Add files" cards:AgentCard.Action="addFiles" Click="AddFiles_Click" Background="#DBEAFE" />
+                            <Button Content="Add folder" cards:AgentCard.Action="addFolder" Click="AddFolder_Click" Background="#DBEAFE" />
                         </StackPanel>
                     </Grid>
 
                     <Border Grid.Row="1"
-                            BorderBrush="#E5E7EB"
+                            BorderBrush="#BFDBFE"
                             BorderThickness="1"
-                            CornerRadius="14"
-                            Background="#F8FAFC">
+                            CornerRadius="16"
+                            Background="#F1F5F9">
                         <ListBox x:Name="SourceList"
                                  ItemsSource="{Binding Sources}"
                                  BorderThickness="0"
                                  Background="Transparent"
                                  SelectionMode="Extended"
+                                 ScrollViewer.VerticalScrollBarVisibility="Hidden"
                                  DisplayMemberPath="Display" />
                     </Border>
 
                     <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,14,0,0">
-                        <Button Content="Remove selected"
-                                cards:AgentCard.Action="removeSelected"
-                                Click="RemoveSelected_Click" />
-                        <Button Content="Clear"
-                                cards:AgentCard.Action="clear"
-                                Click="ClearSources_Click" />
-                        <TextBlock x:Name="PayloadSummaryText"
-                                   VerticalAlignment="Center"
-                                   Margin="8,0,0,8"
-                                   Foreground="{StaticResource PaperboyMuted}" />
+                        <Button Content="Remove selected" cards:AgentCard.Action="removeSelected" Click="RemoveSelected_Click" />
+                        <Button Content="Clear" cards:AgentCard.Action="clear" Click="ClearSources_Click" />
+                        <TextBlock x:Name="PayloadSummaryText" VerticalAlignment="Center" Margin="8,0,0,8" Foreground="{StaticResource PaperboyMuted}" />
                     </StackPanel>
                 </Grid>
             </Border>
 
             <Border Grid.Column="1"
-                    Margin="20,0,0,0"
-                    cards:AgentCard.Id="paperboy.bundle"
-                    cards:AgentCard.Role="bundle-builder"
-                    CornerRadius="18"
-                    Padding="18"
-                    Background="White">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <StackPanel>
-                        <TextBlock Text="Bundle"
-                                   FontSize="22"
-                                   FontWeight="Bold"
-                                   Foreground="{StaticResource PaperboyInk}" />
-                        <TextBlock Text="Choose output, compression, and optional toss destination."
-                                   Margin="0,4,0,16"
+                    Margin="18,0,0,0"
+                    cards:AgentCard.Id="paperboy.workflow"
+                    cards:AgentCard.Role="snap-layer"
+                    Style="{StaticResource TileBorder}"
+                    BorderBrush="#FED7AA"
+                    Background="#FFFBF7">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <StackPanel Grid.Row="0">
+                        <TextBlock Text="Workflow Layers" FontSize="23" FontWeight="Bold" Foreground="#C2410C" />
+                        <TextBlock Text="Snap between bundle, Foundry tagging, and run status without scrolling."
+                                   Margin="0,3,0,10"
                                    Foreground="{StaticResource PaperboyMuted}" />
-
-                        <TextBlock Text="Output bundle" FontWeight="SemiBold" />
-                        <DockPanel Margin="0,6,0,14">
-                            <Button DockPanel.Dock="Right" Content="Browse" Click="BrowseOutput_Click" />
-                            <TextBox x:Name="OutputPathText" />
-                        </DockPanel>
-
-                        <TextBlock Text="Compression" FontWeight="SemiBold" />
-                        <ComboBox x:Name="CompressionCombo" Margin="0,6,0,14" SelectedIndex="0">
-                            <ComboBoxItem Content="SmallestSize" />
-                            <ComboBoxItem Content="Optimal" />
-                            <ComboBoxItem Content="Fastest" />
-                            <ComboBoxItem Content="NoCompression" />
-                        </ComboBox>
-
-                        <CheckBox x:Name="IncludeHiddenCheck"
-                                  Content="Include hidden and system files"
-                                  Margin="0,0,0,10" />
-                        <CheckBox x:Name="OverwriteCheck"
-                                  Content="Overwrite existing bundle/output"
-                                  IsChecked="True"
-                                  Margin="0,0,0,16" />
-
-                        <TextBlock Text="Toss destination (optional)" FontWeight="SemiBold" />
-                        <DockPanel Margin="0,6,0,18">
-                            <Button DockPanel.Dock="Right" Content="Browse" Click="BrowseToss_Click" />
-                            <TextBox x:Name="TossPathText" />
-                        </DockPanel>
-
-                        <Border cards:AgentCard.Id="paperboy.foundryLocal"
-                                cards:AgentCard.Role="offline-metadata-pipeline"
-                                CornerRadius="14"
-                                Background="#F8FAFC"
-                                BorderBrush="#E5E7EB"
-                                BorderThickness="1"
-                                Padding="12"
-                                Margin="0,0,0,16">
-                            <StackPanel>
-                                <TextBlock Text="Foundry Local offline tagging" FontWeight="Bold" />
-                                <TextBlock Text="Classify/tag images, videos, audio, and documents using a local Foundry model endpoint."
-                                           Foreground="{StaticResource PaperboyMuted}"
-                                           TextWrapping="Wrap"
-                                           Margin="0,4,0,10" />
-
-                                <TextBlock Text="Endpoint" FontWeight="SemiBold" />
-                                <TextBox x:Name="FoundryEndpointText"
-                                         Text="http://127.0.0.1:52495/v1"
-                                         Margin="0,4,0,8" />
-
-                                <TextBlock Text="Model" FontWeight="SemiBold" />
-                                <TextBox x:Name="FoundryModelText"
-                                         Text="qwen3.5-0.8b"
-                                         Margin="0,4,0,8" />
-
-                                <CheckBox x:Name="FoundryIncludeImagesCheck"
-                                          Content="Send image content to vision-capable models"
-                                          IsChecked="True"
-                                          Margin="0,0,0,6" />
-                                <CheckBox x:Name="FoundrySampleVideoCheck"
-                                          Content="Sample first video frame with FFmpeg when available"
-                                          IsChecked="True"
-                                          Margin="0,0,0,10" />
-
-                                <Button Content="Analyze payload"
-                                        cards:AgentCard.Action="analyze"
-                                        Click="AnalyzeFoundry_Click"
-                                        Background="#7C3AED"
-                                        Foreground="White" />
-                            </StackPanel>
-                        </Border>
-
-                        <WrapPanel>
-                            <Button Content="Pack bundle"
-                                    cards:AgentCard.Action="pack"
-                                    Click="PackBundle_Click"
-                                    Background="#2563EB"
-                                    Foreground="White" />
-                            <Button Content="Inspect bundle"
-                                    cards:AgentCard.Action="inspect"
-                                    Click="InspectBundle_Click" />
-                            <Button Content="Unpack bundle"
-                                    cards:AgentCard.Action="unpack"
-                                    Click="UnpackBundle_Click" />
-                            <Button Content="Toss bundle"
-                                    cards:AgentCard.Action="toss"
-                                    Click="TossBundle_Click" />
-                        </WrapPanel>
-
-                        <UniformGrid Columns="2" Margin="0,18,0,12">
-                            <Border CornerRadius="14" Background="#EFF6FF" Padding="14" Margin="0,0,8,8">
-                                <StackPanel>
-                                    <TextBlock Text="Files" Foreground="{StaticResource PaperboyMuted}" />
-                                    <TextBlock x:Name="FilesStatText" Text="0" FontSize="24" FontWeight="Bold" />
-                                </StackPanel>
-                            </Border>
-                            <Border CornerRadius="14" Background="#F0FDF4" Padding="14" Margin="0,0,0,8">
-                                <StackPanel>
-                                    <TextBlock Text="Bundle size" Foreground="{StaticResource PaperboyMuted}" />
-                                    <TextBlock x:Name="BundleSizeStatText" Text="-" FontSize="24" FontWeight="Bold" />
-                                </StackPanel>
-                            </Border>
-                        </UniformGrid>
-
-                        <Border CornerRadius="14" Background="#FEF3C7" Padding="14" Margin="0,0,0,12">
-                            <StackPanel>
-                                <TextBlock Text="Foundry tags" Foreground="{StaticResource PaperboyMuted}" />
-                                <TextBlock x:Name="FoundryStatText" Text="Not analyzed" FontSize="18" FontWeight="Bold" TextWrapping="Wrap" />
-                            </StackPanel>
-                        </Border>
-
-                        <TextBlock Text="Log" FontWeight="SemiBold" Margin="0,6,0,6" />
-                        <TextBox x:Name="LogText"
-                                 MinHeight="160"
-                                 TextWrapping="Wrap"
-                                 AcceptsReturn="True"
-                                 IsReadOnly="True"
-                                 VerticalScrollBarVisibility="Auto"
-                                 FontFamily="Consolas"
-                                 FontSize="12" />
                     </StackPanel>
-                </ScrollViewer>
+
+                    <TabControl Grid.Row="1" Margin="0,4,0,0">
+                        <TabItem Header="Bundle">
+                            <Grid Margin="0,14,0,0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Text="Output bundle" FontWeight="SemiBold" />
+                                <DockPanel Grid.Row="1" Margin="0,6,0,12">
+                                    <Button DockPanel.Dock="Right" Content="Browse" Click="BrowseOutput_Click" Background="#FED7AA" />
+                                    <TextBox x:Name="OutputPathText" />
+                                </DockPanel>
+
+                                <Grid Grid.Row="2" Margin="0,0,0,12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                                        <TextBlock Text="Compression" FontWeight="SemiBold" />
+                                        <ComboBox x:Name="CompressionCombo" Margin="0,6,0,8" SelectedIndex="0">
+                                            <ComboBoxItem Content="SmallestSize" />
+                                            <ComboBoxItem Content="Optimal" />
+                                            <ComboBoxItem Content="Fastest" />
+                                            <ComboBoxItem Content="NoCompression" />
+                                        </ComboBox>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                                        <TextBlock Text="Options" FontWeight="SemiBold" />
+                                        <CheckBox x:Name="IncludeHiddenCheck" Content="Include hidden/system" Margin="0,8,0,4" />
+                                        <CheckBox x:Name="OverwriteCheck" Content="Overwrite outputs" IsChecked="True" />
+                                    </StackPanel>
+                                </Grid>
+
+                                <StackPanel Grid.Row="3">
+                                    <TextBlock Text="Toss destination (optional)" FontWeight="SemiBold" />
+                                    <DockPanel Margin="0,6,0,14">
+                                        <Button DockPanel.Dock="Right" Content="Browse" Click="BrowseToss_Click" Background="#FED7AA" />
+                                        <TextBox x:Name="TossPathText" />
+                                    </DockPanel>
+                                    <WrapPanel>
+                                        <Button Content="Pack bundle" cards:AgentCard.Action="pack" Click="PackBundle_Click" Background="#EA580C" Foreground="White" />
+                                        <Button Content="Inspect" cards:AgentCard.Action="inspect" Click="InspectBundle_Click" />
+                                        <Button Content="Unpack" cards:AgentCard.Action="unpack" Click="UnpackBundle_Click" />
+                                        <Button Content="Toss" cards:AgentCard.Action="toss" Click="TossBundle_Click" />
+                                    </WrapPanel>
+                                    <UniformGrid Columns="2" Margin="0,12,0,0">
+                                        <Border CornerRadius="14" Background="#FFF7ED" Padding="14" Margin="0,0,8,0">
+                                            <StackPanel>
+                                                <TextBlock Text="Files" Foreground="{StaticResource PaperboyMuted}" />
+                                                <TextBlock x:Name="FilesStatText" Text="0" FontSize="24" FontWeight="Bold" />
+                                            </StackPanel>
+                                        </Border>
+                                        <Border CornerRadius="14" Background="#ECFDF5" Padding="14">
+                                            <StackPanel>
+                                                <TextBlock Text="Bundle size" Foreground="{StaticResource PaperboyMuted}" />
+                                                <TextBlock x:Name="BundleSizeStatText" Text="-" FontSize="24" FontWeight="Bold" />
+                                            </StackPanel>
+                                        </Border>
+                                    </UniformGrid>
+                                </StackPanel>
+                            </Grid>
+                        </TabItem>
+
+                        <TabItem Header="Foundry Local">
+                            <Grid Margin="0,14,0,0" cards:AgentCard.Id="paperboy.foundryLocal" cards:AgentCard.Role="offline-metadata-pipeline">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Text="Offline metadata tagging" FontWeight="Bold" Foreground="#C2410C" />
+                                <TextBlock Grid.Row="1"
+                                           Text="Uses a local Foundry `/v1/responses` endpoint. No cloud calls from Paperboy."
+                                           TextWrapping="Wrap"
+                                           Margin="0,4,0,12"
+                                           Foreground="{StaticResource PaperboyMuted}" />
+
+                                <Grid Grid.Row="2" Margin="0,0,0,12">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="0.72*" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                                        <TextBlock Text="Endpoint" FontWeight="SemiBold" />
+                                        <TextBox x:Name="FoundryEndpointText" Text="http://127.0.0.1:52495/v1" Margin="0,6,0,8" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                                        <TextBlock Text="Model" FontWeight="SemiBold" />
+                                        <TextBox x:Name="FoundryModelText" Text="qwen3.5-0.8b" Margin="0,6,0,8" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Orientation="Horizontal">
+                                        <CheckBox x:Name="FoundryIncludeImagesCheck" Content="Send images" IsChecked="True" Margin="0,0,18,0" />
+                                        <CheckBox x:Name="FoundrySampleVideoCheck" Content="Sample video frame" IsChecked="True" />
+                                    </StackPanel>
+                                </Grid>
+
+                                <StackPanel Grid.Row="3">
+                                    <Button Content="Analyze payload" cards:AgentCard.Action="analyze" Click="AnalyzeFoundry_Click" Background="#7C3AED" Foreground="White" />
+                                    <Border CornerRadius="14" Background="#FEF3C7" Padding="14" Margin="0,10,0,0">
+                                        <StackPanel>
+                                            <TextBlock Text="Foundry tags" Foreground="{StaticResource PaperboyMuted}" />
+                                            <TextBlock x:Name="FoundryStatText" Text="Not analyzed" FontSize="18" FontWeight="Bold" TextWrapping="Wrap" />
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+                            </Grid>
+                        </TabItem>
+
+                        <TabItem Header="Run Log">
+                            <Grid Margin="0,14,0,0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="Session events" FontWeight="Bold" Foreground="#334155" />
+                                <TextBox Grid.Row="1"
+                                         x:Name="LogText"
+                                         Margin="0,8,0,0"
+                                         TextWrapping="Wrap"
+                                         AcceptsReturn="True"
+                                         IsReadOnly="True"
+                                         VerticalScrollBarVisibility="Hidden"
+                                         FontFamily="Consolas"
+                                         FontSize="12" />
+                            </Grid>
+                        </TabItem>
+                    </TabControl>
+                </Grid>
             </Border>
 
             <Border Grid.Column="2"
-                    Margin="20,0,0,0"
+                    Margin="18,0,0,0"
                     cards:AgentCard.Id="paperboy.livetile"
                     cards:AgentCard.Role="a2a-card"
-                    CornerRadius="18"
-                    Padding="18"
-                    Background="White">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <StackPanel>
-                        <TextBlock Text="Agent Cards"
-                                   FontSize="22"
-                                   FontWeight="Bold"
-                                   Foreground="{StaticResource PaperboyInk}" />
-                        <TextBlock Text="Composable schema for A2A livetiles and MCP-aware agents."
-                                   Margin="0,4,0,16"
+                    Style="{StaticResource TileBorder}"
+                    BorderBrush="#DDD6FE"
+                    Background="#FAF7FF">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0">
+                        <TextBlock Text="Agent Cards" FontSize="23" FontWeight="Bold" Foreground="#6D28D9" />
+                        <TextBlock Text="Composable A2A layers for agents and livetiles."
+                                   Margin="0,3,0,12"
                                    TextWrapping="Wrap"
                                    Foreground="{StaticResource PaperboyMuted}" />
-
-                        <Border Style="{StaticResource TileBorder}" Background="#EEF2FF" Margin="0,0,0,10">
-                            <StackPanel>
-                                <TextBlock Text="paperboy.payload" FontWeight="Bold" />
-                                <TextBlock Text="source-picker · fileDrop → sourcePaths[]" Foreground="{StaticResource PaperboyMuted}" TextWrapping="Wrap" />
-                            </StackPanel>
-                        </Border>
-
-                        <Border Style="{StaticResource TileBorder}" Background="#EFF6FF" Margin="0,0,0,10">
-                            <StackPanel>
-                                <TextBlock Text="paperboy.bundle" FontWeight="Bold" />
-                                <TextBlock Text="bundle-builder · pack/inspect/unpack/toss" Foreground="{StaticResource PaperboyMuted}" TextWrapping="Wrap" />
-                            </StackPanel>
-                        </Border>
-
-                        <Border Style="{StaticResource TileBorder}" Background="#F5F3FF" Margin="0,0,0,10">
-                            <StackPanel>
-                                <TextBlock Text="paperboy.mcp" FontWeight="Bold" />
-                                <TextBlock Text="stdio MCP tools for agents and automation" Foreground="{StaticResource PaperboyMuted}" TextWrapping="Wrap" />
-                            </StackPanel>
-                        </Border>
-
-                        <Border Style="{StaticResource TileBorder}" Background="#FFF7ED" Margin="0,0,0,10">
-                            <StackPanel>
-                                <TextBlock Text="paperboy.foundryLocal" FontWeight="Bold" />
-                                <TextBlock Text="offline model tagging for image/video/audio metadata" Foreground="{StaticResource PaperboyMuted}" TextWrapping="Wrap" />
-                            </StackPanel>
-                        </Border>
-
-                        <Border Style="{StaticResource TileBorder}" Background="#F0FDF4" Margin="0,0,0,16">
-                            <StackPanel>
-                                <TextBlock Text="paperboy.livetile" FontWeight="Bold" />
-                                <TextBlock Text="A2A interactive tile state and action schema" Foreground="{StaticResource PaperboyMuted}" TextWrapping="Wrap" />
-                            </StackPanel>
-                        </Border>
-
-                        <Button Content="Copy card schema"
-                                cards:AgentCard.Action="copySchema"
-                                Click="CopyCardSchema_Click"
-                                Background="#7C3AED"
-                                Foreground="White" />
-                        <Button Content="Export card catalog"
-                                cards:AgentCard.Action="exportCards"
-                                Click="ExportCards_Click" />
-                        <Button Content="Show MCP command"
-                                cards:AgentCard.Id="paperboy.mcp"
-                                cards:AgentCard.Action="showCommand"
-                                Click="ShowMcpCommand_Click" />
                     </StackPanel>
-                </ScrollViewer>
+
+                    <UniformGrid Grid.Row="1" Columns="1" Rows="5">
+                        <Border Style="{StaticResource TileBorder}" Background="#EFF6FF" Margin="0,0,0,8" Padding="12">
+                            <TextBlock Text="paperboy.payload&#x0a;source-picker → sourcePaths[]" TextWrapping="Wrap" />
+                        </Border>
+                        <Border Style="{StaticResource TileBorder}" Background="#FFF7ED" Margin="0,0,0,8" Padding="12">
+                            <TextBlock Text="paperboy.bundle&#x0a;pack / inspect / unpack / toss" TextWrapping="Wrap" />
+                        </Border>
+                        <Border Style="{StaticResource TileBorder}" Background="#F5F3FF" Margin="0,0,0,8" Padding="12">
+                            <TextBlock Text="paperboy.mcp&#x0a;stdio tools for automation" TextWrapping="Wrap" />
+                        </Border>
+                        <Border Style="{StaticResource TileBorder}" Background="#FEF3C7" Margin="0,0,0,8" Padding="12">
+                            <TextBlock Text="paperboy.foundryLocal&#x0a;offline media metadata" TextWrapping="Wrap" />
+                        </Border>
+                        <Border Style="{StaticResource TileBorder}" Background="#ECFDF5" Padding="12">
+                            <TextBlock Text="paperboy.livetile&#x0a;A2A tile state schema" TextWrapping="Wrap" />
+                        </Border>
+                    </UniformGrid>
+
+                    <StackPanel Grid.Row="2" Margin="0,12,0,0">
+                        <Button Content="Copy card schema" cards:AgentCard.Action="copySchema" Click="CopyCardSchema_Click" Background="#7C3AED" Foreground="White" />
+                        <Button Content="Export catalog" cards:AgentCard.Action="exportCards" Click="ExportCards_Click" />
+                        <Button Content="Show MCP command" cards:AgentCard.Id="paperboy.mcp" cards:AgentCard.Action="showCommand" Click="ShowMcpCommand_Click" />
+                    </StackPanel>
+                </Grid>
             </Border>
         </Grid>
 
-        <Border Grid.Row="2"
-                CornerRadius="14"
-                Padding="12"
-                Background="#DBEAFE">
+        <Border Grid.Row="2" CornerRadius="14" Padding="12" Background="#DCEBFF">
             <TextBlock x:Name="StatusText"
                        Text="Ready. Add files or folders to create a tossable Paperboy bundle."
                        Foreground="#1E3A8A" />
