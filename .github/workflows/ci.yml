@@ -11,9 +11,15 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Set up PowerShell
-        uses: actions/setup-powershell@v2
+      - name: Set up .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
       - name: Run install.ps1 (FFmpeg cache)
         run: pwsh launchers/install.ps1
       - name: Run Pester tests for yumlog skills
         run: pwsh -Command "Invoke-Pester -Path Skills/Test-ScreenSkills.Tests.ps1 -Output Detailed"
+      - name: Run Pester tests for Paperboy bundles
+        run: pwsh -Command "Invoke-Pester -Path Skills/Test-PaperboyBundle.Tests.ps1 -Output Detailed"
+      - name: Build Paperboy desktop app
+        run: dotnet build apps/Paperboy.Desktop/Paperboy.Desktop.csproj -c Release

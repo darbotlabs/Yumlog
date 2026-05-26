@@ -4,6 +4,12 @@ package-lock.json
 package.json
 playwright.config.ts
 
+# .NET
+bin/
+obj/
+.vs/
+publish/
+
 # Playwright
 playwright-report/
 test-results/

@@ -71,6 +71,25 @@ Paperboy bundles store payload files under `payload/` and include
 timestamps, and SHA-256 hashes. They are ordinary ZIP archives with a
 `.paperboy.zip` convention so they remain easy to inspect with standard tools.
 
+#### Using the native Paperboy desktop app
+
+```powershell
+# Build the Windows-native .NET 10 desktop app
+dotnet build .\apps\Paperboy.Desktop\Paperboy.Desktop.csproj -c Release
+
+# Publish a self-contained win-x64 app folder
+dotnet publish .\apps\Paperboy.Desktop\Paperboy.Desktop.csproj `
+  -c Release `
+  -r win-x64 `
+  --self-contained true `
+  -p:PublishSingleFile=true `
+  -p:IncludeNativeLibrariesForSelfExtract=true
+```
+
+The desktop app provides a modern drag-and-drop UI for selecting files and
+folders, choosing compression, creating `.paperboy.zip` bundles, inspecting
+manifests, unpacking bundles, and tossing bundles to an outbox folder.
+
 #### Run Unit Tests
 
 ```powershell
@@ -111,6 +130,7 @@ Compatible with Pester 3.4.0+ (included in Windows PowerShell).
 | paperboy.ps1 list      | Print a Paperboy bundle manifest                 |
 | paperboy.ps1 unpack    | Expand a Paperboy bundle                         |
 | paperboy.ps1 toss      | Copy a bundle to a destination                   |
+| Paperboy.exe           | Native desktop UI for pack/list/unpack/toss workflows |
 
 ---
 
@@ -130,6 +150,10 @@ darbot.yumlog/
 │   ├── paperboy.ps1
 │   ├── Record-Terminals.ps1
 │   └── yumlog.ps1
+├── apps/
+│   └── Paperboy.Desktop/
+│       ├── MainWindow.xaml
+│       └── Services/PaperboyBundleService.cs
 ├── bisect-test/
 │   ├── bisect-extractor.html
 │   ├── library.html
