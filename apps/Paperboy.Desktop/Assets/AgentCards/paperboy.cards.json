@@ -30,6 +30,16 @@
     "liveTileState": "offline|stdio-ready|serving"
   },
   {
+    "id": "paperboy.foundryLocal",
+    "title": "Foundry Local",
+    "role": "offline-metadata-pipeline",
+    "description": "Classifies and tags image, video, audio, and document payloads with an offline Foundry Local model endpoint.",
+    "inputs": ["endpoint", "model", "sourcePaths[]", "includeImageContent", "sampleVideoFrames"],
+    "outputs": ["metadataJson", "tags", "classifications", "summaries"],
+    "actions": ["analyze", "writeSidecar", "bundleMetadata"],
+    "liveTileState": "offline|ready|analyzing|tagged|error"
+  },
+  {
     "id": "paperboy.livetile",
     "title": "Live Tile",
     "role": "a2a-card",

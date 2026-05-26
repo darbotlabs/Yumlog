@@ -26,6 +26,7 @@ public static class PaperboyMcpServer
         };
 
         var service = new PaperboyBundleService();
+        var foundry = new FoundryLocalPipelineService();
         var cards = AgentCardCatalog.Default;
 
         while (!cancellationToken.IsCancellationRequested)
@@ -36,7 +37,7 @@ public static class PaperboyMcpServer
                 break;
             }
 
-            var response = await HandleRequestAsync(request, service, cards, cancellationToken);
+            var response = await HandleRequestAsync(request, service, foundry, cards, cancellationToken);
             if (response is not null)
             {
                 await WriteMessageAsync(writer, response, cancellationToken);
@@ -44,7 +45,7 @@ public static class PaperboyMcpServer
         }
     }
 
-    private static async Task<JsonObject?> HandleRequestAsync(JsonObject request, PaperboyBundleService service, AgentCardCatalog cards, CancellationToken cancellationToken)
+    private static async Task<JsonObject?> HandleRequestAsync(JsonObject request, PaperboyBundleService service, FoundryLocalPipelineService foundry, AgentCardCatalog cards, CancellationToken cancellationToken)
     {
         var id = request["id"]?.DeepClone();
         var method = request["method"]?.GetValue<string>() ?? "";
@@ -76,6 +77,7 @@ public static class PaperboyMcpServer
                         Tool("paperboy.bundle.inspect", "Read a Paperboy bundle manifest."),
                         Tool("paperboy.bundle.unpack", "Expand a Paperboy bundle."),
                         Tool("paperboy.bundle.toss", "Copy a Paperboy bundle to a destination."),
+                        Tool("paperboy.foundryLocal.analyze", "Analyze media/documents with a local Foundry endpoint and return tags/classifications."),
                         Tool("paperboy.cards.list", "Return composable Paperboy agent cards for A2A/livetile UIs."),
                         Tool("paperboy.cards.schema", "Return the Paperboy agent-card JSON schema.")
                     }
@@ -98,7 +100,7 @@ public static class PaperboyMcpServer
                         }
                     }
                 }),
-                "tools/call" => await HandleToolCallAsync(id, request["params"]?.AsObject(), service, cards, cancellationToken),
+                "tools/call" => await HandleToolCallAsync(id, request["params"]?.AsObject(), service, foundry, cards, cancellationToken),
                 _ => Error(id, -32601, $"Unsupported method: {method}")
             };
         }
@@ -108,7 +110,7 @@ public static class PaperboyMcpServer
         }
     }
 
-    private static async Task<JsonObject> HandleToolCallAsync(JsonNode? id, JsonObject? parameters, PaperboyBundleService service, AgentCardCatalog cards, CancellationToken cancellationToken)
+    private static async Task<JsonObject> HandleToolCallAsync(JsonNode? id, JsonObject? parameters, PaperboyBundleService service, FoundryLocalPipelineService foundry, AgentCardCatalog cards, CancellationToken cancellationToken)
     {
         var name = parameters?["name"]?.GetValue<string>() ?? "";
         var args = parameters?["arguments"]?.AsObject() ?? new JsonObject();
@@ -119,6 +121,7 @@ public static class PaperboyMcpServer
             "paperboy.bundle.inspect" => ContentResponse(id, await InspectAsync(args, service, cancellationToken)),
             "paperboy.bundle.unpack" => ContentResponse(id, await UnpackAsync(args, service, cancellationToken)),
             "paperboy.bundle.toss" => ContentResponse(id, await TossAsync(args, service, cancellationToken)),
+            "paperboy.foundryLocal.analyze" => ContentResponse(id, await AnalyzeFoundryAsync(args, foundry, cancellationToken)),
             "paperboy.cards.list" => ContentResponse(id, cards.ToJson()),
             "paperboy.cards.schema" => ContentResponse(id, cards.SchemaJson),
             _ => Error(id, -32602, $"Unknown tool: {name}")
@@ -162,6 +165,31 @@ public static class PaperboyMcpServer
         var overwrite = args["overwrite"]?.GetValue<bool>() ?? true;
         var tossedTo = await service.TossBundleAsync(bundlePath, destination, overwrite, cancellationToken);
         return JsonSerializer.Serialize(new { tossedTo }, JsonOptions);
+    }
+
+    private static async Task<string> AnalyzeFoundryAsync(JsonObject args, FoundryLocalPipelineService foundry, CancellationToken cancellationToken)
+    {
+        var sourcePaths = args["sourcePaths"]?.AsArray().Select(v => v?.GetValue<string>() ?? "").Where(v => !string.IsNullOrWhiteSpace(v)).ToArray()
+            ?? throw new ArgumentException("sourcePaths is required.");
+        var endpointText = args["endpoint"]?.GetValue<string>() ?? "http://127.0.0.1:52495/v1";
+        var model = args["model"]?.GetValue<string>() ?? throw new ArgumentException("model is required.");
+        var includeImages = args["includeImageContent"]?.GetValue<bool>() ?? true;
+        var sampleVideoFrames = args["sampleVideoFrames"]?.GetValue<bool>() ?? true;
+        var maxImageBytes = args["maxImageBytes"]?.GetValue<int>() ?? 2_000_000;
+        var outputDirectory = args["outputDirectory"]?.GetValue<string>();
+
+        var result = await foundry.AnalyzeAsync(
+            sourcePaths,
+            new FoundryPipelineOptions(new Uri(endpointText), model, includeImages, sampleVideoFrames, maxImageBytes),
+            cancellationToken: cancellationToken);
+
+        string? sidecar = null;
+        if (!string.IsNullOrWhiteSpace(outputDirectory))
+        {
+            sidecar = await foundry.WriteSidecarAsync(result, outputDirectory, cancellationToken);
+        }
+
+        return JsonSerializer.Serialize(new { result, sidecar }, JsonOptions);
     }
 
     private static CompressionLevel ParseCompression(string value) => value switch

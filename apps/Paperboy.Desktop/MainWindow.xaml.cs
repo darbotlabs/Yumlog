@@ -18,6 +18,8 @@ public partial class MainWindow : Window
 {
     private readonly PaperboyBundleService _bundleService = new();
     private readonly AgentCardCatalog _cardCatalog = AgentCardCatalog.Default;
+    private readonly FoundryLocalPipelineService _foundryPipeline = new();
+    private string? _lastFoundrySidecarPath;
 
     public ObservableCollection<SourceItem> Sources { get; } = [];
 
@@ -251,6 +253,70 @@ public partial class MainWindow : Window
         }
     }
 
+    private async void AnalyzeFoundry_Click(object sender, RoutedEventArgs e)
+    {
+        if (Sources.Count == 0)
+        {
+            SetStatus("Add at least one file or folder before running Foundry Local analysis.", isError: true);
+            return;
+        }
+
+        if (!Uri.TryCreate(FoundryEndpointText.Text.Trim(), UriKind.Absolute, out var endpoint))
+        {
+            SetStatus("Foundry Local endpoint must be an absolute URI.", isError: true);
+            return;
+        }
+
+        var model = FoundryModelText.Text.Trim();
+        if (string.IsNullOrWhiteSpace(model))
+        {
+            SetStatus("Foundry Local model alias/id is required.", isError: true);
+            return;
+        }
+
+        try
+        {
+            SetStatus("Running offline Foundry Local metadata pipeline...");
+            AppendLog($"Foundry Local endpoint: {endpoint}");
+            AppendLog($"Foundry Local model: {model}");
+
+            var options = new FoundryPipelineOptions(
+                endpoint,
+                model,
+                FoundryIncludeImagesCheck.IsChecked == true,
+                FoundrySampleVideoCheck.IsChecked == true,
+                2_000_000);
+
+            var result = await _foundryPipeline.AnalyzeAsync(
+                Sources.Select(s => s.Path),
+                options,
+                new Progress<string>(message => SetStatus(message)));
+
+            var outputRoot = GetMetadataOutputDirectory();
+            _lastFoundrySidecarPath = await _foundryPipeline.WriteSidecarAsync(result, outputRoot);
+
+            var tagCount = result.Files.SelectMany(f => f.Tags).Distinct(StringComparer.OrdinalIgnoreCase).Count();
+            FoundryStatText.Text = $"{result.Files.Count:N0} file(s), {tagCount:N0} unique tag(s)";
+            SetStatus($"Foundry Local tagged {result.Files.Count:N0} file(s). Sidecar saved.");
+            AppendLog($"Foundry metadata sidecar: {_lastFoundrySidecarPath}");
+
+            foreach (var file in result.Files.Take(8))
+            {
+                AppendLog($" - {System.IO.Path.GetFileName(file.Path)} :: {string.Join(", ", file.Tags.Take(6))} :: {file.Summary}");
+            }
+
+            if (!Sources.Any(s => string.Equals(s.Path, _lastFoundrySidecarPath, StringComparison.OrdinalIgnoreCase)))
+            {
+                AddSources([_lastFoundrySidecarPath]);
+            }
+        }
+        catch (Exception ex)
+        {
+            SetStatus(ex.Message, isError: true);
+            AppendLog($"ERROR: {ex}");
+        }
+    }
+
     private void CopyCardSchema_Click(object sender, RoutedEventArgs e)
     {
         Clipboard.SetText(_cardCatalog.SchemaJson);
@@ -373,6 +439,21 @@ public partial class MainWindow : Window
         PayloadSummaryText.Text = Sources.Count == 0
             ? "No payload selected"
             : $"{Sources.Count:N0} source root(s) selected";
+    }
+
+    private string GetMetadataOutputDirectory()
+    {
+        var output = OutputPathText.Text.Trim();
+        if (!string.IsNullOrWhiteSpace(output))
+        {
+            var parent = System.IO.Path.GetDirectoryName(output);
+            if (!string.IsNullOrWhiteSpace(parent))
+            {
+                return parent;
+            }
+        }
+
+        return System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Paperboy", "metadata");
     }
 
     private void SetStatus(string message, bool isError = false)

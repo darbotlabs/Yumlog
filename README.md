@@ -94,6 +94,40 @@ It uses Windows App SDK visual assets for its showcase shell and ships
 composable agent-card metadata for A2A/livetile surfaces plus a companion
 `Paperboy.Mcp` stdio host for agent tool calls.
 
+#### Offline metadata tagging with Foundry Local
+
+Paperboy can enrich payloads with offline model metadata using a running
+Foundry Local OpenAI-compatible endpoint:
+
+```powershell
+# Example endpoint started by a Foundry Local web-server workflow:
+# http://127.0.0.1:52495/v1
+```
+
+In the desktop app, use **Foundry Local offline tagging** to choose:
+
+- endpoint, for example `http://127.0.0.1:52495/v1`
+- model alias/id, for example `qwen3.5-0.8b` for vision-capable responses
+- whether to send image content
+- whether to sample a video frame with FFmpeg
+
+The pipeline produces a `paperboy-foundry-metadata-*.json` sidecar containing
+file hashes, media kind, tags, classifications, summaries, and raw model output.
+The sidecar is automatically added to the payload list so it can travel inside
+the same `.paperboy.zip` bundle.
+
+Recommended offline model roles:
+
+| Pipeline | Foundry Local model role |
+|---|---|
+| Image classification/tagging | Vision-capable Responses API model |
+| Video classification/tagging | Vision-capable model over sampled frame plus file metadata |
+| Audio metadata tagging | Chat model over file metadata, or Whisper externally for transcription |
+| Document/log tagging | Small chat model over text/file metadata |
+
+The MCP host also exposes `paperboy.foundryLocal.analyze` for agent-driven
+offline tagging.
+
 #### Run Unit Tests
 
 ```powershell

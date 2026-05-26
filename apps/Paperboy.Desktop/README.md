@@ -14,6 +14,7 @@ lightweight `.paperboy.zip` bundles.
 - Export composable agent-card JSON for A2A/livetile surfaces.
 - Copy the MCP stdio launch command for agent integration.
 - Use Windows App SDK imagery and modern card/tile styling for showcase demos.
+- Run offline Foundry Local metadata tagging for images, videos, audio, and documents.
 - Preserve SHA-256 hashes, byte counts, and source metadata in
   `paperboy-manifest.json`.
 
@@ -69,8 +70,30 @@ It exposes these tools over stdio JSON-RPC/MCP:
 - `paperboy.bundle.inspect`
 - `paperboy.bundle.unpack`
 - `paperboy.bundle.toss`
+- `paperboy.foundryLocal.analyze`
 - `paperboy.cards.list`
 - `paperboy.cards.schema`
+
+## Foundry Local offline pipelines
+
+Paperboy expects a running Foundry Local OpenAI-compatible endpoint such as:
+
+```text
+http://127.0.0.1:52495/v1
+```
+
+Supported pipeline behavior:
+
+- Images: send file metadata and optional image content to a vision-capable
+  `/v1/responses` model.
+- Videos: optionally sample the first frame with FFmpeg and send that frame plus
+  file metadata to a vision-capable model.
+- Audio: tag/classify using file metadata; use a Whisper model externally when
+  full transcription is required.
+- Documents/logs: tag/classify using file metadata and compact prompts.
+
+The result is saved as `paperboy-foundry-metadata-*.json` and can be bundled
+with the original payload for offline routing/search.
 
 ## Agent-card schema
 

@@ -36,6 +36,7 @@ public sealed class PaperboyManifestEntry
     public long Length { get; init; }
     public DateTime LastWriteTimeUtc { get; init; }
     public string Sha256 { get; init; } = "";
+    public Dictionary<string, JsonElement>? Tags { get; init; }
 }
 
 public sealed class PaperboyBundleService

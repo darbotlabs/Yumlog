@@ -190,6 +190,48 @@
                             <TextBox x:Name="TossPathText" />
                         </DockPanel>
 
+                        <Border cards:AgentCard.Id="paperboy.foundryLocal"
+                                cards:AgentCard.Role="offline-metadata-pipeline"
+                                CornerRadius="14"
+                                Background="#F8FAFC"
+                                BorderBrush="#E5E7EB"
+                                BorderThickness="1"
+                                Padding="12"
+                                Margin="0,0,0,16">
+                            <StackPanel>
+                                <TextBlock Text="Foundry Local offline tagging" FontWeight="Bold" />
+                                <TextBlock Text="Classify/tag images, videos, audio, and documents using a local Foundry model endpoint."
+                                           Foreground="{StaticResource PaperboyMuted}"
+                                           TextWrapping="Wrap"
+                                           Margin="0,4,0,10" />
+
+                                <TextBlock Text="Endpoint" FontWeight="SemiBold" />
+                                <TextBox x:Name="FoundryEndpointText"
+                                         Text="http://127.0.0.1:52495/v1"
+                                         Margin="0,4,0,8" />
+
+                                <TextBlock Text="Model" FontWeight="SemiBold" />
+                                <TextBox x:Name="FoundryModelText"
+                                         Text="qwen3.5-0.8b"
+                                         Margin="0,4,0,8" />
+
+                                <CheckBox x:Name="FoundryIncludeImagesCheck"
+                                          Content="Send image content to vision-capable models"
+                                          IsChecked="True"
+                                          Margin="0,0,0,6" />
+                                <CheckBox x:Name="FoundrySampleVideoCheck"
+                                          Content="Sample first video frame with FFmpeg when available"
+                                          IsChecked="True"
+                                          Margin="0,0,0,10" />
+
+                                <Button Content="Analyze payload"
+                                        cards:AgentCard.Action="analyze"
+                                        Click="AnalyzeFoundry_Click"
+                                        Background="#7C3AED"
+                                        Foreground="White" />
+                            </StackPanel>
+                        </Border>
+
                         <WrapPanel>
                             <Button Content="Pack bundle"
                                     cards:AgentCard.Action="pack"
@@ -221,6 +263,13 @@
                                 </StackPanel>
                             </Border>
                         </UniformGrid>
+
+                        <Border CornerRadius="14" Background="#FEF3C7" Padding="14" Margin="0,0,0,12">
+                            <StackPanel>
+                                <TextBlock Text="Foundry tags" Foreground="{StaticResource PaperboyMuted}" />
+                                <TextBlock x:Name="FoundryStatText" Text="Not analyzed" FontSize="18" FontWeight="Bold" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
 
                         <TextBlock Text="Log" FontWeight="SemiBold" Margin="0,6,0,6" />
                         <TextBox x:Name="LogText"
@@ -271,6 +320,13 @@
                             <StackPanel>
                                 <TextBlock Text="paperboy.mcp" FontWeight="Bold" />
                                 <TextBlock Text="stdio MCP tools for agents and automation" Foreground="{StaticResource PaperboyMuted}" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource TileBorder}" Background="#FFF7ED" Margin="0,0,0,10">
+                            <StackPanel>
+                                <TextBlock Text="paperboy.foundryLocal" FontWeight="Bold" />
+                                <TextBlock Text="offline model tagging for image/video/audio metadata" Foreground="{StaticResource PaperboyMuted}" TextWrapping="Wrap" />
                             </StackPanel>
                         </Border>
 

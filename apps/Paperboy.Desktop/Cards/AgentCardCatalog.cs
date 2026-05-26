@@ -57,6 +57,15 @@ public sealed class AgentCardCatalog
             ["initialize", "tools/list", "tools/call"],
             "offline|stdio-ready|serving"),
         new(
+            "paperboy.foundryLocal",
+            "Foundry Local",
+            "offline-metadata-pipeline",
+            "Classifies and tags image, video, audio, and document payloads with an offline Foundry Local model endpoint.",
+            ["endpoint", "model", "sourcePaths[]", "includeImageContent", "sampleVideoFrames"],
+            ["metadataJson", "tags", "classifications", "summaries"],
+            ["analyze", "writeSidecar", "bundleMetadata"],
+            "offline|ready|analyzing|tagged|error"),
+        new(
             "paperboy.livetile",
             "Live Tile",
             "a2a-card",
