@@ -161,6 +161,22 @@ PMM settings include the CLI path (`foundry` by default) and target device
 `paperboy.pmm.info`, `paperboy.pmm.download`, `paperboy.pmm.load`,
 `paperboy.pmm.cacheList`, and `paperboy.pmm.run`.
 
+#### Floating Paperboy 9bit widget
+
+The Windows desktop app launches a small always-on-top **Paperboy 9bit** live
+tile alongside the main window. Click the tile to expand a compact model chat
+surface backed by PMM:
+
+- choose a local model (`qwen3-0.6b`, `qwen2.5-0.5b`, or `phi-3.5-mini`)
+- send a natural-language prompt through `foundry model run`
+- view the real model response in the widget
+- ask the widget to propose the next offline pipeline step
+- inspect local orchestration endpoints from `dayourbot` or `dlm-lib` when those
+  repos are present on the machine
+
+The widget is intentionally a live tile: small by default, expandable on demand,
+and model-backed rather than a static status badge.
+
 #### Run Unit Tests
 
 ```powershell

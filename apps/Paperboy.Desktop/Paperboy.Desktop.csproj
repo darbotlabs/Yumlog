@@ -9,7 +9,7 @@
     <AssemblyName>Paperboy</AssemblyName>
     <RootNamespace>Paperboy.Desktop</RootNamespace>
     <ApplicationIcon />
-    <Version>0.1.0</Version>
+    <Version>0.3.0</Version>
     <Authors>Darbot Labs</Authors>
     <Description>Windows-native .NET 11 Paperboy bundle courier for tossable .paperboy.zip archives.</Description>
   </PropertyGroup>

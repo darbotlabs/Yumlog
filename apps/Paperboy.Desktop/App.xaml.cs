@@ -20,6 +20,7 @@ public partial class App : Application
 
         base.OnStartup(e);
         new MainWindow().Show();
+        new WidgetWindow().Show();
     }
 }
 

@@ -52,6 +52,23 @@ public sealed class PaperboyModelManagerService
         return match.Success ? match.Groups["path"].Value.Trim() : "";
     }
 
+    public string CleanModelResponse(string output)
+    {
+        var lines = output
+            .Replace("\r\n", "\n")
+            .Split('\n')
+            .Select(line => line.Trim())
+            .Where(line => !string.IsNullOrWhiteSpace(line))
+            .Where(line => !Regex.IsMatch(line, @"^\[\d{2}:\d{2}:\d{2}\s+ERR\]\s+Failed to process model #0 on page \d+\.?$"))
+            .Where(line => !Regex.IsMatch(line, @"^Model .+ was found in the local cache\.$", RegexOptions.IgnoreCase))
+            .Where(line => !line.Contains("Thinking", StringComparison.OrdinalIgnoreCase))
+            .Where(line => !line.Equals("🤖", StringComparison.OrdinalIgnoreCase))
+            .ToArray();
+
+        var cleaned = string.Join(Environment.NewLine, lines).Trim();
+        return string.IsNullOrWhiteSpace(cleaned) ? output.Trim() : cleaned;
+    }
+
     private async Task<FoundryCliResult> RunFoundryAsync(IReadOnlyList<string> arguments, CancellationToken cancellationToken)
     {
         var psi = new ProcessStartInfo

@@ -17,6 +17,7 @@ lightweight `.paperboy.zip` bundles.
 - Run offline Foundry Local metadata tagging for images, videos, audio, and documents.
 - Switch to a full-page Foundry Local model-card layer for delivering language,
   vision, audio, and embedding model metadata as Paperboy bundles.
+- Open a floating Paperboy 9bit live tile for local model chat and pipeline help.
 - Preserve SHA-256 hashes, byte counts, and source metadata in
   `paperboy-manifest.json`.
 
@@ -130,6 +131,15 @@ MCP exposes the same operations:
 - `paperboy.pmm.load`
 - `paperboy.pmm.cacheList`
 - `paperboy.pmm.run`
+
+## Paperboy 9bit widget
+
+The desktop app also opens an always-on-top **Paperboy 9bit** live tile.
+
+Click the tile to expand a compact chat surface. The widget sends prompts through
+PMM (`foundry model run`) and shows the real model response. It also has a
+pipeline helper action and an orchestrator discovery action that lists local
+`dayourbot` or `dlm-lib` endpoints when present.
 
 ## Agent-card schema
 
