@@ -58,3 +58,27 @@ if (Test-Path $pkg) {
 }
 
 Write-Host "Install script complete."
+
+# Build snap.exe (F# screen capture binary) if dotnet is available
+$snapSrc   = Join-Path $PSScriptRoot '../snap/snap.fsproj'
+$snapOut   = Join-Path $PSScriptRoot '../.tools/snap'
+$snapExe   = Join-Path $snapOut 'snap.exe'
+
+if (Test-Path $snapSrc) {
+    if (Get-Command dotnet -ErrorAction SilentlyContinue) {
+        if (-not (Test-Path $snapExe)) {
+            Write-Host "Building snap.exe from F# source..."
+            dotnet publish $snapSrc -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:PublishTrimmed=false -o $snapOut --nologo -v quiet
+            if (Test-Path $snapExe) {
+                Write-Host "snap.exe built at $snapExe"
+            } else {
+                Write-Host "WARNING: snap.exe build failed - capture will fall back to PowerShell GDI+"
+            }
+        } else {
+            Write-Host "snap.exe already present at $snapExe"
+        }
+    } else {
+        Write-Host "NOTE: dotnet SDK not found - skipping snap.exe build (capture will use PowerShell GDI+)"
+    }
+}
+

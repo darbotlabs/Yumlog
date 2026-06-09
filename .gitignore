@@ -24,6 +24,9 @@ ffmpeg_output.log
 .tools/ffmpeg/bin/ffmpeg-*-essentials_build/
 .tools/ffmpeg/bin/*.zip
 
+# snap binary output (build from snap/ source with: dotnet publish)
+.tools/snap/
+
 # Recordings and Captures
 *.mp4
 *.avi
@@ -49,3 +52,7 @@ Thumbs.db
 # Temp
 *.tmp
 temp/
+temp_*.txt
+tmp-*.txt
+clippyclaw-verify-*/
+clippyclaw-validation-*/

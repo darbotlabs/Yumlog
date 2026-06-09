@@ -6,7 +6,13 @@ function Run-FFmpeg {
     )
     $ffmpegPath = $env:FFMPEG_PATH
     if (-not $ffmpegPath) {
-        $ffmpegPath = "ffmpeg" # Assume on PATH
+        # Auto-discover from .tools relative to this script
+        $localFfmpeg = Join-Path $PSScriptRoot "..\\.tools\\ffmpeg\\bin\\ffmpeg.exe"
+        if (Test-Path $localFfmpeg) {
+            $ffmpegPath = (Resolve-Path $localFfmpeg).Path
+        } else {
+            $ffmpegPath = "ffmpeg" # Last resort: assume on PATH
+        }
     }
     Write-Verbose "Invoking: $ffmpegPath $($Arguments -join ' ')" -Verbose:$($VerbosePreference -eq 'Continue')
     $process = Start-Process -FilePath $ffmpegPath -ArgumentList $Arguments -NoNewWindow -Wait -PassThru -RedirectStandardError ffmpeg_error.log -RedirectStandardOutput ffmpeg_output.log
