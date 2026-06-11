@@ -2,7 +2,7 @@
 
 ## Screen Capture & Recording
 
-darbot.yumlog provides PowerShell-based tools for desktop screen capture and recording, leveraging FFmpeg for high performance and flexibility. These tools are useful for creating demo assets, bug reports, or automated test evidence.
+darbot.yumlog provides local Windows tools for desktop screen capture, recording, and lightweight screen analysis. The legacy PowerShell tools remain available, and the native `Yumlog.Native` F# CLI is the no-PowerShell path for capture, recording orchestration, analysis manifests, and follow-me step extraction.
 
 Paperboy is Yumlog's lightweight courier layer: it can sample recordings with
 half-step navigation and can pack files into small manifest-backed bundles that
@@ -20,6 +20,31 @@ For a visual interface to manage, configure, and use Yumlog, open `yumlog-manage
 Simply double-click `yumlog-manager.html` to launch the interface in your default browser.
 
 ### Usage Examples
+
+#### Using the native F# CLI
+
+```powershell
+# Build the native CLI
+dotnet build .\apps\Yumlog.Native\Yumlog.Native.fsproj -c Release
+
+# Capture a fast all-monitor screenshot sequence
+dotnet run --project .\apps\Yumlog.Native\Yumlog.Native.fsproj -c Release -- capture --out-dir .\screenshots --duration 1
+
+# Record desktop video through FFmpeg without PowerShell entry points
+dotnet run --project .\apps\Yumlog.Native\Yumlog.Native.fsproj -c Release -- record --out-file .\yumlogs\native.mp4 --duration 10 --fps 30
+
+# Analyze image files and emit JSON metadata
+dotnet run --project .\apps\Yumlog.Native\Yumlog.Native.fsproj -c Release -- analyze --input .\screenshots --ocr auto
+
+# Capture follow-me frames and write a follow manifest
+dotnet run --project .\apps\Yumlog.Native\Yumlog.Native.fsproj -c Release -- follow --out-dir .\yumlogs\follow --duration 10 --ocr auto
+
+# Show or initialize native config
+dotnet run --project .\apps\Yumlog.Native\Yumlog.Native.fsproj -c Release -- config show
+dotnet run --project .\apps\Yumlog.Native\Yumlog.Native.fsproj -c Release -- config init --force
+```
+
+`Yumlog.Native` is local-only and uses `config\yumlog.native.json` by default. Capture uses .NET desktop APIs directly. Recording uses FFmpeg as a native child process. OCR is capability-gated: `--ocr auto` and `--ocr windows-ai` report Windows AI Text Recognition availability and preserve the data model for lines, words, polygon bounds, and confidence values. Windows AI OCR requires the Windows App SDK AI imaging projection, a supported NPU, and model readiness through `TextRecognizer.EnsureReadyAsync`.
 
 #### Using the Unified CLI
 

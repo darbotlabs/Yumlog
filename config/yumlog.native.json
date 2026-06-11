@@ -1,0 +1,32 @@
+{
+  "capture": {
+    "outDir": "./screenshots",
+    "fps": 1,
+    "durationSec": 1,
+    "count": 0,
+    "allScreens": true,
+    "imageFormat": "png"
+  },
+  "record": {
+    "outFile": "./yumlogs/yumlog.mp4",
+    "fps": 30,
+    "durationSec": 10,
+    "ffmpegPath": "",
+    "encoder": "libx264",
+    "preset": "ultrafast"
+  },
+  "analyze": {
+    "input": "./screenshots",
+    "ocrMode": "auto",
+    "jsonOut": "",
+    "minConfidence": 0.5
+  },
+  "follow": {
+    "outDir": "./yumlogs/follow",
+    "fps": 1,
+    "durationSec": 30,
+    "changeThreshold": 0.05,
+    "ocrMode": "auto",
+    "stopOnIdleSec": 0
+  }
+}

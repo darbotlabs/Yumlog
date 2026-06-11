@@ -2,7 +2,7 @@
 
 Welcome to darbot.yumlog.
 
-darbot.yumlog is a PowerShell-based screen capture and logging utility for Windows, designed for automation, reproducibility, and integration with other tools. It provides high-performance desktop video recording and periodic screenshot capture using FFmpeg, with simple CLI commands and scriptable workflows.
+darbot.yumlog is a local screen capture and logging utility for Windows, designed for automation, reproducibility, and integration with other tools. It now includes a native .NET F# CLI for capture, recording orchestration, analysis manifests, follow-me screen-step extraction, configuration parsing, and OCR capability detection, alongside the original PowerShell utilities.
 
 **License:** darbot.yumlog is licensed under the MIT License.
 
@@ -34,8 +34,11 @@ darbot.yumlog is a PowerShell-based screen capture and logging utility for Windo
 
 ## Features
 
+* **Native F# CLI:** `apps\Yumlog.Native` provides no-PowerShell capture, record, analyze, follow, orchestrate, and config commands.
 * **Screen Recording:** Record the desktop at configurable FPS and duration to MP4 using FFmpeg.
 * **Screenshot Capture:** Capture periodic screenshots at configurable FPS and duration.
+* **Screen Analysis:** Emit JSON image metadata, hashes, dimensions, and OCR provider status.
+* **Follow-Me Manifests:** Capture frame sequences, estimate visual changes, and emit navigation-step manifests.
 * **Simple CLI:** One-liner PowerShell scripts for all major actions.
 * **No Dependencies:** FFmpeg is auto-installed if not present.
 * **Scriptable:** Designed for automation and integration in CI/CD or test workflows.
@@ -59,6 +62,9 @@ darbot.yumlog/
 │   └── yumlog.ps1          # Unified yumlog CLI (see below)
 ├── config/                 # Configuration files
 │   └── tools.json          # Default yumlog configuration
+│   └── yumlog.native.json  # Native CLI configuration
+├── apps/
+│   └── Yumlog.Native/      # Native .NET F# CLI
 ├── .github/                # GitHub configuration
 │   └── copilot-instructions.md  # GitHub Copilot instructions
 ├── yumlog-manager.html     # Web-based management interface
@@ -108,6 +114,17 @@ The web interface is completely local and requires no server setup.
 ```powershell
 .\launchers\record.ps1 -Fps 30 -DurationSec 10 -OutFile .\myvideo.mp4
 ```
+
+### Native F# CLI
+
+```powershell
+dotnet build .\apps\Yumlog.Native\Yumlog.Native.fsproj -c Release
+dotnet run --project .\apps\Yumlog.Native\Yumlog.Native.fsproj -c Release -- capture --out-dir .\screenshots --duration 1
+dotnet run --project .\apps\Yumlog.Native\Yumlog.Native.fsproj -c Release -- analyze --input .\screenshots --ocr auto
+dotnet run --project .\apps\Yumlog.Native\Yumlog.Native.fsproj -c Release -- follow --out-dir .\yumlogs\follow --duration 10 --ocr auto
+```
+
+The native CLI targets `net10.0-windows` in this repo because the local SDK does not support `net11.0-windows` yet. It has no PowerShell entry points. The Windows AI OCR integration is intentionally capability-gated: the data model supports recognized text, lines, words, polygonal bounds, and confidence values, while runtime availability depends on the Windows App SDK AI imaging projection, an NPU-backed device, and `TextRecognizer.EnsureReadyAsync` model readiness.
 
 ### Screenshot Capture
 
