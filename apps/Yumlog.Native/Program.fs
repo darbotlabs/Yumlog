@@ -51,7 +51,16 @@ module Program =
     [<EntryPoint>]
     let main argv =
         try
-            argv |> Cli.parse |> execute
+            WinAppRuntime.tryInitialize() |> ignore
+            let exitCode =
+                if argv.Length = 0 && RuntimeIdentity.currentPackageFullName().IsSome then
+                    NativeUi.run()
+                    0
+                else
+                    argv |> Cli.parse |> execute
+            WinAppRuntime.shutdown()
+            exitCode
         with ex ->
+            WinAppRuntime.shutdown()
             eprintfn "ERROR: %s" ex.Message
             1

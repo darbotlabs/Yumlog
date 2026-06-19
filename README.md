@@ -42,9 +42,12 @@ dotnet run --project .\apps\Yumlog.Native\Yumlog.Native.fsproj -c Release -- fol
 # Show or initialize native config
 dotnet run --project .\apps\Yumlog.Native\Yumlog.Native.fsproj -c Release -- config show
 dotnet run --project .\apps\Yumlog.Native\Yumlog.Native.fsproj -c Release -- config init --force
+
+# Build an unsigned MSIX package layout and package artifact
+dotnet msbuild .\apps\Yumlog.Native\Yumlog.Native.fsproj -t:PackageMsix -p:Configuration=Release
 ```
 
-`Yumlog.Native` is local-only and uses `config\yumlog.native.json` by default. Capture uses .NET desktop APIs directly. Recording uses FFmpeg as a native child process. OCR is capability-gated: `--ocr auto` and `--ocr windows-ai` report Windows AI Text Recognition availability and preserve the data model for lines, words, polygon bounds, and confidence values. Windows AI OCR requires the Windows App SDK AI imaging projection, a supported NPU, and model readiness through `TextRecognizer.EnsureReadyAsync`.
+`Yumlog.Native` is local-only and uses `config\yumlog.native.json` by default. Capture uses .NET desktop APIs directly. Recording uses FFmpeg as a native child process. OCR uses the Windows AI Text Recognition stack: `--ocr auto`, `--ocr windows-ai`, and `--ocr raw-com` (alias of `windows-ai`) run the full recognition pipeline and return lines, words, polygon bounds, and confidence values. The pipeline is implemented in F# (`WindowsAiOcr.fs`) on the managed `Microsoft.WindowsAppSDK.AI` projections: it bootstraps the Windows App Runtime, checks `TextRecognizer.GetReadyState`, provisions the on-device model via `TextRecognizer.EnsureReadyAsync` when `NotReady`, creates a recognizer with `CreateAsync`, decodes the image to a BGRA8 `SoftwareBitmap`/`ImageBuffer`, and projects `RecognizeTextFromImage` results into the native data model. Windows AI OCR requires Windows App SDK runtime registration, package/sparse-package identity with `systemAIModels` (run the packaged build so `EnsureReadyAsync` can deploy the `Windows.Workload.ContentExtraction` model), and Copilot+/NPU-class hardware; the unpackaged exe reports `CapabilityMissing` by design. `apps\Yumlog.Native\Package.appxmanifest` declares the `systemAIModels` capability and an `appExecutionAlias` so the packaged CLI is invocable as `Yumlog.Native.exe`.
 
 #### Using the Unified CLI
 

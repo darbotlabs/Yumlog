@@ -2,7 +2,11 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net10.0-windows</TargetFramework>
+    <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <WindowsPackageType>None</WindowsPackageType>
+    <WindowsAppSdkBootstrapInitialize>false</WindowsAppSdkBootstrapInitialize>
+    <WindowsAppSdkUndockedRegFreeWinRTInitialize>false</WindowsAppSdkUndockedRegFreeWinRTInitialize>
     <UseWindowsForms>true</UseWindowsForms>
     <AssemblyName>Yumlog.Native</AssemblyName>
     <RootNamespace>Yumlog.Native</RootNamespace>
@@ -12,7 +16,15 @@
     <Version>0.1.0</Version>
     <Authors>Darbot Labs</Authors>
     <Description>Native .NET F# screen capture, recording, analysis, and follow-me orchestration for Yumlog.</Description>
+    <YumlogNativePackageDir>$(MSBuildProjectDirectory)\..\..\dist\Yumlog.Native\</YumlogNativePackageDir>
+    <YumlogNativePackageLayout>$(YumlogNativePackageDir)layout</YumlogNativePackageLayout>
+    <YumlogNativeMsixPath>$(YumlogNativePackageDir)Yumlog.Native_$(Version)_$(RuntimeIdentifier).msix</YumlogNativeMsixPath>
+    <YumlogMakeAppx Condition="'$(YumlogMakeAppx)' == ''">C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\x64\makeappx.exe</YumlogMakeAppx>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.WindowsAppSDK.AI" Version="2.2.3" />
+  </ItemGroup>
 
   <ItemGroup>
     <Compile Include="Domain.fs" />
@@ -20,12 +32,59 @@
     <Compile Include="Config.fs" />
     <Compile Include="Capture.fs" />
     <Compile Include="Recording.fs" />
+    <Compile Include="RuntimeIdentity.fs" />
+    <Compile Include="WinAppRuntime.fs" />
+    <Compile Include="RawWinRt.fs" />
+    <Compile Include="WindowsAiOcr.fs" />
     <Compile Include="Ocr.fs" />
+    <Compile Include="NativeUi.fs" />
     <Compile Include="Analysis.fs" />
     <Compile Include="Navigation.fs" />
     <Compile Include="Orchestration.fs" />
     <Compile Include="Cli.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
+
+  <Target Name="PackageMsix" DependsOnTargets="Build">
+    <Error Condition="!Exists('$(YumlogMakeAppx)')" Text="makeappx.exe was not found at '$(YumlogMakeAppx)'. Set /p:YumlogMakeAppx=&lt;path&gt; to override." />
+
+    <RemoveDir Directories="$(YumlogNativePackageLayout)" />
+    <MakeDir Directories="$(YumlogNativePackageDir)" />
+    <MakeDir Directories="$(YumlogNativePackageLayout)" />
+    <MakeDir Directories="$(YumlogNativePackageLayout)\Assets" />
+
+    <ItemGroup>
+      <YumlogNativePayload Include="$(TargetDir)**\*.*" />
+    </ItemGroup>
+
+    <Copy
+      SourceFiles="@(YumlogNativePayload)"
+      DestinationFiles="@(YumlogNativePayload->'$(YumlogNativePackageLayout)\%(RecursiveDir)%(Filename)%(Extension)')"
+      SkipUnchangedFiles="false" />
+
+    <Copy
+      SourceFiles="$(MSBuildProjectDirectory)\Package.appxmanifest"
+      DestinationFiles="$(YumlogNativePackageLayout)\AppxManifest.xml"
+      SkipUnchangedFiles="false" />
+
+    <Copy
+      SourceFiles="$(MSBuildProjectDirectory)\..\Paperboy.Desktop\Assets\WindowsAppSDK128.png"
+      DestinationFiles="$(YumlogNativePackageLayout)\Assets\StoreLogo.png"
+      SkipUnchangedFiles="false" />
+
+    <Copy
+      SourceFiles="$(MSBuildProjectDirectory)\..\Paperboy.Desktop\Assets\WindowsAppSDK128.png"
+      DestinationFiles="$(YumlogNativePackageLayout)\Assets\Square44x44Logo.png"
+      SkipUnchangedFiles="false" />
+
+    <Copy
+      SourceFiles="$(MSBuildProjectDirectory)\..\Paperboy.Desktop\Assets\WindowsAppSDK240.png"
+      DestinationFiles="$(YumlogNativePackageLayout)\Assets\Square150x150Logo.png"
+      SkipUnchangedFiles="false" />
+
+    <Delete Files="$(YumlogNativeMsixPath)" />
+    <Exec Command="&quot;$(YumlogMakeAppx)&quot; pack /d &quot;$(YumlogNativePackageLayout)&quot; /p &quot;$(YumlogNativeMsixPath)&quot; /o" />
+    <Message Importance="high" Text="Created $(YumlogNativeMsixPath)" />
+  </Target>
 
 </Project>

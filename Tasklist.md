@@ -122,9 +122,10 @@ dotnet build .\apps\Yumlog.Native\Yumlog.Native.fsproj -c Release
 dotnet run --project .\apps\Yumlog.Native\Yumlog.Native.fsproj -c Release -- capture --out-dir .\screenshots --duration 1
 dotnet run --project .\apps\Yumlog.Native\Yumlog.Native.fsproj -c Release -- analyze --input .\screenshots --ocr auto
 dotnet run --project .\apps\Yumlog.Native\Yumlog.Native.fsproj -c Release -- follow --out-dir .\yumlogs\follow --duration 10 --ocr auto
+dotnet msbuild .\apps\Yumlog.Native\Yumlog.Native.fsproj -t:PackageMsix -p:Configuration=Release
 ```
 
-The native CLI targets `net10.0-windows` in this repo because the local SDK does not support `net11.0-windows` yet. It has no PowerShell entry points. The Windows AI OCR integration is intentionally capability-gated: the data model supports recognized text, lines, words, polygonal bounds, and confidence values, while runtime availability depends on the Windows App SDK AI imaging projection, an NPU-backed device, and `TextRecognizer.EnsureReadyAsync` model readiness.
+The native CLI targets `net10.0-windows10.0.26100.0` in this repo because the raw Windows AI path needs versioned WinRT platform projections. It has no PowerShell entry points. The Windows AI OCR integration is capability-gated: `--ocr raw-com` uses F# Windows App Runtime bootstrap plus raw `RoGetActivationFactory`/vtable dispatch for `TextRecognizer.GetReadyState`, and includes raw async-operation/vector traversal helpers for recognized lines and words. Full text extraction still depends on Windows App SDK runtime registration, package/sparse-package identity with `systemAIModels`, NPU-backed hardware, and model readiness.
 
 ### Screenshot Capture
 

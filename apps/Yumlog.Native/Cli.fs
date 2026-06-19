@@ -10,7 +10,7 @@ Yumlog.Native
 Usage:
   Yumlog.Native capture [--config path] [--out-dir path] [--fps n] [--duration n] [--count n] [--primary]
   Yumlog.Native record [--config path] [--out-file path] [--fps n] [--duration n] [--ffmpeg path]
-  Yumlog.Native analyze [--config path] [--input path] [--ocr none|auto|windows-ai] [--json-out path]
+  Yumlog.Native analyze [--config path] [--input path] [--ocr none|auto|windows-ai|raw-com] [--json-out path]
   Yumlog.Native follow [--config path] [--out-dir path] [--fps n] [--duration n] [--change-threshold n] [--ocr mode]
   Yumlog.Native orchestrate --plan path
   Yumlog.Native config show [--config path]
@@ -68,4 +68,3 @@ Usage:
             ConfigInit(configPath, Map.containsKey "force" options)
         | command :: _ ->
             invalidArg "command" $"Unknown command '{command}'."
-
