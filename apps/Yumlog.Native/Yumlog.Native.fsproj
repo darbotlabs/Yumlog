@@ -13,7 +13,7 @@
     <Nullable>enable</Nullable>
     <Optimize>true</Optimize>
     <Deterministic>true</Deterministic>
-    <Version>0.1.0</Version>
+    <Version>0.4.0</Version>
     <Authors>Darbot Labs</Authors>
     <Description>Native .NET F# screen capture, recording, analysis, and follow-me orchestration for Yumlog.</Description>
     <YumlogNativePackageDir>$(MSBuildProjectDirectory)\..\..\dist\Yumlog.Native\</YumlogNativePackageDir>
@@ -29,6 +29,7 @@
   <ItemGroup>
     <Compile Include="Domain.fs" />
     <Compile Include="Json.fs" />
+    <Compile Include="Mdkg.fs" />
     <Compile Include="Config.fs" />
     <Compile Include="Capture.fs" />
     <Compile Include="Recording.fs" />

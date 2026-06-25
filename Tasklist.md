@@ -35,6 +35,7 @@ darbot.yumlog is a local screen capture and logging utility for Windows, designe
 ## Features
 
 * **Native F# CLI:** `apps\Yumlog.Native` provides no-PowerShell capture, record, analyze, follow, orchestrate, and config commands.
+* **MDKG Container Format:** `Mdkg.fs` implements the `.mdkg` binary layered metadata track format for frame-accurate HEVC/MP4 metadata embedding (OCR text, timing, change scores, navigation steps, embeddings). See `apps/Yumlog.Native/hevc-swarm-out/MDKG-SPEC.md`.
 * **Screen Recording:** Record the desktop at configurable FPS and duration to MP4 using FFmpeg.
 * **Screenshot Capture:** Capture periodic screenshots at configurable FPS and duration.
 * **Screen Analysis:** Emit JSON image metadata, hashes, dimensions, and OCR provider status.
