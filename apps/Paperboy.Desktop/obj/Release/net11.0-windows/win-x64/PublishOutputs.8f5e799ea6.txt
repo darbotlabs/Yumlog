@@ -1,0 +1,7 @@
+E:\Yumlog\dist\release\Paperboy.Desktop\Paperboy.pdb
+E:\Yumlog\dist\release\Paperboy.Desktop\Assets\AgentCards\foundry-local.model-cards.json
+E:\Yumlog\dist\release\Paperboy.Desktop\Assets\AgentCards\paperboy.cards.json
+E:\Yumlog\dist\release\Paperboy.Desktop\Assets\AgentCards\paperboy.cards.schema.json
+E:\Yumlog\dist\release\Paperboy.Desktop\Assets\WindowsAppSDK128.png
+E:\Yumlog\dist\release\Paperboy.Desktop\Assets\WindowsAppSDK240.png
+E:\Yumlog\dist\release\Paperboy.Desktop\Paperboy.exe

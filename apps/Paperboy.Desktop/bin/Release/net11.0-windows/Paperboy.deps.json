@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v11.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v11.0": {
+      "Paperboy/0.3.0": {
+        "runtime": {
+          "Paperboy.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Paperboy/0.3.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

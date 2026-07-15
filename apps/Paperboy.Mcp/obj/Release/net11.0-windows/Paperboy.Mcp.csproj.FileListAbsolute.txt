@@ -1,0 +1,15 @@
+E:\Yumlog\apps\Paperboy.Mcp\bin\Release\net11.0-windows\Paperboy.Mcp.exe
+E:\Yumlog\apps\Paperboy.Mcp\bin\Release\net11.0-windows\Paperboy.Mcp.deps.json
+E:\Yumlog\apps\Paperboy.Mcp\bin\Release\net11.0-windows\Paperboy.Mcp.runtimeconfig.json
+E:\Yumlog\apps\Paperboy.Mcp\bin\Release\net11.0-windows\Paperboy.Mcp.dll
+E:\Yumlog\apps\Paperboy.Mcp\bin\Release\net11.0-windows\Paperboy.Mcp.pdb
+E:\Yumlog\apps\Paperboy.Mcp\obj\Release\net11.0-windows\Paperboy.Mcp.GeneratedMSBuildEditorConfig.editorconfig
+E:\Yumlog\apps\Paperboy.Mcp\obj\Release\net11.0-windows\Paperboy.Mcp.AssemblyInfoInputs.cache
+E:\Yumlog\apps\Paperboy.Mcp\obj\Release\net11.0-windows\Paperboy.Mcp.AssemblyInfo.cs
+E:\Yumlog\apps\Paperboy.Mcp\obj\Release\net11.0-windows\Paperboy.Mcp.csproj.CoreCompileInputs.cache
+E:\Yumlog\apps\Paperboy.Mcp\obj\Release\net11.0-windows\Paperboy.Mcp.sourcelink.json
+E:\Yumlog\apps\Paperboy.Mcp\obj\Release\net11.0-windows\Paperboy.Mcp.dll
+E:\Yumlog\apps\Paperboy.Mcp\obj\Release\net11.0-windows\refint\Paperboy.Mcp.dll
+E:\Yumlog\apps\Paperboy.Mcp\obj\Release\net11.0-windows\Paperboy.Mcp.pdb
+E:\Yumlog\apps\Paperboy.Mcp\obj\Release\net11.0-windows\Paperboy.Mcp.genruntimeconfig.cache
+E:\Yumlog\apps\Paperboy.Mcp\obj\Release\net11.0-windows\ref\Paperboy.Mcp.dll

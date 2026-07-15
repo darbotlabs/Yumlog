@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<linker>
+  <assembly fullname="Yumlog.Native">
+    <resource name="FSharpSignatureData.Yumlog.Native" action="remove"></resource>
+    <resource name="FSharpSignatureCompressedData.Yumlog.Native" action="remove"></resource>
+    <resource name="FSharpSignatureDataB.Yumlog.Native" action="remove"></resource>
+    <resource name="FSharpSignatureCompressedDataB.Yumlog.Native" action="remove"></resource>
+    <resource name="FSharpOptimizationData.Yumlog.Native" action="remove"></resource>
+    <resource name="FSharpOptimizationCompressedData.Yumlog.Native" action="remove"></resource>
+    <resource name="FSharpOptimizationDataB.Yumlog.Native" action="remove"></resource>
+    <resource name="FSharpOptimizationCompressedDataB.Yumlog.Native" action="remove"></resource>
+    <resource name="FSharpOptimizationInfo.Yumlog.Native" action="remove"></resource>
+    <resource name="FSharpSignatureInfo.Yumlog.Native" action="remove"></resource>
+  </assembly>
+</linker>

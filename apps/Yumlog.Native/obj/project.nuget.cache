@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "dgSpecHash": "Za4l+6THhm4=",
+  "success": true,
+  "projectFilePath": "E:\\Yumlog\\apps\\Yumlog.Native\\Yumlog.Native.fsproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\dayour\\.nuget\\packages\\fsharp.core\\10.1.300-servicing.26177.108\\fsharp.core.10.1.300-servicing.26177.108.nupkg.sha512",
+    "C:\\Users\\dayour\\.nuget\\packages\\microsoft.windows.sdk.buildtools\\10.0.26100.4654\\microsoft.windows.sdk.buildtools.10.0.26100.4654.nupkg.sha512",
+    "C:\\Users\\dayour\\.nuget\\packages\\microsoft.windows.sdk.buildtools.msix\\1.7.251221100\\microsoft.windows.sdk.buildtools.msix.1.7.251221100.nupkg.sha512",
+    "C:\\Users\\dayour\\.nuget\\packages\\microsoft.windowsappsdk.ai\\2.2.3\\microsoft.windowsappsdk.ai.2.2.3.nupkg.sha512",
+    "C:\\Users\\dayour\\.nuget\\packages\\microsoft.windowsappsdk.base\\2.0.4\\microsoft.windowsappsdk.base.2.0.4.nupkg.sha512",
+    "C:\\Users\\dayour\\.nuget\\packages\\microsoft.windowsappsdk.foundation\\2.1.0\\microsoft.windowsappsdk.foundation.2.1.0.nupkg.sha512",
+    "C:\\Users\\dayour\\.nuget\\packages\\microsoft.windowsappsdk.interactiveexperiences\\2.0.15\\microsoft.windowsappsdk.interactiveexperiences.2.0.15.nupkg.sha512",
+    "C:\\Users\\dayour\\.nuget\\packages\\microsoft.windows.sdk.net.ref\\10.0.26100.57\\microsoft.windows.sdk.net.ref.10.0.26100.57.nupkg.sha512"
+  ],
+  "logs": []
+}

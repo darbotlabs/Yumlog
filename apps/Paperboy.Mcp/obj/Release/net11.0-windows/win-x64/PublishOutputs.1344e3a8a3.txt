@@ -1,0 +1,2 @@
+E:\Yumlog\apps\Paperboy.Mcp\bin\Release\net11.0-windows\win-x64\publish\Paperboy.Mcp.pdb
+E:\Yumlog\apps\Paperboy.Mcp\bin\Release\net11.0-windows\win-x64\publish\Paperboy.Mcp.exe

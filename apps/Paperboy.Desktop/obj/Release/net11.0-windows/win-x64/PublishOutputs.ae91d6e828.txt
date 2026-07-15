@@ -1,0 +1,7 @@
+E:\Yumlog\apps\Paperboy.Desktop\bin\Release\net11.0-windows\win-x64\publish\Paperboy.pdb
+E:\Yumlog\apps\Paperboy.Desktop\bin\Release\net11.0-windows\win-x64\publish\Assets\AgentCards\foundry-local.model-cards.json
+E:\Yumlog\apps\Paperboy.Desktop\bin\Release\net11.0-windows\win-x64\publish\Assets\AgentCards\paperboy.cards.json
+E:\Yumlog\apps\Paperboy.Desktop\bin\Release\net11.0-windows\win-x64\publish\Assets\AgentCards\paperboy.cards.schema.json
+E:\Yumlog\apps\Paperboy.Desktop\bin\Release\net11.0-windows\win-x64\publish\Assets\WindowsAppSDK128.png
+E:\Yumlog\apps\Paperboy.Desktop\bin\Release\net11.0-windows\win-x64\publish\Assets\WindowsAppSDK240.png
+E:\Yumlog\apps\Paperboy.Desktop\bin\Release\net11.0-windows\win-x64\publish\Paperboy.exe

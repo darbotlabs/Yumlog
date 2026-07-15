@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://darbotlabs.github.io/yumlog/paperboy-agent-card.schema.json",
+  "title": "Paperboy Agent Card",
+  "type": "object",
+  "required": ["id", "title", "role", "description", "inputs", "outputs", "actions", "liveTileState"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^paperboy\\.[a-z0-9.-]+$"
+    },
+    "title": {
+      "type": "string"
+    },
+    "role": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "inputs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "outputs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "actions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "liveTileState": {
+      "type": "string"
+    }
+  }
+}
