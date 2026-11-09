@@ -7,7 +7,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>Paperboy.Mcp</AssemblyName>
     <RootNamespace>Paperboy.Mcp</RootNamespace>
-    <Version>0.4.0</Version>
+    <Version>0.4.2</Version>
+    <AssemblyVersion>0.4.2.0</AssemblyVersion>
+    <FileVersion>0.4.2.0</FileVersion>
     <Authors>Darbot Labs</Authors>
     <Description>MCP stdio server for Paperboy bundle and agent-card workflows.</Description>
   </PropertyGroup>
@@ -17,7 +19,17 @@
     <Compile Include="..\Paperboy.Desktop\Services\FoundryLocalPipelineService.cs" Link="Services\FoundryLocalPipelineService.cs" />
     <Compile Include="..\Paperboy.Desktop\Services\PaperboyModelManagerService.cs" Link="Services\PaperboyModelManagerService.cs" />
     <Compile Include="..\Paperboy.Desktop\Cards\AgentCardCatalog.cs" Link="Cards\AgentCardCatalog.cs" />
+    <Compile Include="..\Paperboy.Desktop\Capabilities\PaperboyCapabilityContract.cs" Link="Capabilities\PaperboyCapabilityContract.cs" />
+    <Compile Include="..\Paperboy.Desktop\Capabilities\PaperboyCapabilityRegistry.cs" Link="Capabilities\PaperboyCapabilityRegistry.cs" />
+    <Compile Include="..\Paperboy.Desktop\Capabilities\PaperboyCapabilityInvoker.cs" Link="Capabilities\PaperboyCapabilityInvoker.cs" />
+    <Compile Include="..\Paperboy.Desktop\Capabilities\PaperboyExtensionSchema.cs" Link="Capabilities\PaperboyExtensionSchema.cs" />
     <Compile Include="..\Paperboy.Desktop\Mcp\PaperboyMcpServer.cs" Link="Mcp\PaperboyMcpServer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\Paperboy.Desktop\Assets\Extensions\**\*" Link="Assets\Extensions\%(RecursiveDir)%(Filename)%(Extension)">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

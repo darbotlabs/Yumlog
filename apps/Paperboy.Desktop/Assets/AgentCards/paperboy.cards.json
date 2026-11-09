@@ -23,10 +23,10 @@
     "id": "paperboy.mcp",
     "title": "MCP Bridge",
     "role": "tool-surface",
-    "description": "Exposes Paperboy pack/list/unpack/toss as agent-callable MCP tools.",
+    "description": "Exposes Paperboy bundle, resources, prompts, and ACP capability metadata as agent-callable MCP surfaces.",
     "inputs": ["jsonRpc", "toolName", "arguments"],
-    "outputs": ["toolResult", "manifest", "agentCardCatalog"],
-    "actions": ["initialize", "tools/list", "tools/call"],
+    "outputs": ["toolResult", "manifest", "agentCardCatalog", "resources", "prompts", "acpCapabilityMetadata"],
+    "actions": ["initialize", "tools/list", "tools/call", "resources/list", "resources/read", "prompts/list", "prompts/get"],
     "liveTileState": "offline|stdio-ready|serving"
   },
   {
@@ -50,6 +50,16 @@
     "liveTileState": "catalog|selected|bundled|delivered"
   },
   {
+    "id": "paperboy.apim",
+    "title": "APIM Surface",
+    "role": "apim-control-plane",
+    "description": "Maps Paperboy MCP, Foundry Local, OCR, and ACP resources into local APIM route contracts.",
+    "inputs": ["localEndpoint", "foundryEndpoint", "ocrBridge", "mcpCommand"],
+    "outputs": ["routeManifestJson", "serviceStatus", "validationReport"],
+    "actions": ["showApimSurface", "validateApimSurface", "checkLocalEndpoint", "checkFoundryHealth", "checkOcrReadiness", "copyRouteManifest"],
+    "liveTileState": "design|configured|validating|ready|gap"
+  },
+  {
     "id": "paperboy.livetile",
     "title": "Live Tile",
     "role": "a2a-card",
@@ -58,5 +68,15 @@
     "outputs": ["cardJson", "tileState", "nextActions"],
     "actions": ["render", "exportCards", "copySchema"],
     "liveTileState": "draft|active|shared"
+  },
+  {
+    "id": "paperboy.extensions",
+    "title": "Extensions",
+    "role": "capability-registry",
+    "description": "Discovers *.extension.json capability packages for apps, agents, tools, skills, workflows, connectors, plugins, and MCP/API bridges, and indexes them next to Paperboy's built-in tools.",
+    "inputs": ["extensionRoots[]", "capabilityId", "arguments", "invocationPolicy"],
+    "outputs": ["capabilityIndexJson", "extensionManifests", "extensionCards", "invocationResult", "diagnostics"],
+    "actions": ["discover", "refresh", "listCapabilities", "describeExtension", "invokeCapability", "copyCapabilityIndex"],
+    "liveTileState": "empty|discovered|blocked|invoked|error"
   }
 ]

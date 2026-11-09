@@ -26,3 +26,5 @@ jobs:
         run: dotnet build apps/Paperboy.Desktop/Paperboy.Desktop.csproj -c Release
       - name: Build Paperboy MCP app
         run: dotnet build apps/Paperboy.Mcp/Paperboy.Mcp.csproj -c Release
+      - name: Run Pester tests for Paperboy extensions and capabilities
+        run: pwsh -Command "Invoke-Pester -Path Skills/Test-PaperboyExtensions.Tests.ps1 -Output Detailed"
