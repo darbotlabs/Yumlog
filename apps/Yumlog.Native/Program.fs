@@ -47,6 +47,9 @@ module Program =
         | Handoff config ->
             NativeHandoff.run config |> writeJson
             0
+        | Readiness mode ->
+            NativeOcr.readiness mode |> writeJson
+            0
         | Orchestrate(planPath, _) ->
             NativeOrchestration.runPlan planPath |> writeJson
             0

@@ -51,7 +51,8 @@ Use the registered execution alias for packaged identity, not `dotnet` on a loos
 `auto`, `windows-ai`, and `raw-com` all use the managed Windows AI recognizer; `raw-com` is
 an alias, not a separate fallback. `auto` reports unavailable results rather than switching OCR
 engines. Recognition may call `EnsureReadyAsync` and **download/provision the model** when
-`NotReady`; `none` disables OCR. Catalog discovery only checks readiness and never calls
+`NotReady` for the existing analyze/UI flows; `none` disables OCR. The handoff command never
+provisions models. Catalog discovery only checks readiness and never calls
 `EnsureReadyAsync`. Successful `analyze` command completion is not proof OCR was available:
 inspect `ocr.isAvailable` and `ocr.message`.
 
@@ -161,8 +162,12 @@ dotnet $native handoff --input .\images --out-dir .\sessions\new-session --ocr n
 
 `handoff --input <image|directory> --out-dir <new-session> [--ocr none|auto|windows-ai|raw-com] [--resume]`
 uses the native image analyzer and actual MDKG writer/producers. OCR defaults to **none**
-independently of application configuration; other modes retain the readiness/provisioning behavior
-described above. Directory input selects top-level PNG/JPEG/BMP images in ordinal filename order.
+independently of application configuration. Other modes require an already-ready Windows AI model:
+handoff uses a separate **non-provisioning** analysis/recognition path, checking readiness both
+before staging and immediately before recognition. It never calls `EnsureReadyAsync`; unavailable
+OCR or recognition failure fails the command rather than publishing an empty successful session.
+Existing analyze/UI provisioning behavior is unchanged.
+Directory input selects top-level PNG/JPEG/BMP images in ordinal filename order.
 The command copies them to `frames/000001.bmp` (retaining their normalized extensions), analyzes
 the copies, and emits portable relative paths. It does not capture, record, mux, install, or sign.
 
@@ -208,6 +213,19 @@ It is required for **native resume**, but deliberately is not a `files` payload;
 only the manifest and listed payloads. Such copies remain consumable but need the unchanged
 sidecar (and matching source inputs) for native resume. Checksums detect corruption, not malicious
 rewrites of both content and checksums; this is not signing or authenticated provenance.
+
+### Read-only OCR readiness
+
+`Yumlog.Native readiness --ocr none|auto|windows-ai|raw-com` returns
+`{"ready":false,"code":"NotReady","message":"..."}` (illustrative unavailable result).
+Valid requests return exit **0**, even when OCR is unavailable; invalid arguments return exit 1.
+`none` returns `ready:true, code:"ocr-disabled"` without a model probe. Other modes initialize
+the runtime without installation and call only `TextRecognizer.GetReadyState`. Codes are `ready`,
+`runtime-unavailable`, `probe-failed`, or a Windows AI state name such as `NotReady`,
+`CapabilityMissing`, `DisabledByUser`, or `NotCompatibleWithSystemHardware`.
+No model download, installation, signing, or readiness repair is performed. Hosts must check
+the boolean, not infer readiness from process exit status. Handoff rechecks independently so a
+readiness change after a host probe cannot route execution into model provisioning.
 
 ## Extension manifests
 
@@ -291,3 +309,5 @@ The handoff regression creates tiny BMPs with OCR disabled, checks initial publi
 manifest/analysis, unchanged resume, corrupt/missing/extra outputs, changed inputs/options, CLI/path
 safety and failed-publication isolation, and reads generated MDKG timing/OCR/UI samples using the
 actual reader. Its unique fixture directory is removed after the run.
+It also checks readiness JSON for all modes without recognition/provisioning, invalid readiness
+arguments, and parity between legacy and non-provisioning image analysis with OCR disabled.

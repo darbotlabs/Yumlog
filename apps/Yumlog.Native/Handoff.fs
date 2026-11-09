@@ -176,6 +176,8 @@ module NativeHandoff =
             if not config.Resume then fail "Output directory already exists; use --resume to verify it."
             verify target options sources
         else
+            let readiness = NativeOcr.readiness mode
+            if not readiness.Ready then fail $"OCR unavailable ({readiness.Code}): {readiness.Message}"
             let parent = Path.GetDirectoryName(target) |> Option.ofObj |> Option.defaultValue ""
             if String.IsNullOrEmpty(parent) then invalidArg "out-dir" "A session directory below a parent is required."
             Directory.CreateDirectory(parent) |> ignore
@@ -192,7 +194,8 @@ module NativeHandoff =
                         File.Copy(sourcePath, copiedPath, false)
                         verifyFile stage { Role = "source"; Path = source.Path; Sha256 = source.Sha256; SizeBytes = source.SizeBytes }
                         let analysisConfig = { NativeConfig.defaults.Analyze with Input = copiedPath; OcrMode = mode }
-                        let result = NativeAnalysis.analyze analysisConfig |> Array.exactlyOne
+                        let result = NativeAnalysis.analyzeWithoutProvisioning analysisConfig |> Array.exactlyOne
+                        if not result.Ocr.IsAvailable then fail $"OCR unavailable: {result.Ocr.Message}"
                         { result with Input = source.Path })
                 NativeJson.write (Path.Combine(stage, "analysis.json")) results
                 writeMdkg (Path.Combine(stage, "session.mdkg")) results

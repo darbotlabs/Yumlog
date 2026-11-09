@@ -393,6 +393,12 @@ type McpServerManifest =
       Tools: McpToolDescriptor array }
 
 [<CLIMutable>]
+type OcrReadiness =
+    { Ready: bool
+      Code: string
+      Message: string }
+
+[<CLIMutable>]
 type HandoffConfig =
     { Input: string
       OutDir: string
@@ -441,6 +447,7 @@ type NativeCommand =
     | Record of RecordConfig * string
     | Analyze of AnalyzeConfig * string
     | Handoff of HandoffConfig
+    | Readiness of string
     | Follow of FollowConfig * string
     | Orchestrate of string * string
     | ConfigShow of string

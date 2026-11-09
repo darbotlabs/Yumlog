@@ -43,6 +43,18 @@ try {
     $first = Join-Path $InputDir 'a.bmp'
     Write-Bmp $first
     Write-Bmp (Join-Path $InputDir 'b.bmp') 255
+    foreach ($mode in @('none', 'auto', 'windows-ai', 'raw-com')) {
+        $readiness = (Invoke-Native @('readiness', '--ocr', $mode)) | ConvertFrom-Json
+        Assert-True ($readiness.ready -is [bool]) 'Readiness must expose a boolean ready field.'
+        Assert-True (-not [string]::IsNullOrWhiteSpace($readiness.code)) 'Readiness must expose a code.'
+        Assert-True (-not [string]::IsNullOrWhiteSpace($readiness.message)) 'Readiness must explain status.'
+        if ($mode -eq 'none') {
+            Assert-True ($readiness.ready -and $readiness.code -ceq 'ocr-disabled') 'Disabled OCR must require no model.'
+        }
+    }
+    Invoke-Native @('readiness') $false
+    Invoke-Native @('readiness', '--ocr', 'invalid') $false
+    Invoke-Native @('readiness', '--ocr', 'none', '--extra') $false
     $argsBase = @('handoff', '--input', $InputDir, '--out-dir', $Session, '--ocr', 'none')
     $manifest = (Invoke-Native $argsBase) | ConvertFrom-Json
     Assert-True ($manifest.schema -ceq 'urn:yumlog:handoff:v1') 'Wrong manifest schema.'
@@ -63,6 +75,9 @@ try {
     Assert-True ($analysis.Count -eq 2) 'Expected two analysis results.'
     Assert-True ($analysis[0].input -ceq 'frames/000001.bmp') 'Analysis must use portable paths.'
     Assert-True ($analysis[0].width -eq 1 -and $analysis[0].height -eq 1 -and $analysis[0].ocr.provider -ceq 'none') 'Wrong native analysis.'
+    $legacy = (Invoke-Native @('analyze', '--input', $first, '--ocr', 'none')) | ConvertFrom-Json
+    $legacy[0].input = $analysis[0].input
+    Assert-True (($legacy[0] | ConvertTo-Json -Depth 20 -Compress) -ceq ($analysis[0] | ConvertTo-Json -Depth 20 -Compress)) 'Non-provisioning analysis changed legacy image results.'
 
     $before = @{}
     Get-ChildItem $Session -Recurse -File | ForEach-Object {

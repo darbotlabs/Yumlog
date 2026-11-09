@@ -12,6 +12,7 @@ Usage:
   Yumlog.Native record [--config path] [--out-file path] [--fps n] [--duration n] [--ffmpeg path]
   Yumlog.Native analyze [--config path] [--input path] [--ocr none|auto|windows-ai|raw-com] [--json-out path]
   Yumlog.Native handoff --input path --out-dir path [--ocr none|auto|windows-ai|raw-com] [--resume]
+  Yumlog.Native readiness --ocr none|auto|windows-ai|raw-com
   Yumlog.Native follow [--config path] [--out-dir path] [--fps n] [--duration n] [--change-threshold n] [--ocr mode]
   Yumlog.Native orchestrate --plan path
   Yumlog.Native config show [--config path]
@@ -85,6 +86,8 @@ Extension kinds:
             Analyze(NativeConfig.mergeAnalyze appConfig.Analyze options, configPath)
         | "handoff" :: args ->
             Handoff(parseHandoff args)
+        | [ "readiness"; "--ocr"; mode ] -> Readiness mode
+        | "readiness" :: _ -> invalidArg "args" "Usage: readiness --ocr none|auto|windows-ai|raw-com"
         | "follow" :: args ->
             let configPath, options = parseOptions args
             let appConfig = NativeConfig.load configPath
