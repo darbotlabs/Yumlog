@@ -60,7 +60,12 @@ clippyclaw-verify-*/
 clippyclaw-validation-*/
 
 # Local downloaded media collection and generated integration reports
-/archive/51PercentCrew/
+/archive/51PercentCrew/*
+!/archive/51PercentCrew/STUDY.md
+!/archive/51PercentCrew/INDEX.md
+!/archive/51PercentCrew/tools/
+/archive/51PercentCrew/tools/*
+!/archive/51PercentCrew/tools/parse_archive.py
 /Scratchpad/apim-roundtrip/
 
 # Local signing material and environment secrets
