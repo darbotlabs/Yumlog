@@ -2,7 +2,36 @@
 
 Authored by the HEVC swarm (dayour-architect) for Yumlog.Native, 2026-06-18.
 
-Companion source: ../Mdkg.fs (890 lines, module Mdkg).
+Maintained sources: [`../Mdkg.fs`](../Mdkg.fs) (module `Mdkg`) and
+[`../Domain.fs`](../Domain.fs) (shared semantic, ART, ACP/APIM, widget and extension records).
+The current implementation summary and registry below supersede the original 2026-06-18
+embedded source snapshot. Do not copy that historical listing over the maintained source.
+
+## Current implementation status
+
+The native project compiles the standalone binary writer/reader, typed payload validators,
+producer helpers, semantic graph reconstruction and MDS1 carrier encode/decode. The registry
+now has **eleven** layers, including ART, ACP, APIM, LiveTile, Widget Studio and extension
+catalogs. The binary format remains **1.0**, with UTF-8 camel-case JSON payloads.
+
+These are in-process APIs, not a `Yumlog.Native mdkg` CLI command. `record` still invokes FFmpeg;
+it does not automatically write MDKG sidecars, synchronize producers, or embed a `mett` track.
+The MP4/HEVC integration examples below describe proposed integration, not a shipped muxer.
+For extension discovery, package/OCR requirements and the standalone catalog-writing helper,
+see [`../EXTENSIBILITY.md`](../EXTENSIBILITY.md).
+
+Safe validation from the repository root:
+
+```powershell
+dotnet build .\apps\Yumlog.Native\Yumlog.Native.fsproj -c Debug
+.\launchers\Test-YumlogNativeMdkgRoundTrip.ps1
+.\apps\Yumlog.Native\Test-YumlogNativeExtensibility.ps1
+```
+
+The round-trip test covers layers 2–4 and 6–10, descriptor registration, and keyframe-plus-delta
+graph reconstruction. The extensibility test covers layer 11, catalog/config/manifest handling,
+and CLI projections. These tests do not establish HEVC fidelity, MP4 metadata synchronization,
+OCR availability, or exhaustive corrupt-file conformance.
 
 ---
 
@@ -130,15 +159,65 @@ Sample flags:
 
 ---
 
-## Required Built-In Layers
+## Built-In Layer Registry
 
-| Id | Name | Codec | Required |
-|---:|------|-------|----------|
-| 1 | timing | `application/vnd.yumlog.mdkg.timing+json;version=1` | yes |
-| 2 | ocr-text | `application/vnd.yumlog.mdkg.ocr-text+json;version=1` | no |
-| 3 | ui-affordance | `application/vnd.yumlog.mdkg.ui-affordance+json;version=1` | no |
-| 4 | semantic-graph | `application/vnd.yumlog.mdkg.semantic-graph+json;version=1` | no |
-| 5 | input-event | `application/vnd.yumlog.mdkg.input-event+json;version=1` | no |
+For each name below, the schema URI is `urn:yumlog:mdkg:layer:<name>:v1` and codec is
+`application/vnd.yumlog.mdkg.<name>+json;version=1`.
+
+| Id | Name / `LayerId` member | Payload type (`Mdkg` module) | Layer flags |
+|---:|---|---|---|
+| 1 | `timing` / `Timing` | `TimingLayerSample` | Required |
+| 2 | `ocr-text` / `OcrText` | `OcrTextLayerSample` | Sparse |
+| 3 | `ui-affordance` / `UiAffordance` | `UiAffordanceLayerSample` | Sparse |
+| 4 | `semantic-graph` / `SemanticGraph` | `SemanticGraphLayerSample` | Sparse, Graph |
+| 5 | `input-event` / `InputEvent` | `InputEventLayerSample` | Sparse, Extension |
+| 6 | `art-frame` / `ArtFrame` | `ArtFrameLayerSample` | Sparse, Extension |
+| 7 | `acp-context` / `AcpContext` | `AcpContextLayerSample` | Sparse, Extension |
+| 8 | `apim-trace` / `ApimTrace` | `ApimTraceLayerSample` | Sparse, Extension |
+| 9 | `live-tile` / `LiveTile` | `LiveTileLayerSample` | Sparse, Extension |
+| 10 | `widget-studio` / `WidgetStudio` | `WidgetStudioLayerSample` | Sparse, Extension |
+| 11 | `extension-catalog` / `ExtensionCatalog` | `ExtensionCatalogLayerSample` | Sparse, Extension |
+
+`Registry.BuiltIn` and `MdkgWriter.AddDefaultLayers()` register all eleven descriptors; callers
+must register layers before the first sample. Registration does not emit samples. The Required
+flag on timing describes the video-aligned profile, not a writer requirement to emit timing
+data: metadata-only files, including `NativeExtensibility.writeMdkg`, may have no timing entries.
+
+### Extended typed payloads
+
+Every extended sample contains non-negative `PtsTicks` and `DurationTicks` (zero duration is
+allowed); layer 6 additionally contains `Qpc` and an `int64 FrameIndex`.
+
+| Layer | Payload fields beyond the sample clock |
+|---|---|
+| `art-frame` | `Telemetry: ArtFrameTelemetry` with stream/frame identifiers, capture timestamp, image dimensions, change score, normalized dirty regions, OCR, UI affordances and a `SemanticGraphSnapshot`. |
+| `acp-context` | `Context: AcpContextEnvelope` with producer, capability, schema URI, JSON payload, creation timestamp and semantic attributes. |
+| `apim-trace` | `Trace: ApimTraceTelemetry` with backend/operation/policies, request and correlation IDs, status/duration/outcome, JSON trace and semantic attributes. |
+| `live-tile` | `Definitions: LiveTileWidgetDefinition[]`, `States: LiveTileWidgetState[]`, `Attributes: SemanticAttribute[]`. Definitions carry APIM bindings; instance states carry data JSON and semantic snapshots. |
+| `widget-studio` | `Project: WidgetStudioProject` with widget definitions, APIM backends/policies, description and creation/update timestamps. |
+| `extension-catalog` | `Catalog: ExtensionCatalog` with catalog/host identifiers, host version, generation timestamp, manifests and resolved capabilities. |
+
+The shared domain types use `SemanticIdentifier` (`Namespace`, `Kind`, `Key`, `Version`),
+`SemanticConfidence` and `SemanticAttribute`. They are **not interchangeable** with the older
+layer-4 `Mdkg.SemanticGraphNode` / `SemanticGraphEdge` / `MdkgAttribute` records, which use string
+IDs, scalar confidence, four-point `TextBounds`, and PTS lifetimes. `SemanticGraphSnapshot`
+instead uses structured IDs and `NormalizedRect` bounds. OCR four-point coordinates are not
+automatically normalized by serialization.
+
+`Mdkg.Producers` constructs validated samples; `Mdkg.LayerPayloads` provides validated typed
+serialization/deserialization for layers 2–4 and 6–11. Corresponding writer/reader methods are
+`WriteOcrText` / `ReadOcrText`, `WriteUiAffordance` / `ReadUiAffordance`,
+`WriteSemanticGraph` / `ReadSemanticGraph`, `WriteArtFrame` / `ReadArtFrame`,
+`WriteAcpContext` / `ReadAcpContext`, `WriteApimTrace` / `ReadApimTrace`,
+`WriteLiveTile` / `ReadLiveTile`, `WriteWidgetStudio` / `ReadWidgetStudio`, and
+`WriteExtensionCatalog` / `ReadExtensionCatalog`. `ReadLayer` returns sample-index entries to
+pass to these readers. Generic `WriteSample` / `ReadSample` retain opaque byte payload support.
+Timing and input-event retain their direct JSON paths rather than the new typed validators.
+
+Sample flags differ from descriptor flags: OCR, UI, input-event and layers 6–10 write `Sparse`;
+semantic graphs write `KeyFrame` or `Delta`; extension catalogs write `KeyFrame | Sparse`.
+These payloads describe observations/configuration, not executable APIM policies, widget UI,
+extension loading, or model provisioning.
 
 ---
 
@@ -151,7 +230,7 @@ movieTimescale = 10,000,000
 ptsTicks = ((qpc - firstQpc) * 10,000,000) / QueryPerformanceFrequency()
 ```
 
-Round-trip guarantee:
+Video-aligned producer contract (not automatically enforced by the standalone writer):
 
 1. Every encoded video frame MUST have exactly one timing-layer sample.
 2. Timing-layer samples are dense and frame-ordered.
@@ -163,7 +242,11 @@ Round-trip guarantee:
 
 ---
 
-# Complete `Mdkg.fs`
+# Historical `Mdkg.fs` snapshot (2026-06-18)
+
+The following listing is retained as design history only. It predates the extended layers,
+typed validators and graph reconstruction, and includes superseded reader behavior. The
+maintained [`../Mdkg.fs`](../Mdkg.fs), not this block, is compiled and tested.
 
 ```fsharp
 namespace Yumlog.Native
@@ -1111,6 +1194,13 @@ If multiple `.mdkg` layers have samples at the same video PTS, write multiple MP
 
 The semantic graph layer is sparse and reconstructable.
 
+`Mdkg.Graph.reconstruct` validates samples, sorts by PTS, resets state at each keyframe, then
+applies that sample's delta (remove edges, remove nodes and their incident edges, add/update
+nodes, add/update edges). Adds/updates are upserts by ordinal string ID. It returns `GraphId`,
+nodes, edges and `LastPtsTicks`. Supply samples for a **single graph**, filtered to the desired
+time; it does not partition by graph ID or impose a time cutoff. A starting keyframe, consistent
+graph IDs, edge referential integrity and same-PTS ordering remain producer responsibilities.
+
 ### Keyframe sample
 
 A keyframe semantic graph sample sets:
@@ -1160,16 +1250,18 @@ To answer “what UI graph existed at time T”:
 
 ## Fsproj Compile Order
 
-`Mdkg.fs` depends on `Domain.fs` types. `HevcMux.fs` can optionally use `Mdkg.Carrier.encode` when embedding layered metadata in MP4. Therefore place `Mdkg.fs` after `Domain.fs` and before `HevcMux.fs`.
+`Mdkg.fs` depends on `Domain.fs` types. The current native project compiles `Domain.fs`,
+`Json.fs`, then `Mdkg.fs`, followed by the configuration/capture/runtime modules below.
+`Extensibility.fs` must follow OCR and MDKG and precede the CLI. There is no compiled
+`HevcMux.fs`; a future mux integration would follow `Mdkg.fs` to use `Mdkg.Carrier.encode`.
 
-Recommended compile order:
+Current compile order:
 
 ```xml
 <ItemGroup>
   <Compile Include="Domain.fs" />
-  <Compile Include="Mdkg.fs" />
-  <Compile Include="HevcMux.fs" />
   <Compile Include="Json.fs" />
+  <Compile Include="Mdkg.fs" />
   <Compile Include="Config.fs" />
   <Compile Include="Capture.fs" />
   <Compile Include="Recording.fs" />
@@ -1182,12 +1274,13 @@ Recommended compile order:
   <Compile Include="Analysis.fs" />
   <Compile Include="Navigation.fs" />
   <Compile Include="Orchestration.fs" />
+  <Compile Include="Extensibility.fs" />
   <Compile Include="Cli.fs" />
   <Compile Include="Program.fs" />
 </ItemGroup>
 ```
 
-If `HevcMux.fs` does not reference `Mdkg.fs`, it may remain before `Mdkg.fs`, but the preferred architecture is:
+Proposed future mux architecture (not currently integrated):
 
 ```text
 Domain.fs -> Mdkg.fs -> HevcMux.fs -> recorder integration
@@ -1196,6 +1289,9 @@ Domain.fs -> Mdkg.fs -> HevcMux.fs -> recorder integration
 ---
 
 ## Minimal Writer Flow
+
+Illustrative in-process producer code; `frames` and the capture clock are supplied by the host.
+This is not a native CLI command or an automatically invoked recording path.
 
 ```fsharp
 use mdkg = Mdkg.``open`` sidecarPath

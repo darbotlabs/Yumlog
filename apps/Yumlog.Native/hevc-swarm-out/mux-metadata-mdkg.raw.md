@@ -1,3 +1,8 @@
+> Historical HEVC/mux design transcript. Code and API sketches below are not the current
+> implementation. The maintained [MDKG specification](MDKG-SPEC.md) documents eleven layers,
+> typed payload validation and graph reconstruction; `../Mdkg.fs` is the authoritative source.
+> The proposed HEVC mux and automatic MP4/sidecar production are not integrated into `record`.
+
 Agent is idle (waiting for messages). agent_id: mux-metadata-1, agent_type: dayour-architect, status: idle, description: MP4/MKV mux + metadata track, elapsed: 416s, total_turns: 2
 
 [Turn 0]

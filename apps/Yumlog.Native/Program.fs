@@ -47,6 +47,20 @@ module Program =
         | Orchestrate(planPath, _) ->
             NativeOrchestration.runPlan planPath |> writeJson
             0
+        | ExtensionsShow(config, query, _) ->
+            NativeExtensibility.catalog config
+            |> NativeExtensibility.filter query
+            |> writeJson
+            0
+        | ExtensionsMcp(config, _) ->
+            NativeExtensibility.catalog config
+            |> NativeExtensibility.mcpManifest
+            |> writeJson
+            0
+        | ExtensionsValidate(config, _) ->
+            let report = NativeExtensibility.validate config
+            writeJson report
+            if report.IsValid then 0 else 1
 
     [<EntryPoint>]
     let main argv =

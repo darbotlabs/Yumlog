@@ -15,6 +15,12 @@ Usage:
   Yumlog.Native orchestrate --plan path
   Yumlog.Native config show [--config path]
   Yumlog.Native config init [--config path] [--force]
+  Yumlog.Native extensions list [--config path] [--dir path] [--kind kind] [--name text] [--no-builtin] [--no-external]
+  Yumlog.Native extensions mcp [--config path] [--dir path] [--no-builtin] [--no-external]
+  Yumlog.Native extensions validate [--config path] [--dir path] [--pattern glob]
+
+Extension kinds:
+  model, agent, tool, skill, workflow, connector, plugin, extension, mcp-server, api, continuous-ai
 """
 
     let helpText () = usage.Trim()
@@ -26,6 +32,8 @@ Usage:
             | "--config" :: value :: rest -> loop rest value options
             | "--force" :: rest -> loop rest configPath (Map.add "force" "true" options)
             | "--primary" :: rest -> loop rest configPath (Map.add "primary" "true" options)
+            | "--no-builtin" :: rest -> loop rest configPath (Map.add "no-builtin" "true" options)
+            | "--no-external" :: rest -> loop rest configPath (Map.add "no-external" "true" options)
             | "--plan" :: value :: rest -> loop rest configPath (Map.add "plan" value options)
             | option :: value :: rest when option.StartsWith("--") ->
                 loop rest configPath (Map.add (option.Substring(2)) value options)
@@ -66,5 +74,22 @@ Usage:
         | "config" :: "init" :: args ->
             let configPath, options = parseOptions args
             ConfigInit(configPath, Map.containsKey "force" options)
+        | "extensions" :: "mcp" :: args ->
+            let configPath, options = parseOptions args
+            let appConfig = NativeConfig.load configPath
+            ExtensionsMcp(NativeConfig.mergeExtensions appConfig.Extensions options, configPath)
+        | "extensions" :: "validate" :: args ->
+            let configPath, options = parseOptions args
+            let appConfig = NativeConfig.load configPath
+            ExtensionsValidate(NativeConfig.mergeExtensions appConfig.Extensions options, configPath)
+        | "extensions" :: "list" :: args
+        | "extensions" :: "show" :: args
+        | "extensions" :: args ->
+            let configPath, options = parseOptions args
+            let appConfig = NativeConfig.load configPath
+            let get name =
+                options |> Map.tryFind name |> Option.defaultValue ""
+            let query: ExtensionQuery = { Kind = get "kind"; Name = get "name" }
+            ExtensionsShow(NativeConfig.mergeExtensions appConfig.Extensions options, query, configPath)
         | command :: _ ->
             invalidArg "command" $"Unknown command '{command}'."

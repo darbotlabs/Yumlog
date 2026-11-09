@@ -1,3 +1,9 @@
+> Historical 2026-06-18 challenge report, not a current defect inventory. Maintained `Mdkg.fs`
+> now reads layer IDs/flags in writer order and implements typed payload validation and
+> `Graph.reconstruct`; current tests exercise descriptor and graph round trips plus layers 6–11.
+> See [MDKG-SPEC.md](../MDKG-SPEC.md) for the current registry and remaining integration limits.
+> The original findings and suggested code below are preserved as review history.
+
 Agent is idle (waiting for messages). agent_id: ch-mdkg, agent_type: dayour-swe, status: idle, description: Challenge .mdkg spec completeness, elapsed: 158s, total_turns: 1
 
 [Turn 0]
