@@ -3,6 +3,13 @@
 Fresh red-team fleet of 6 dayour-swe agents, 2026-06-18. Challenged both swarms
 (A = native HEVC pipeline, B = .mdkg layered track) on completeness.
 
+> Historical review: the original findings below are retained, not reasserted as current bugs.
+> The maintained MDKG layer-table reader is now symmetric, typed validation and graph
+> reconstruction are implemented, and the registry covers eleven layers. See
+> [MDKG-SPEC.md](../MDKG-SPEC.md) and its safe round-trip tests. Recording still uses FFmpeg;
+> native HEVC/mux integration and synchronized live MDKG production are not completed by
+> these metadata/extensibility changes.
+
 ## Unanimous verdict: INCOMPLETE (6/6)
 
 | Agent | Target | Swarm | Verdict |

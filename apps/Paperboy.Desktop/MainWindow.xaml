@@ -47,11 +47,16 @@
                             Background="#DBEAFE"
                             Foreground="#1E3A8A"
                             Margin="0,0,8,0" />
-                    <Button Content="Foundry Models"
-                            Click="ShowFoundryModels_Click"
-                            Background="#FEF3C7"
-                            Foreground="#92400E"
-                            Margin="0,0,12,0" />
+                     <Button Content="Foundry Models"
+                             Click="ShowFoundryModels_Click"
+                             Background="#FEF3C7"
+                             Foreground="#92400E"
+                             Margin="0,0,8,0" />
+                     <Button Content="APIM Surface"
+                             Click="ShowApimSurface_Click"
+                             Background="#DCFCE7"
+                             Foreground="#166534"
+                             Margin="0,0,12,0" />
                     <Border CornerRadius="999" Background="#2563EB" Padding="18,10" Margin="0,0,8,0">
                         <TextBlock Text=".paperboy.zip" Foreground="White" FontWeight="SemiBold" />
                     </Border>
@@ -305,7 +310,7 @@
                                    Foreground="{StaticResource PaperboyMuted}" />
                     </StackPanel>
 
-                    <UniformGrid Grid.Row="1" Columns="1" Rows="5">
+                    <UniformGrid Grid.Row="1" Columns="1" Rows="7">
                         <Border Style="{StaticResource TileBorder}" Background="#EFF6FF" Margin="0,0,0,8" Padding="12">
                             <TextBlock Text="paperboy.payload&#x0a;source-picker → sourcePaths[]" TextWrapping="Wrap" />
                         </Border>
@@ -315,11 +320,29 @@
                         <Border Style="{StaticResource TileBorder}" Background="#F5F3FF" Margin="0,0,0,8" Padding="12">
                             <TextBlock Text="paperboy.mcp&#x0a;stdio tools for automation" TextWrapping="Wrap" />
                         </Border>
+                        <Border Style="{StaticResource TileBorder}" Background="#DCFCE7" Margin="0,0,0,8" Padding="12">
+                            <TextBlock Text="paperboy.apim&#x0a;status / routes / validation" TextWrapping="Wrap" />
+                        </Border>
                         <Border Style="{StaticResource TileBorder}" Background="#FEF3C7" Margin="0,0,0,8" Padding="12">
                             <TextBlock Text="paperboy.foundryLocal&#x0a;offline media metadata" TextWrapping="Wrap" />
                         </Border>
-                        <Border Style="{StaticResource TileBorder}" Background="#ECFDF5" Padding="12">
+                        <Border Style="{StaticResource TileBorder}" Background="#ECFDF5" Margin="0,0,0,8" Padding="12">
                             <TextBlock Text="paperboy.livetile&#x0a;A2A tile state schema" TextWrapping="Wrap" />
+                        </Border>
+                        <Border cards:AgentCard.Id="paperboy.extensions"
+                                cards:AgentCard.Role="capability-registry"
+                                Style="{StaticResource TileBorder}"
+                                Background="#FDF2F8"
+                                Padding="12">
+                            <StackPanel>
+                                <TextBlock Text="paperboy.extensions&#x0a;discoverable capability packages" TextWrapping="Wrap" />
+                                <TextBlock x:Name="ExtensionsStatusText"
+                                           Text="Extensions not scanned yet."
+                                           Margin="0,4,0,0"
+                                           TextWrapping="Wrap"
+                                           FontSize="11"
+                                           Foreground="{StaticResource PaperboyMuted}" />
+                            </StackPanel>
                         </Border>
                     </UniformGrid>
 
@@ -327,6 +350,9 @@
                         <Button Content="Copy card schema" cards:AgentCard.Action="copySchema" Click="CopyCardSchema_Click" Background="#7C3AED" Foreground="White" />
                         <Button Content="Export catalog" cards:AgentCard.Action="exportCards" Click="ExportCards_Click" />
                         <Button Content="Show MCP command" cards:AgentCard.Id="paperboy.mcp" cards:AgentCard.Action="showCommand" Click="ShowMcpCommand_Click" />
+                        <Button Content="Refresh extensions" cards:AgentCard.Id="paperboy.extensions" cards:AgentCard.Action="refresh" Click="RefreshExtensions_Click" />
+                        <Button Content="Copy capability index" cards:AgentCard.Id="paperboy.extensions" cards:AgentCard.Action="copyCapabilityIndex" Click="CopyCapabilityIndex_Click" />
+                        <Button Content="Open extensions folder" cards:AgentCard.Id="paperboy.extensions" cards:AgentCard.Action="discover" Click="OpenExtensionsFolder_Click" />
                     </StackPanel>
                 </Grid>
             </Border>
@@ -504,6 +530,282 @@
                     <TextBlock Text="Delivery pattern: export these model cards, pack them with prompts/config, then toss the bundle to an offline Foundry Local workspace. Paperboy does not redistribute model weights; it delivers model metadata, aliases, cards, prompts, and pipeline instructions."
                                TextWrapping="Wrap"
                                Foreground="#78350F" />
+                </Border>
+            </Grid>
+        </Border>
+
+        <Border x:Name="ApimLayer"
+                Grid.Row="1"
+                Visibility="Collapsed"
+                cards:AgentCard.Id="paperboy.apim"
+                cards:AgentCard.Role="apim-control-plane"
+                Style="{StaticResource TileBorder}"
+                BorderBrush="#86EFAC"
+                Background="#F0FDF4"
+                Margin="0,18,0,18">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <TextBlock Text="Paperboy APIM Surface"
+                                   FontSize="28"
+                                   FontWeight="Bold"
+                                   Foreground="#166534" />
+                        <TextBlock Text="Local gateway design layer for Paperboy MCP, ACP resources, Foundry Local, OCR readiness, and route validation."
+                                   Margin="0,4,0,18"
+                                   Foreground="{StaticResource PaperboyMuted}" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Top">
+                        <Button Content="Validate all"
+                                cards:AgentCard.Action="validateApimSurface"
+                                Click="ValidateApimSurface_Click"
+                                Background="#16A34A"
+                                Foreground="White" />
+                        <Button Content="Copy route manifest"
+                                cards:AgentCard.Action="copyRouteManifest"
+                                Click="CopyApimManifest_Click"
+                                Background="#BBF7D0"
+                                Foreground="#14532D" />
+                    </StackPanel>
+                </Grid>
+
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.95*" />
+                        <ColumnDefinition Width="1.1*" />
+                        <ColumnDefinition Width="1.05*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Border Grid.Column="0"
+                            Style="{StaticResource TileBorder}"
+                            BorderBrush="#BBF7D0"
+                            Background="#FFFFFF"
+                            Margin="0,0,12,0">
+                        <StackPanel>
+                            <TextBlock Text="Service status" FontSize="22" FontWeight="Bold" Foreground="#166534" />
+                            <TextBlock Text="Local endpoint" FontWeight="SemiBold" Margin="0,12,0,4" />
+                            <TextBox x:Name="ApimLocalEndpointText"
+                                     Text="http://127.0.0.1:8787/paperboy"
+                                     Margin="0,0,0,8" />
+                            <Button Content="Check local endpoint"
+                                    cards:AgentCard.Action="checkLocalEndpoint"
+                                    Click="CheckApimEndpoint_Click"
+                                    Background="#DCFCE7"
+                                    Foreground="#14532D" />
+                            <TextBlock Text="Service controls" FontWeight="SemiBold" Margin="0,12,0,4" />
+                            <WrapPanel Margin="0,0,0,8">
+                                <Button Content="Start service"
+                                        cards:AgentCard.Action="startApimService"
+                                        Click="StartApimService_Click"
+                                        Background="#DCFCE7"
+                                        Foreground="#14532D" />
+                                <Button Content="Stop service"
+                                        cards:AgentCard.Action="stopApimService"
+                                        Click="StopApimService_Click" />
+                                <Button Content="Restart service"
+                                        cards:AgentCard.Action="restartApimService"
+                                        Click="RestartApimService_Click"
+                                        Background="#FEF3C7"
+                                        Foreground="#92400E" />
+                                <Button Content="Open Widget Studio"
+                                        cards:AgentCard.Action="openWidgetStudio"
+                                        Click="OpenWidgetStudio_Click"
+                                        Background="#DBEAFE"
+                                        Foreground="#1E3A8A" />
+                            </WrapPanel>
+                            <Border CornerRadius="14" Padding="12" Background="#ECFDF5" Margin="0,8,0,10">
+                                <StackPanel>
+                                    <TextBlock Text="Gateway" Foreground="{StaticResource PaperboyMuted}" />
+                                    <TextBlock x:Name="ApimServiceStatusText"
+                                               Text="Design ready. Local APIM host not checked."
+                                               FontSize="16"
+                                               FontWeight="Bold"
+                                               TextWrapping="Wrap" />
+                                </StackPanel>
+                            </Border>
+                            <Border CornerRadius="14" Padding="12" Background="#F5F3FF" Margin="0,0,0,10">
+                                <StackPanel>
+                                    <TextBlock Text="MCP bridge" Foreground="{StaticResource PaperboyMuted}" />
+                                    <TextBlock x:Name="ApimMcpBridgeStatusText"
+                                               Text="MCP bridge not checked."
+                                               FontSize="16"
+                                               FontWeight="Bold"
+                                               TextWrapping="Wrap" />
+                                </StackPanel>
+                            </Border>
+                            <Border CornerRadius="14" Padding="12" Background="#EFF6FF">
+                                <StackPanel>
+                                    <TextBlock Text="Route contract" Foreground="{StaticResource PaperboyMuted}" />
+                                    <TextBlock x:Name="ApimRouteStatusText"
+                                               Text="Routes not loaded."
+                                               FontSize="16"
+                                               FontWeight="Bold"
+                                               TextWrapping="Wrap" />
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Grid.Column="1"
+                            Style="{StaticResource TileBorder}"
+                            BorderBrush="#BBF7D0"
+                            Background="#FFFFFF"
+                            Margin="0,0,12,0">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <StackPanel Grid.Row="0">
+                                <TextBlock Text="APIM route list" FontSize="22" FontWeight="Bold" Foreground="#166534" />
+                                <TextBlock Text="Gateway-facing routes planned for the Paperboy local APIM facade."
+                                           Margin="0,4,0,12"
+                                           Foreground="{StaticResource PaperboyMuted}" />
+                            </StackPanel>
+                            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                                <StackPanel>
+                                    <Border CornerRadius="12" Padding="10" Background="#ECFDF5" Margin="0,0,0,8">
+                                        <TextBlock Text="GET /paperboy/status - service, bridge, Foundry, and OCR readiness" TextWrapping="Wrap" />
+                                    </Border>
+                                    <Border CornerRadius="12" Padding="10" Background="#ECFDF5" Margin="0,0,0,8">
+                                        <TextBlock Text="GET /paperboy/routes - APIM route manifest for clients and agents" TextWrapping="Wrap" />
+                                    </Border>
+                                    <Border CornerRadius="12" Padding="10" Background="#ECFDF5" Margin="0,0,0,8">
+                                        <TextBlock Text="GET /paperboy/acp/resources - ACP resource catalog" TextWrapping="Wrap" />
+                                    </Border>
+                                    <Border CornerRadius="12" Padding="10" Background="#ECFDF5" Margin="0,0,0,8">
+                                        <TextBlock Text="POST /paperboy/mcp/tools/call - APIM-to-MCP tool bridge" TextWrapping="Wrap" />
+                                    </Border>
+                                    <Border CornerRadius="12" Padding="10" Background="#ECFDF5" Margin="0,0,0,8">
+                                        <TextBlock Text="GET /paperboy/foundry/health - Foundry Local /v1/models probe" TextWrapping="Wrap" />
+                                    </Border>
+                                    <Border CornerRadius="12" Padding="10" Background="#ECFDF5" Margin="0,0,0,8">
+                                        <TextBlock Text="GET /paperboy/ocr/readiness - Yumlog.Native OCR bridge readiness" TextWrapping="Wrap" />
+                                    </Border>
+                                    <Border CornerRadius="12" Padding="10" Background="#ECFDF5">
+                                        <TextBlock Text="POST /paperboy/validate - run route, bridge, Foundry, and OCR checks" TextWrapping="Wrap" />
+                                    </Border>
+                                </StackPanel>
+                            </ScrollViewer>
+                        </Grid>
+                    </Border>
+
+                    <Border Grid.Column="2"
+                            Style="{StaticResource TileBorder}"
+                            BorderBrush="#BBF7D0"
+                            Background="#FFFFFF">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <StackPanel Grid.Row="0">
+                                <TextBlock Text="ACP resources" FontSize="22" FontWeight="Bold" Foreground="#166534" />
+                                <TextBlock x:Name="ApimAcpResourceStatusText"
+                                           Text="ACP resources not checked."
+                                           Margin="0,4,0,12"
+                                           Foreground="{StaticResource PaperboyMuted}"
+                                           TextWrapping="Wrap" />
+                                <Border CornerRadius="12" Padding="10" Background="#F8FAFC" Margin="0,0,0,8">
+                                    <TextBlock Text="paperboy://cards - current MCP resource" TextWrapping="Wrap" />
+                                </Border>
+                                <Border CornerRadius="12" Padding="10" Background="#F8FAFC" Margin="0,0,0,8">
+                                    <TextBlock Text="paperboy://cards/schema - current MCP resource" TextWrapping="Wrap" />
+                                </Border>
+                                <Border CornerRadius="12" Padding="10" Background="#F8FAFC" Margin="0,0,0,8">
+                                    <TextBlock Text="paperboy://apim/routes - planned ACP route manifest" TextWrapping="Wrap" />
+                                </Border>
+                                <Border CornerRadius="12" Padding="10" Background="#F8FAFC" Margin="0,0,0,12">
+                                    <TextBlock Text="paperboy://validation/status - planned ACP validation report" TextWrapping="Wrap" />
+                                </Border>
+                            </StackPanel>
+
+                            <Grid Grid.Row="1" Margin="0,2,0,12">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                                    <TextBlock Text="Foundry Local endpoint" FontWeight="SemiBold" />
+                                    <TextBox x:Name="ApimFoundryEndpointText"
+                                             Text="http://127.0.0.1:52495/v1"
+                                             Margin="0,4,0,8" />
+                                </StackPanel>
+                                <Button Grid.Column="1"
+                                        Content="Check Foundry"
+                                        Click="CheckFoundryHealth_Click"
+                                        VerticalAlignment="Bottom"
+                                        Background="#FEF3C7"
+                                        Foreground="#92400E" />
+                                <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,8,0">
+                                    <TextBlock Text="OCR bridge command" FontWeight="SemiBold" />
+                                    <TextBox x:Name="ApimOcrBridgeText"
+                                             Text="Yumlog.Native.exe"
+                                             Margin="0,4,0,0" />
+                                </StackPanel>
+                                <Button Grid.Row="1"
+                                        Grid.Column="1"
+                                        Content="Check OCR"
+                                        Click="CheckOcrReadiness_Click"
+                                        VerticalAlignment="Bottom"
+                                        Background="#DBEAFE"
+                                        Foreground="#1E3A8A" />
+                            </Grid>
+
+                            <StackPanel Grid.Row="2">
+                                <Border CornerRadius="14" Padding="12" Background="#FEF3C7" Margin="0,0,0,10">
+                                    <StackPanel>
+                                        <TextBlock Text="Foundry Local health" Foreground="{StaticResource PaperboyMuted}" />
+                                        <TextBlock x:Name="ApimFoundryHealthText"
+                                                   Text="Not checked."
+                                                   FontSize="16"
+                                                   FontWeight="Bold"
+                                                   TextWrapping="Wrap" />
+                                    </StackPanel>
+                                </Border>
+                                <Border CornerRadius="14" Padding="12" Background="#DBEAFE" Margin="0,0,0,10">
+                                    <StackPanel>
+                                        <TextBlock Text="OCR readiness" Foreground="{StaticResource PaperboyMuted}" />
+                                        <TextBlock x:Name="ApimOcrReadinessText"
+                                                   Text="Not checked."
+                                                   FontSize="16"
+                                                   FontWeight="Bold"
+                                                   TextWrapping="Wrap" />
+                                    </StackPanel>
+                                </Border>
+                                <Border CornerRadius="14" Padding="12" Background="#ECFDF5">
+                                    <StackPanel>
+                                        <TextBlock Text="Validation summary" Foreground="{StaticResource PaperboyMuted}" />
+                                        <TextBlock x:Name="ApimValidationSummaryText"
+                                                   Text="Run validation to produce a local readiness report."
+                                                   FontSize="16"
+                                                   FontWeight="Bold"
+                                                   TextWrapping="Wrap" />
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <Border Grid.Row="2" CornerRadius="16" Padding="14" Background="#DCFCE7" Margin="0,16,0,0">
+                    <TextBlock Text="Integration note: this WPF layer defines and validates the Paperboy APIM surface contract. A persistent HTTP gateway host still needs to bind these routes to MCP stdio calls, ACP resources, Foundry health probes, and Yumlog.Native OCR execution."
+                               TextWrapping="Wrap"
+                               Foreground="#14532D" />
                 </Border>
             </Grid>
         </Border>

@@ -1,4 +1,5 @@
 using Paperboy.Desktop.Services;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -12,8 +13,22 @@ public partial class WidgetWindow : Window
     public WidgetWindow()
     {
         InitializeComponent();
-        Left = SystemParameters.WorkArea.Right - Width - 24;
-        Top = SystemParameters.WorkArea.Bottom - Height - 24;
+        SystemParameters.StaticPropertyChanged += SystemParameters_StaticPropertyChanged;
+        PositionForCurrentSize();
+    }
+
+    protected override void OnClosed(EventArgs e)
+    {
+        SystemParameters.StaticPropertyChanged -= SystemParameters_StaticPropertyChanged;
+        base.OnClosed(e);
+    }
+
+    private void SystemParameters_StaticPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName is nameof(SystemParameters.WorkArea))
+        {
+            PositionForCurrentSize();
+        }
     }
 
     private void TileButton_Click(object sender, RoutedEventArgs e)
@@ -28,7 +43,7 @@ public partial class WidgetWindow : Window
 
     private void Close_Click(object sender, RoutedEventArgs e)
     {
-        Close();
+        Hide();
     }
 
     private async void Send_Click(object sender, RoutedEventArgs e)
@@ -98,10 +113,10 @@ public partial class WidgetWindow : Window
 
     private void Expand()
     {
-        Width = 560;
-        Height = 420;
-        Left = SystemParameters.WorkArea.Right - Width - 24;
-        Top = SystemParameters.WorkArea.Bottom - Height - 24;
+        var workArea = SystemParameters.WorkArea;
+        Width = Math.Min(560, Math.Max(360, workArea.Width - 48));
+        Height = Math.Min(420, Math.Max(220, workArea.Height - 48));
+        PositionForCurrentSize();
         ExpandedPanel.Visibility = Visibility.Visible;
         WidgetStatusText.Text = "Model chat ready";
     }
@@ -109,10 +124,17 @@ public partial class WidgetWindow : Window
     private void Collapse()
     {
         ExpandedPanel.Visibility = Visibility.Collapsed;
-        Width = 360;
-        Height = 96;
-        Left = SystemParameters.WorkArea.Right - Width - 24;
-        Top = SystemParameters.WorkArea.Bottom - Height - 24;
+        var workArea = SystemParameters.WorkArea;
+        Width = Math.Min(360, Math.Max(240, workArea.Width - 48));
+        Height = Math.Min(96, Math.Max(72, workArea.Height - 48));
+        PositionForCurrentSize();
         WidgetStatusText.Text = "Click to open model chat";
+    }
+
+    private void PositionForCurrentSize()
+    {
+        var workArea = SystemParameters.WorkArea;
+        Left = Math.Max(workArea.Left + 12, workArea.Right - Width - 24);
+        Top = Math.Max(workArea.Top + 12, workArea.Bottom - Height - 24);
     }
 }

@@ -12,13 +12,13 @@ module NativeAnalysis =
         | null -> false
         | extension -> imageExtensions.Contains(extension.ToLowerInvariant())
 
-    let analyzeImage (config: AnalyzeConfig) (path: string) =
+    let private analyzeImageWith recognize (config: AnalyzeConfig) (path: string) =
         if not (File.Exists(path)) then
             invalidArg "path" $"Input file does not exist: {path}"
 
         use image = Image.FromFile(path)
         let info = FileInfo(path)
-        let ocr = NativeOcr.recognize config.OcrMode path
+        let ocr = recognize config.OcrMode path
 
         { Input = Path.GetFullPath(path)
           Kind = "image"
@@ -28,7 +28,10 @@ module NativeAnalysis =
           Sha256 = FileHash.sha256 path
           Ocr = ocr }
 
-    let analyze (config: AnalyzeConfig) =
+    let analyzeImage config path =
+        analyzeImageWith NativeOcr.recognize config path
+
+    let private analyzeWith analyzeImage (config: AnalyzeConfig) =
         let input = config.Input
         let files =
             if File.Exists(input) then
@@ -41,3 +44,9 @@ module NativeAnalysis =
                 invalidArg "Input" $"Analyze input does not exist: {input}"
 
         files |> Array.map (analyzeImage config)
+
+    let analyze config =
+        analyzeWith analyzeImage config
+
+    let analyzeWithoutProvisioning config =
+        analyzeWith (analyzeImageWith NativeOcr.recognizeWithoutProvisioning) config

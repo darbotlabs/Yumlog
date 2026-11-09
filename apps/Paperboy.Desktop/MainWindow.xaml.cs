@@ -1,10 +1,19 @@
 using Microsoft.Win32;
+using Paperboy.Desktop.Capabilities;
 using Paperboy.Desktop.Cards;
 using Paperboy.Desktop.Services;
+using System.Diagnostics;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.IO.Compression;
+using System.Net.Http;
+using System.Text.Json;
 using System.Windows;
+using Clipboard = System.Windows.Clipboard;
+using DataFormats = System.Windows.DataFormats;
+using DragDropEffects = System.Windows.DragDropEffects;
+using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
+using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
 
 namespace Paperboy.Desktop;
 
@@ -20,7 +29,36 @@ public partial class MainWindow : Window
     private readonly AgentCardCatalog _cardCatalog = AgentCardCatalog.Default;
     private readonly FoundryLocalPipelineService _foundryPipeline = new();
     private readonly PaperboyModelManagerService _modelManager = new();
+    private readonly PaperboyCapabilityRegistry _capabilityRegistry = PaperboyCapabilityRegistry.Shared;
     private string? _lastFoundrySidecarPath;
+    private static readonly HttpClient ApimHealthClient = new()
+    {
+        Timeout = TimeSpan.FromSeconds(3)
+    };
+
+    private static readonly JsonSerializerOptions ApimJsonOptions = new()
+    {
+        WriteIndented = true
+    };
+
+    private static readonly string[] ApimRoutes =
+    [
+        "GET /paperboy/status",
+        "GET /paperboy/routes",
+        "GET /paperboy/acp/resources",
+        "POST /paperboy/mcp/tools/call",
+        "GET /paperboy/foundry/health",
+        "GET /paperboy/ocr/readiness",
+        "POST /paperboy/validate"
+    ];
+
+    private static readonly string[] AcpResources =
+    [
+        "paperboy://cards",
+        "paperboy://cards/schema",
+        "paperboy://apim/routes",
+        "paperboy://validation/status"
+    ];
 
     public ObservableCollection<SourceItem> Sources { get; } = [];
 
@@ -29,11 +67,13 @@ public partial class MainWindow : Window
         InitializeComponent();
         DataContext = this;
         UpdatePayloadSummary();
+        RefreshApimSurfaceStatus();
+        RefreshExtensionStatus(rescan: false);
     }
 
     private void AddFiles_Click(object sender, RoutedEventArgs e)
     {
-        var dialog = new OpenFileDialog
+        var dialog = new Microsoft.Win32.OpenFileDialog
         {
             Title = "Add files to Paperboy bundle",
             Multiselect = true,
@@ -78,7 +118,7 @@ public partial class MainWindow : Window
 
     private void BrowseOutput_Click(object sender, RoutedEventArgs e)
     {
-        var dialog = new SaveFileDialog
+        var dialog = new Microsoft.Win32.SaveFileDialog
         {
             Title = "Save Paperboy bundle",
             Filter = "Paperboy bundle (*.paperboy.zip)|*.paperboy.zip|ZIP archive (*.zip)|*.zip|All files (*.*)|*.*",
@@ -325,10 +365,95 @@ public partial class MainWindow : Window
         AppendLog("Agent-card schema copied to clipboard.");
     }
 
+    private void RefreshExtensions_Click(object sender, RoutedEventArgs e)
+    {
+        var index = RefreshExtensionStatus(rescan: true);
+        if (index is null)
+        {
+            return;
+        }
+
+        SetStatus($"Discovered {index.Extensions.Length:N0} Paperboy extension package(s).");
+        AppendLog($"Extension roots: {string.Join("; ", index.Roots)}");
+
+        foreach (var extension in index.Extensions)
+        {
+            AppendLog($" - {extension.Id} v{extension.Version} ({extension.Kind}, trust={extension.Trust}) :: {extension.CapabilityIds.Length} capability(ies) :: {extension.ManifestPath}");
+        }
+
+        foreach (var diagnostic in index.Diagnostics)
+        {
+            AppendLog($" ! {diagnostic.Severity}: {diagnostic.Message} [{diagnostic.Path}]");
+        }
+
+        AppendLog(index.Policy.Notes);
+    }
+
+    private void CopyCapabilityIndex_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            Clipboard.SetText(_capabilityRegistry.IndexJson());
+            SetStatus("Copied Paperboy capability index to clipboard.");
+            AppendLog("Capability index copied to clipboard.");
+        }
+        catch (Exception ex)
+        {
+            SetStatus(ex.Message, isError: true);
+            AppendLog($"ERROR: {ex}");
+        }
+    }
+
+    private void OpenExtensionsFolder_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            var userRoot = System.IO.Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "Paperboy",
+                "extensions");
+
+            Directory.CreateDirectory(userRoot);
+            Process.Start(new ProcessStartInfo(userRoot) { UseShellExecute = true });
+            SetStatus($"Opened extension drop folder {userRoot}.");
+            AppendLog($"Extension drop folder: {userRoot}");
+            AppendLog($"Drop *.extension.json manifests here, then set {PaperboyCapabilityEnvironment.AllowInvokeVariable}=1 to allow invoking them.");
+        }
+        catch (Exception ex)
+        {
+            SetStatus(ex.Message, isError: true);
+            AppendLog($"ERROR: {ex}");
+        }
+    }
+
+    private PaperboyCapabilityIndex? RefreshExtensionStatus(bool rescan)
+    {
+        try
+        {
+            var index = rescan ? _capabilityRegistry.Refresh() : _capabilityRegistry.Index;
+            var externalCapabilities = index.Capabilities
+                .Count(capability => !string.Equals(capability.Transport, PaperboyCapabilityTransports.BuiltIn, StringComparison.OrdinalIgnoreCase));
+            var invocation = index.Policy.AllowExternalInvocation ? "external invoke on" : "app-trusted invoke only";
+
+            ExtensionsStatusText.Text = index.Extensions.Length == 0
+                ? $"No extension packages found in {index.Roots.Length} root(s). {invocation}."
+                : $"{index.Extensions.Length:N0} package(s), {externalCapabilities:N0} capability(ies), {index.Diagnostics.Length:N0} diagnostic(s). {invocation}.";
+
+            return index;
+        }
+        catch (Exception ex)
+        {
+            ExtensionsStatusText.Text = $"Extension discovery failed: {ex.Message}";
+            AppendLog($"ERROR: {ex}");
+            return null;
+        }
+    }
+
     private void ShowWorkspace_Click(object sender, RoutedEventArgs e)
     {
         WorkspaceLayer.Visibility = Visibility.Visible;
         FoundryModelsLayer.Visibility = Visibility.Collapsed;
+        ApimLayer.Visibility = Visibility.Collapsed;
         SetStatus("Workspace layer active.");
     }
 
@@ -336,12 +461,22 @@ public partial class MainWindow : Window
     {
         WorkspaceLayer.Visibility = Visibility.Collapsed;
         FoundryModelsLayer.Visibility = Visibility.Visible;
+        ApimLayer.Visibility = Visibility.Collapsed;
         SetStatus("Foundry Local model-card delivery layer active.");
+    }
+
+    private void ShowApimSurface_Click(object sender, RoutedEventArgs e)
+    {
+        WorkspaceLayer.Visibility = Visibility.Collapsed;
+        FoundryModelsLayer.Visibility = Visibility.Collapsed;
+        ApimLayer.Visibility = Visibility.Visible;
+        RefreshApimSurfaceStatus();
+        SetStatus("Paperboy APIM surface active.");
     }
 
     private void ExportCards_Click(object sender, RoutedEventArgs e)
     {
-        var dialog = new SaveFileDialog
+        var dialog = new Microsoft.Win32.SaveFileDialog
         {
             Title = "Export Paperboy agent card catalog",
             Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*",
@@ -359,7 +494,7 @@ public partial class MainWindow : Window
 
     private void ExportModelCards_Click(object sender, RoutedEventArgs e)
     {
-        var dialog = new SaveFileDialog
+        var dialog = new Microsoft.Win32.SaveFileDialog
         {
             Title = "Export Foundry Local model cards",
             Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*",
@@ -522,16 +657,138 @@ public partial class MainWindow : Window
         Clipboard.SetText(command);
         SetStatus("Copied MCP stdio launch command to clipboard.");
         AppendLog($"MCP stdio command: {command}");
-        AppendLog("Tools: paperboy.bundle.*, paperboy.foundryLocal.*, paperboy.pmm.*, paperboy.cards.*");
+        AppendLog("Tools: paperboy.bundle.*, paperboy.foundryLocal.*, paperboy.pmm.*, paperboy.cards.*, paperboy.capabilities.*, paperboy.extensions.*");
     }
 
-    private void Window_DragOver(object sender, DragEventArgs e)
+    private async void ValidateApimSurface_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            SetStatus("Validating Paperboy APIM surface...");
+            AppendLog("APIM validation started.");
+
+            var endpointStatus = await ProbeApimEndpointAsync();
+            var foundryStatus = await ProbeFoundryHealthAsync();
+            var ocrStatus = RefreshOcrReadiness();
+            var bridgeStatus = RefreshMcpBridgeStatus();
+
+            ApimValidationSummaryText.Text =
+                $"Routes: {ApimRoutes.Length}; ACP resources: {AcpResources.Length}; APIM endpoint: {endpointStatus}; MCP: {bridgeStatus}; Foundry: {foundryStatus}; OCR: {ocrStatus}";
+            SetStatus("APIM surface validation completed.");
+            AppendLog($"APIM validation summary: {ApimValidationSummaryText.Text}");
+        }
+        catch (Exception ex)
+        {
+            SetStatus(ex.Message, isError: true);
+            AppendLog($"ERROR: {ex}");
+        }
+    }
+
+    private async void CheckApimEndpoint_Click(object sender, RoutedEventArgs e)
+    {
+        var status = await ProbeApimEndpointAsync();
+        SetStatus($"APIM endpoint check: {status}");
+        AppendLog($"APIM endpoint check: {status}");
+    }
+
+    private async void StartApimService_Click(object sender, RoutedEventArgs e)
+    {
+        await RunApimServiceScriptAsync("Start", "Start-YumlogAPIMService.ps1");
+    }
+
+    private async void StopApimService_Click(object sender, RoutedEventArgs e)
+    {
+        await RunApimServiceScriptAsync("Stop", "Stop-YumlogAPIMService.ps1");
+    }
+
+    private async void RestartApimService_Click(object sender, RoutedEventArgs e)
+    {
+        await RunApimServiceScriptAsync("Stop", "Stop-YumlogAPIMService.ps1");
+        await RunApimServiceScriptAsync("Start", "Start-YumlogAPIMService.ps1");
+    }
+
+    private void OpenWidgetStudio_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            var studioExe = ResolveSiblingPath("Yumlog.WidgetStudio", "bin", "Debug", "net11.0", "Yumlog.WidgetStudio.exe");
+            if (File.Exists(studioExe))
+            {
+                Process.Start(new ProcessStartInfo(studioExe) { UseShellExecute = true });
+                SetStatus("Opened Widget Studio.");
+                AppendLog($"Widget Studio launched: {studioExe}");
+                return;
+            }
+
+            var studioProject = ResolveSiblingPath("Yumlog.WidgetStudio", "Yumlog.WidgetStudio.csproj");
+            if (!File.Exists(studioProject))
+            {
+                throw new FileNotFoundException("Widget Studio project was not found.", studioProject);
+            }
+
+            Process.Start(new ProcessStartInfo("dotnet", $"run --project \"{studioProject}\"")
+            {
+                UseShellExecute = true,
+                WorkingDirectory = System.IO.Path.GetDirectoryName(studioProject) ?? AppContext.BaseDirectory
+            });
+            SetStatus("Opening Widget Studio from project.");
+            AppendLog($"Widget Studio project launched: {studioProject}");
+        }
+        catch (Exception ex)
+        {
+            SetStatus(ex.Message, isError: true);
+            AppendLog($"ERROR: {ex}");
+        }
+    }
+
+    private async void CheckFoundryHealth_Click(object sender, RoutedEventArgs e)
+    {
+        var status = await ProbeFoundryHealthAsync();
+        SetStatus($"Foundry Local health check: {status}");
+        AppendLog($"Foundry Local health check: {status}");
+    }
+
+    private void CheckOcrReadiness_Click(object sender, RoutedEventArgs e)
+    {
+        var status = RefreshOcrReadiness();
+        SetStatus($"OCR readiness check: {status}");
+        AppendLog($"OCR readiness check: {status}");
+    }
+
+    private void CopyApimManifest_Click(object sender, RoutedEventArgs e)
+    {
+        var manifest = new
+        {
+            id = "paperboy.apim",
+            localEndpoint = ApimLocalEndpointText.Text.Trim(),
+            routes = ApimRoutes,
+            acpResources = AcpResources,
+            mcpBridge = ApimMcpBridgeStatusText.Text,
+            foundryLocal = new
+            {
+                endpoint = ApimFoundryEndpointText.Text.Trim(),
+                health = ApimFoundryHealthText.Text
+            },
+            ocr = new
+            {
+                command = ApimOcrBridgeText.Text.Trim(),
+                readiness = ApimOcrReadinessText.Text
+            },
+            validation = ApimValidationSummaryText.Text
+        };
+
+        Clipboard.SetText(JsonSerializer.Serialize(manifest, ApimJsonOptions));
+        SetStatus("Copied Paperboy APIM route manifest to clipboard.");
+        AppendLog("APIM route manifest copied to clipboard.");
+    }
+
+    private void Window_DragOver(object sender, System.Windows.DragEventArgs e)
     {
         e.Effects = e.Data.GetDataPresent(DataFormats.FileDrop) ? DragDropEffects.Copy : DragDropEffects.None;
         e.Handled = true;
     }
 
-    private void Window_Drop(object sender, DragEventArgs e)
+    private void Window_Drop(object sender, System.Windows.DragEventArgs e)
     {
         if (e.Data.GetData(DataFormats.FileDrop) is string[] paths)
         {
@@ -575,7 +832,7 @@ public partial class MainWindow : Window
             return existing;
         }
 
-        var dialog = new OpenFileDialog
+        var dialog = new Microsoft.Win32.OpenFileDialog
         {
             Title = "Choose Paperboy bundle",
             Filter = "Paperboy bundle (*.paperboy.zip)|*.paperboy.zip|ZIP archive (*.zip)|*.zip|All files (*.*)|*.*",
@@ -609,6 +866,223 @@ public partial class MainWindow : Window
         PayloadSummaryText.Text = Sources.Count == 0
             ? "No payload selected"
             : $"{Sources.Count:N0} source root(s) selected";
+    }
+
+    private void RefreshApimSurfaceStatus()
+    {
+        ApimRouteStatusText.Text = $"{ApimRoutes.Length} APIM route contract(s) ready for gateway mapping.";
+        ApimAcpResourceStatusText.Text = $"{AcpResources.Length} ACP/MCP resource URI(s) declared.";
+        RefreshMcpBridgeStatus();
+        RefreshOcrReadiness();
+    }
+
+    private async Task RunApimServiceScriptAsync(string action, string scriptName)
+    {
+        try
+        {
+            var scriptPath = ResolveLauncherPath(scriptName);
+            if (!File.Exists(scriptPath))
+            {
+                throw new FileNotFoundException($"APIM service launcher not found: {scriptName}", scriptPath);
+            }
+
+            var presentTense = action.Equals("Stop", StringComparison.OrdinalIgnoreCase) ? "Stopping" : $"{action}ing";
+            SetStatus($"{presentTense} Yumlog APIM service...");
+            AppendLog($"APIM service {action.ToLowerInvariant()} requested via {scriptPath}");
+
+            using var process = Process.Start(new ProcessStartInfo("powershell.exe", $"-NoProfile -ExecutionPolicy Bypass -File \"{scriptPath}\"")
+            {
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                CreateNoWindow = true
+            }) ?? throw new InvalidOperationException("Failed to start PowerShell launcher.");
+
+            var output = await process.StandardOutput.ReadToEndAsync();
+            var error = await process.StandardError.ReadToEndAsync();
+            await process.WaitForExitAsync();
+
+            if (!string.IsNullOrWhiteSpace(output))
+            {
+                AppendLog(output.Trim());
+            }
+            if (!string.IsNullOrWhiteSpace(error))
+            {
+                AppendLog(error.Trim());
+            }
+
+            var summary = process.ExitCode == 0
+                ? $"APIM service {action.ToLowerInvariant()} completed."
+                : $"APIM service {action.ToLowerInvariant()} failed with exit code {process.ExitCode}.";
+            ApimServiceStatusText.Text = summary;
+            SetStatus(summary, process.ExitCode != 0);
+        }
+        catch (Exception ex)
+        {
+            ApimServiceStatusText.Text = ex.Message;
+            SetStatus(ex.Message, isError: true);
+            AppendLog($"ERROR: {ex}");
+        }
+    }
+
+    private string RefreshMcpBridgeStatus()
+    {
+        var appDir = AppContext.BaseDirectory;
+        var mcpExe = System.IO.Path.Combine(appDir, "Paperboy.Mcp.exe");
+        var paperboyExe = System.IO.Path.Combine(appDir, "Paperboy.exe");
+        var paperboyDll = System.IO.Path.Combine(appDir, "Paperboy.dll");
+
+        var status = File.Exists(mcpExe)
+            ? $"Standalone MCP executable found: {mcpExe}"
+            : File.Exists(paperboyExe) || File.Exists(paperboyDll)
+                ? "Embedded --mcp stdio bridge is available from the Paperboy app output; standalone Paperboy.Mcp.exe is not in this output."
+                : "MCP bridge output not found. Build Paperboy.Desktop or Paperboy.Mcp before hosting APIM tool routes.";
+
+        ApimMcpBridgeStatusText.Text = status;
+        return status;
+    }
+
+    private async Task<string> ProbeApimEndpointAsync()
+    {
+        if (!Uri.TryCreate(ApimLocalEndpointText.Text.Trim(), UriKind.Absolute, out var endpoint))
+        {
+            ApimServiceStatusText.Text = "Invalid local APIM endpoint URI.";
+            return "invalid-uri";
+        }
+
+        var statusUri = AppendEndpointSegment(endpoint, "status");
+        try
+        {
+            using var response = await ApimHealthClient.GetAsync(statusUri);
+            var status = response.IsSuccessStatusCode
+                ? $"online at {statusUri} (HTTP {(int)response.StatusCode})"
+                : $"listener returned HTTP {(int)response.StatusCode} at {statusUri}";
+            ApimServiceStatusText.Text = status;
+            return status;
+        }
+        catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or InvalidOperationException)
+        {
+            var status = $"No local APIM listener at {statusUri}. Surface contract is ready for host wiring.";
+            ApimServiceStatusText.Text = status;
+            return "offline/design-only";
+        }
+    }
+
+    private async Task<string> ProbeFoundryHealthAsync()
+    {
+        var endpointText = ApimFoundryEndpointText.Text.Trim();
+        if (!Uri.TryCreate(endpointText, UriKind.Absolute, out var endpoint))
+        {
+            ApimFoundryHealthText.Text = "Invalid Foundry Local endpoint URI.";
+            return "invalid-uri";
+        }
+
+        FoundryEndpointText.Text = endpointText;
+        var modelsUri = BuildFoundryModelsUri(endpoint);
+
+        try
+        {
+            using var response = await ApimHealthClient.GetAsync(modelsUri);
+            var status = response.IsSuccessStatusCode
+                ? $"healthy at {modelsUri} (HTTP {(int)response.StatusCode})"
+                : $"HTTP {(int)response.StatusCode} from {modelsUri}";
+            ApimFoundryHealthText.Text = status;
+            return status;
+        }
+        catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or InvalidOperationException)
+        {
+            var status = $"offline or unreachable at {modelsUri}";
+            ApimFoundryHealthText.Text = status;
+            return status;
+        }
+    }
+
+    private string RefreshOcrReadiness()
+    {
+        var command = ApimOcrBridgeText.Text.Trim();
+        var resolved = ResolveExecutablePath(command);
+        if (!string.IsNullOrWhiteSpace(resolved))
+        {
+            var status = $"Yumlog.Native OCR bridge command resolved: {resolved}";
+            ApimOcrReadinessText.Text = status;
+            return "bridge-resolved";
+        }
+
+        var nativeProject = ResolveYumlogNativeProjectPath();
+        if (File.Exists(nativeProject))
+        {
+            var status = $"Yumlog.Native project found at {nativeProject}. Build or publish it to enable OCR readiness probes.";
+            ApimOcrReadinessText.Text = status;
+            return "project-found/build-needed";
+        }
+
+        ApimOcrReadinessText.Text = "Yumlog.Native OCR bridge not found. Configure a built Yumlog.Native.exe command.";
+        return "bridge-missing";
+    }
+
+    private static Uri AppendEndpointSegment(Uri endpoint, string segment)
+    {
+        return new Uri($"{endpoint.ToString().TrimEnd('/')}/{segment.TrimStart('/')}");
+    }
+
+    private static Uri BuildFoundryModelsUri(Uri endpoint)
+    {
+        var baseText = endpoint.ToString().TrimEnd('/');
+        return new Uri(baseText.EndsWith("/v1", StringComparison.OrdinalIgnoreCase)
+            ? $"{baseText}/models"
+            : $"{baseText}/v1/models");
+    }
+
+    private static string ResolveYumlogNativeProjectPath()
+    {
+        return ResolveSiblingPath("Yumlog.Native", "Yumlog.Native.fsproj");
+    }
+
+    private static string ResolveLauncherPath(string scriptName)
+    {
+        return System.IO.Path.GetFullPath(System.IO.Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "..", "launchers", scriptName));
+    }
+
+    private static string ResolveSiblingPath(params string[] segments)
+    {
+        var parts = new List<string> { AppContext.BaseDirectory, "..", "..", "..", ".." };
+        parts.AddRange(segments);
+        return System.IO.Path.GetFullPath(System.IO.Path.Combine(parts.ToArray()));
+    }
+
+    private static string? ResolveExecutablePath(string command)
+    {
+        if (string.IsNullOrWhiteSpace(command))
+        {
+            return null;
+        }
+
+        var expanded = Environment.ExpandEnvironmentVariables(command.Trim('"'));
+        if (System.IO.Path.IsPathFullyQualified(expanded) ||
+            expanded.Contains(System.IO.Path.DirectorySeparatorChar) ||
+            expanded.Contains(System.IO.Path.AltDirectorySeparatorChar))
+        {
+            var fullPath = System.IO.Path.GetFullPath(expanded);
+            return File.Exists(fullPath) ? fullPath : null;
+        }
+
+        var names = System.IO.Path.HasExtension(expanded)
+            ? [expanded]
+            : new[] { expanded, $"{expanded}.exe" };
+
+        foreach (var directory in (Environment.GetEnvironmentVariable("PATH") ?? "").Split(System.IO.Path.PathSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+        {
+            foreach (var name in names)
+            {
+                var candidate = System.IO.Path.Combine(directory, name);
+                if (File.Exists(candidate))
+                {
+                    return candidate;
+                }
+            }
+        }
+
+        return null;
     }
 
     private string GetMetadataOutputDirectory()

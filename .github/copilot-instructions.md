@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Darbot Yumlog is a lightweight, efficient PowerShell-based screen capture and recording utility that acts as "vision" for AI by taking screenshots at set intervals and analyzing them. The tool is designed to be simple, reliable, and robust.
+Darbot Yumlog is a Windows local-first capture and automation toolkit with a native F# CLI, MDKG metadata contracts, Paperboy WPF/MCP capabilities, a local APIM/ACP service foundation, Widget Studio authoring, and PowerShell utilities.
 
 ## Core Principles
 
@@ -14,11 +14,24 @@ Darbot Yumlog is a lightweight, efficient PowerShell-based screen capture and re
 
 ## Architecture
 
+### Ownership boundary
+- Yumlog owns capture, recording, OCR, native domain/configuration/serialization, and MDKG.
+- The standalone Paperboy application owns delivery/orchestration, SDK, executable APIM integration, and widget lifecycle.
+- Retain this checkout's documented Paperboy components and existing commands; ownership is not deprecation.
+- Publish native contract changes here with explicit format/schema compatibility evidence; downstream consumers adopt reviewed commits.
+- Never copy private downstream code or data into this public repository without explicit publication approval.
+
 ### Directory Structure
 - `Skills/`: Reusable PowerShell functions/modules (core functionality)
 - `launchers/`: Top-level PowerShell scripts for user interaction
 - `config/`: Configuration files (tools.json)
 - `.tools/`: Auto-installed dependencies (FFmpeg)
+- `apps/Yumlog.Native/`: .NET 10 Windows F# CLI, OCR, MDKG, and extension catalog
+- `apps/Paperboy.Desktop/`: .NET 11 WPF UI, capabilities, services, and MCP implementation
+- `apps/Paperboy.Mcp/`: Stdio host reusing the Paperboy implementation
+- `apps/Yumlog.APIM.Service/`: Loopback HTTP/ACP catalogs and envelope scaffolding
+- `apps/Yumlog.WidgetStudio/`: Widget contract validation, preview, and package CLI
+- `snap/`: Small F# capture executable used by `yumlog.cmd` when installed
 
 ### Key Components
 1. **Record-Screen.ps1**: Desktop video recording using FFmpeg
@@ -38,7 +51,9 @@ Darbot Yumlog is a lightweight, efficient PowerShell-based screen capture and re
 - Follow existing naming conventions (Verb-Noun)
 
 ### Configuration
-- All defaults should be in `config/tools.json`
+- Keep PowerShell configuration in `config/tools.json` and native configuration in `config/yumlog.native.json`
+- Preserve backward compatibility for missing native configuration sections
+- Keep APIM settings in its component configuration; supply secrets through local environment/configuration, never tracked files
 - Support command-line parameter overrides
 - Use relative paths for portability
 
@@ -46,7 +61,10 @@ Darbot Yumlog is a lightweight, efficient PowerShell-based screen capture and re
 - Use Pester for unit tests
 - Tests should be in `*.Tests.ps1` files
 - Test files should be self-contained
-- Compatible with Pester 3.4.0 (Windows PowerShell default)
+- Paperboy suites use modern Pester; the older screen-skills suite uses Pester 3 syntax and mock files
+- Run native extensibility and MDKG round-trip scripts for native contract changes
+- Run APIM's temporary loopback round-trip script and Widget Studio `self-test` for their respective changes
+- Never install a Windows Service, register MSIX packages, provision OCR models, or capture a user's desktop as an ordinary unit-test step
 
 ### FFmpeg Integration
 - Auto-install FFmpeg if not present
@@ -63,12 +81,12 @@ Darbot Yumlog is a lightweight, efficient PowerShell-based screen capture and re
 ## Common Tasks
 
 ### Adding a New Command
-1. Create function in appropriate Skills/*.ps1 file
-2. Add launcher script in launchers/ if needed
-3. Update yumlog.ps1 with new action (if CLI command)
-4. Update config/tools.json with defaults
-5. Add tests in Skills/*.Tests.ps1
-6. Document in README.md and Tasklist.md
+1. Implement in the owning component; use Skills/*.ps1 for PowerShell functions
+2. Wire the component's CLI, capability registry, or launcher as appropriate
+3. Keep typed contracts, schema validation, and declared invocation behavior consistent
+4. Preserve existing defaults and document capability/runtime requirements
+5. Extend the existing component test suite
+6. Update README.md, Tasklist.md, and the affected component guide
 
 ### Modifying Core Functionality
 1. Update the relevant Skills/*.ps1 file
@@ -106,17 +124,20 @@ Darbot Yumlog is a lightweight, efficient PowerShell-based screen capture and re
 
 ## Security & Privacy
 
-- **No telemetry**: All operations are local
-- **No network calls**: Except for FFmpeg download during install
-- **No data collection**: User data stays on their machine
-- **Sandboxed execution**: PowerShell execution policy respected
+- **Local-first**: Recordings, bundles, metadata, and logs can contain private user data
+- **Explicit networking**: Dependency/model downloads and configured HTTP connectors may use the network; do not claim all operations are offline
+- **Credentials**: Never commit API keys, environment secrets, or signing certificates
+- **Publication**: Do not newly stage generated outputs or downloaded third-party archives; inspect explicit staged paths
+- **Execution**: A declarative capability is not proof of an executable backend or a sandbox; document implementation limits honestly
 
 ## Documentation
 
 - Keep README.md concise and user-focused
 - Tasklist.md contains detailed technical documentation
-- Inline comments for complex PowerShell logic
-- Update both when making changes
+- Component READMEs and the native extension/MDKG guides define component-specific contracts
+- Keep historical research notes distinct from current implementation documentation
+- Inline comments for complex logic
+- Update affected guides alongside source changes; keep examples runnable from the repository root
 
 ## Best Practices for AI Agents
 

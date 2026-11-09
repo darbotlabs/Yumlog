@@ -6,23 +6,43 @@ on:
   pull_request:
     branches: [ main ]
 
+permissions:
+  contents: read
+
 jobs:
-  test-yumlog-skills:
+  maintained-components:
     runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
     steps:
       - uses: actions/checkout@v4
+      - name: Set up .NET 10 native runtime and SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
       - name: Set up .NET 11
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 11.0.x
           dotnet-quality: preview
-      - name: Run install.ps1 (FFmpeg cache)
-        run: pwsh launchers/install.ps1
-      - name: Run Pester tests for yumlog skills
-        run: pwsh -Command "Invoke-Pester -Path Skills/Test-ScreenSkills.Tests.ps1 -Output Detailed"
-      - name: Run Pester tests for Paperboy bundles
-        run: pwsh -Command "Invoke-Pester -Path Skills/Test-PaperboyBundle.Tests.ps1 -Output Detailed"
       - name: Build Paperboy desktop app
-        run: dotnet build apps/Paperboy.Desktop/Paperboy.Desktop.csproj -c Release
+        run: dotnet build .\apps\Paperboy.Desktop\Paperboy.Desktop.csproj -c Release
       - name: Build Paperboy MCP app
-        run: dotnet build apps/Paperboy.Mcp/Paperboy.Mcp.csproj -c Release
+        run: dotnet build .\apps\Paperboy.Mcp\Paperboy.Mcp.csproj -c Release
+      - name: Bundle and extension contracts
+        run: |
+          Import-Module Pester -MinimumVersion 5.0 -ErrorAction Stop
+          $result = Invoke-Pester -Path .\Skills\Test-PaperboyBundle.Tests.ps1, .\Skills\Test-PaperboyExtensions.Tests.ps1 -Output Detailed -PassThru
+          if ($result.FailedCount -gt 0 -or $result.PassedCount -eq 0) { exit 1 }
+      - name: Build APIM foundation
+        run: dotnet build .\apps\Yumlog.APIM.Service\Yumlog.APIM.Service.fsproj -c Release
+      - name: APIM foundation contracts
+        run: .\launchers\Test-YumlogAPIMRoundTrip.ps1
+      - name: Widget authoring contracts
+        run: dotnet run --project .\apps\Yumlog.WidgetStudio\Yumlog.WidgetStudio.csproj -c Release -- self-test
+      - name: Native extension and MDKG contracts
+        run: |
+          .\apps\Yumlog.Native\Test-YumlogNativeExtensibility.ps1
+          .\launchers\Test-YumlogNativeMdkgRoundTrip.ps1
+          .\launchers\Test-YumlogNativeHandoff.ps1

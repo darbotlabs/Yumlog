@@ -1,0 +1,94 @@
+{
+  "id": {
+    "namespace": "contoso.yumlog",
+    "kind": "extension",
+    "key": "contoso-vision-pack",
+    "version": "v1"
+  },
+  "name": "Contoso Vision Pack",
+  "version": "0.1.0",
+  "publisher": "contoso",
+  "description": "Sample extension manifest showing how third-party models, tools, and continuous AI loops plug into Yumlog.Native.",
+  "enabled": true,
+  "schemaUri": "urn:yumlog:native:extension-manifest:v1",
+  "capabilities": [
+    {
+      "id": {
+        "namespace": "contoso.yumlog",
+        "kind": "model",
+        "key": "contoso-layout-model",
+        "version": "v1"
+      },
+      "kind": "model",
+      "displayName": "Contoso layout model",
+      "description": "Local layout segmentation model invoked over the loopback inference endpoint.",
+      "provider": "contoso",
+      "status": "preview",
+      "invocation": {
+        "transport": "http",
+        "target": "http://127.0.0.1:5273/v1/layout",
+        "arguments": [],
+        "inputSchemaUri": "urn:contoso:yumlog:schema:layout-request:v1",
+        "outputSchemaUri": "urn:contoso:yumlog:schema:layout-result:v1"
+      },
+      "tags": [ "model", "layout" ],
+      "attributes": []
+    },
+    {
+      "id": {
+        "namespace": "contoso.yumlog",
+        "kind": "tool",
+        "key": "contoso-redact",
+        "version": "v1"
+      },
+      "kind": "tool",
+      "displayName": "Redact captured frames",
+      "description": "Redacts sensitive regions from captured frames before analysis.",
+      "provider": "contoso",
+      "status": "available",
+      "invocation": {
+        "transport": "cli",
+        "target": "contoso-redact.exe",
+        "arguments": [ "--input" ],
+        "inputSchemaUri": "urn:contoso:yumlog:schema:redact-request:v1",
+        "outputSchemaUri": "urn:contoso:yumlog:schema:redact-result:v1"
+      },
+      "tags": [ "privacy", "redaction" ],
+      "attributes": []
+    },
+    {
+      "id": {
+        "namespace": "contoso.yumlog",
+        "kind": "continuous-ai",
+        "key": "contoso-watch-loop",
+        "version": "v1"
+      },
+      "kind": "continuous-ai",
+      "displayName": "Contoso watch loop",
+      "description": "Continuously scores follow-me frames and raises redaction work items.",
+      "provider": "contoso",
+      "status": "preview",
+      "invocation": {
+        "transport": "http",
+        "target": "http://127.0.0.1:5273/v1/watch",
+        "arguments": [],
+        "inputSchemaUri": "urn:yumlog:native:schema:follow-manifest:v1",
+        "outputSchemaUri": "urn:contoso:yumlog:schema:watch-result:v1"
+      },
+      "tags": [ "continuous", "loop" ],
+      "attributes": [
+        {
+          "name": "intervalMs",
+          "value": "5000",
+          "valueType": "integer",
+          "confidence": {
+            "score": 1.0,
+            "source": "contoso.manifest",
+            "model": "declared",
+            "timestampUtc": "2026-07-28T00:00:00+00:00"
+          }
+        }
+      ]
+    }
+  ]
+}

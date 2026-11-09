@@ -3,15 +3,17 @@
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
   xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3"
+  xmlns:uap10="http://schemas.microsoft.com/appx/manifest/uap/windows10/10"
   xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
   xmlns:systemai="http://schemas.microsoft.com/appx/manifest/systemai/windows10"
-  IgnorableNamespaces="uap uap3 desktop rescap systemai">
+  IgnorableNamespaces="uap uap3 uap10 desktop rescap systemai">
 
   <Identity
     Name="DarbotLabs.Yumlog.Native"
     Publisher="CN=Darbot Labs"
-    Version="0.1.0.0" />
+    Version="0.1.2.0"
+    ProcessorArchitecture="x64" />
 
   <Properties>
     <DisplayName>Yumlog Native</DisplayName>
@@ -34,7 +36,9 @@
     <Application
       Id="YumlogNative"
       Executable="Yumlog.Native.exe"
-      EntryPoint="Windows.FullTrustApplication">
+      EntryPoint="Windows.FullTrustApplication"
+      uap10:RuntimeBehavior="packagedClassicApp"
+      uap10:TrustLevel="mediumIL">
       <uap:VisualElements
         DisplayName="Yumlog Native"
         Description="Native local screen capture and OCR utility."

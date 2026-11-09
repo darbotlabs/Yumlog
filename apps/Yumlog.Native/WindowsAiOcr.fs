@@ -99,10 +99,8 @@ module WindowsAiOcr =
             runSync (decoder.GetSoftwareBitmapAsync(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Premultiplied).AsTask())
         ImageBuffer.CreateForSoftwareBitmap(bitmap)
 
-    /// Full OCR pipeline: ensure the model, create a recognizer, decode the image,
-    /// run recognition, and project results into the native OcrResult shape.
-    let recognize (imagePath: string) : OcrResult =
-        match ensureReady () with
+    let private recognizeWithReadiness checkReady (imagePath: string) : OcrResult =
+        match checkReady () with
         | Error message ->
             { Provider = "windows-ai"
               IsAvailable = false
@@ -132,3 +130,15 @@ module WindowsAiOcr =
               Message = "OK"
               Text = text
               Lines = lines }
+
+    /// Existing interactive callers may provision the model when it is NotReady.
+    let recognize imagePath =
+        recognizeWithReadiness ensureReady imagePath
+
+    /// Never calls EnsureReadyAsync, including if readiness changes after a host preflight.
+    let recognizeWithoutProvisioning imagePath =
+        let checkReady () =
+            match getReadyState () with
+            | AIFeatureReadyState.Ready -> Ok ()
+            | state -> Error(describeUnavailable state)
+        recognizeWithReadiness checkReady imagePath

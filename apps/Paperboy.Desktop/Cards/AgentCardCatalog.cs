@@ -64,10 +64,10 @@ public sealed class AgentCardCatalog
             "paperboy.mcp",
             "MCP Bridge",
             "tool-surface",
-            "Exposes Paperboy pack/list/unpack/toss as agent-callable MCP tools.",
+            "Exposes Paperboy bundle, resources, prompts, and ACP capability metadata as agent-callable MCP surfaces.",
             ["jsonRpc", "toolName", "arguments"],
-            ["toolResult", "manifest", "agentCardCatalog"],
-            ["initialize", "tools/list", "tools/call"],
+            ["toolResult", "manifest", "agentCardCatalog", "resources", "prompts", "acpCapabilityMetadata"],
+            ["initialize", "tools/list", "tools/call", "resources/list", "resources/read", "prompts/list", "prompts/get"],
             "offline|stdio-ready|serving"),
         new(
             "paperboy.foundryLocal",
@@ -88,6 +88,15 @@ public sealed class AgentCardCatalog
             ["showModels", "downloadModel", "loadModel", "modelInfo", "exportModelCards", "bundleModelCards", "deliverModel"],
             "catalog|selected|bundled|delivered"),
         new(
+            "paperboy.apim",
+            "APIM Surface",
+            "apim-control-plane",
+            "Maps Paperboy MCP, Foundry Local, OCR, and ACP resources into local APIM route contracts.",
+            ["localEndpoint", "foundryEndpoint", "ocrBridge", "mcpCommand"],
+            ["routeManifestJson", "serviceStatus", "validationReport"],
+            ["showApimSurface", "validateApimSurface", "checkLocalEndpoint", "checkFoundryHealth", "checkOcrReadiness", "copyRouteManifest"],
+            "design|configured|validating|ready|gap"),
+        new(
             "paperboy.livetile",
             "Live Tile",
             "a2a-card",
@@ -95,8 +104,41 @@ public sealed class AgentCardCatalog
             ["cardId", "state", "actions"],
             ["cardJson", "tileState", "nextActions"],
             ["render", "exportCards", "copySchema"],
-            "draft|active|shared")
+            "draft|active|shared"),
+        new(
+            "paperboy.extensions",
+            "Extensions",
+            "capability-registry",
+            "Discovers *.extension.json capability packages for apps, agents, tools, skills, workflows, connectors, plugins, and MCP/API bridges, and indexes them next to Paperboy's built-in tools.",
+            ["extensionRoots[]", "capabilityId", "arguments", "invocationPolicy"],
+            ["capabilityIndexJson", "extensionManifests", "extensionCards", "invocationResult", "diagnostics"],
+            ["discover", "refresh", "listCapabilities", "describeExtension", "invokeCapability", "copyCapabilityIndex"],
+            "empty|discovered|blocked|invoked|error")
     ]);
+
+    /// <summary>
+    /// Returns a catalog that also exposes cards contributed by discovered extensions.
+    /// Built-in cards always win on id conflicts, so existing consumers are unaffected.
+    /// </summary>
+    public AgentCardCatalog WithAdditionalCards(IEnumerable<AgentCardDefinition> additionalCards)
+    {
+        ArgumentNullException.ThrowIfNull(additionalCards);
+
+        var merged = new List<AgentCardDefinition>(Cards);
+        var seen = merged.Select(card => card.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var card in additionalCards)
+        {
+            if (card is null || string.IsNullOrWhiteSpace(card.Id) || !seen.Add(card.Id))
+            {
+                continue;
+            }
+
+            merged.Add(card);
+        }
+
+        return merged.Count == Cards.Count ? this : new AgentCardCatalog(merged);
+    }
 
     public string ToJson() => JsonSerializer.Serialize(Cards, JsonOptions);
 

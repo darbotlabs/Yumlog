@@ -1,0 +1,92 @@
+{
+  "$schema": "./paperboy.extension.schema.json",
+  "schemaVersion": "1.0",
+  "id": "yumlog.local-bridges",
+  "name": "Yumlog Local Bridges",
+  "version": "1.0.0",
+  "kind": "connector",
+  "publisher": "Darbot Labs",
+  "description": "Ships Paperboy's adjacent local surfaces - the Yumlog APIM gateway, Foundry Local, the Yumlog.Native OCR bridge, and the Paperboy MCP stdio host - as discoverable capabilities.",
+  "enabled": true,
+  "tags": ["yumlog", "local", "bridge"],
+  "capabilities": [
+    {
+      "id": "yumlog.apim.status",
+      "kind": "api",
+      "title": "Yumlog APIM status",
+      "description": "Read the local Paperboy APIM gateway status route.",
+      "transport": "http",
+      "url": "http://127.0.0.1:8787/paperboy/status",
+      "method": "GET",
+      "timeoutSeconds": 5,
+      "tags": ["apim", "health"],
+      "cards": ["paperboy.apim"]
+    },
+    {
+      "id": "yumlog.foundryLocal.models",
+      "kind": "api",
+      "title": "Foundry Local model inventory",
+      "description": "List models served by the local Foundry Local OpenAI-compatible endpoint.",
+      "transport": "http",
+      "url": "http://127.0.0.1:52495/v1/models",
+      "method": "GET",
+      "timeoutSeconds": 5,
+      "tags": ["foundry-local", "health", "models"],
+      "cards": ["paperboy.foundryLocal", "paperboy.modelCards"]
+    },
+    {
+      "id": "yumlog.native.ocr",
+      "kind": "connector",
+      "title": "Yumlog.Native OCR extract",
+      "description": "Run the Yumlog.Native OCR bridge over a local image and return recognized text.",
+      "transport": "process",
+      "command": "Yumlog.Native.exe",
+      "args": ["ocr", "{{imagePath}}"],
+      "timeoutSeconds": 120,
+      "inputSchema": {
+        "type": "object",
+        "required": ["imagePath"],
+        "properties": {
+          "imagePath": { "type": "string", "description": "Absolute path to a local image file." }
+        }
+      },
+      "tags": ["ocr", "native"],
+      "cards": ["paperboy.apim"]
+    },
+    {
+      "id": "yumlog.paperboy.mcpStdio",
+      "kind": "tool",
+      "title": "Paperboy MCP stdio host",
+      "description": "Launch contract for hosting Paperboy's own MCP bridge from another agent runtime.",
+      "transport": "mcp-stdio",
+      "command": "Paperboy.Mcp.exe",
+      "tags": ["mcp", "stdio"],
+      "cards": ["paperboy.mcp"]
+    }
+  ],
+  "cards": [
+    {
+      "id": "paperboy.connector.yumlog-bridges",
+      "title": "Yumlog Local Bridges",
+      "role": "connector-surface",
+      "description": "Connector card for the local APIM gateway, Foundry Local, OCR, and MCP stdio bridges.",
+      "inputs": ["capabilityId", "arguments"],
+      "outputs": ["invocationResult", "statusJson", "ocrText"],
+      "actions": ["listCapabilities", "invokeCapability", "checkHealth"],
+      "liveTileState": "discovered|reachable|invoked|error"
+    }
+  ],
+  "resources": [
+    {
+      "uri": "paperboy://extensions/schema",
+      "name": "Paperboy Extension Manifest Schema",
+      "mimeType": "application/schema+json",
+      "path": "paperboy.extension.schema.json",
+      "description": "Schema used to author additional Paperboy extension manifests."
+    }
+  ],
+  "requires": {
+    "paperboy": ">=0.4.0",
+    "services": ["yumlog-apim", "foundry-local"]
+  }
+}

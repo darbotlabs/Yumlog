@@ -1,0 +1,348 @@
+{
+  "schemaVersion": "1.1",
+  "projectId": "yumlog.widgetstudio.capability-mesh",
+  "name": "Paperboy Capability Mesh Widget Studio Seed",
+  "version": "0.2.0",
+  "owner": "widget-studio-agent",
+  "widget": {
+    "id": "paperboy.livetile.capability-mesh",
+    "displayName": "Paperboy Capability Mesh LiveTile",
+    "description": "Schema 1.1 seed that exercises the versioned capability contract across tools, skills, workflows, connectors, plugins, extensions, MCP/API surfaces, and continuous AI loops.",
+    "kind": "adaptiveLiveTile",
+    "tags": ["apim-symphony", "phase-6", "paperboy", "capabilities", "extensibility"],
+    "dataSources": [
+      {
+        "id": "paperboy.capture.latest",
+        "type": "apimOperation",
+        "displayName": "Latest capture summary",
+        "bindingRef": "apim.capture.latest",
+        "payloadSchemaUri": "urn:yumlog:widget:data:latest-capture:v1",
+        "refreshPolicy": "inherit",
+        "samplePayload": {
+          "status": "ready",
+          "summary": "3 new screenshots indexed",
+          "lastUpdatedUtc": "2026-07-27T07:39:55Z",
+          "changeScore": 0.82
+        }
+      },
+      {
+        "id": "paperboy.context.plan",
+        "type": "acpEnvelope",
+        "displayName": "ACP tile planning context",
+        "bindingRef": "acp.tile.plan",
+        "payloadSchemaUri": "urn:yumlog:acp:context-envelope:v1",
+        "refreshPolicy": "eventDriven",
+        "samplePayload": {
+          "capability": "paperboy.livetile.plan",
+          "intent": "Suggest the next offline Paperboy pipeline action"
+        }
+      },
+      {
+        "id": "paperboy.mdkg.widgetstudio",
+        "type": "mdkgLayer",
+        "displayName": "MDKG widget-studio layer",
+        "bindingRef": "",
+        "payloadSchemaUri": "urn:yumlog:mdkg:layer:widget-studio:v1",
+        "refreshPolicy": "manual"
+      }
+    ],
+    "acpActions": [
+      {
+        "id": "acp.tile.refresh",
+        "displayName": "Refresh tile context",
+        "capability": "paperboy.livetile.refresh",
+        "envelopeSchemaUri": "urn:yumlog:acp:context-envelope:v1",
+        "inputSchemaUri": "urn:yumlog:widget:refresh-request:v1",
+        "outputSchemaUri": "urn:yumlog:widget:refresh-result:v1",
+        "permission": "invoke",
+        "targetDataSourceId": "paperboy.capture.latest"
+      }
+    ],
+    "apimBindings": [
+      {
+        "id": "apim.capture.latest",
+        "backendId": "yumlog.native",
+        "operationId": "yumlog.native.capture.latest",
+        "method": "GET",
+        "route": "/yumlog/native/captures/latest",
+        "baseUrl": "http://localhost:41417",
+        "authScheme": "none",
+        "requestSchemaUri": "",
+        "responseSchemaUri": "urn:yumlog:widget:data:latest-capture:v1",
+        "policyTags": ["local-only", "no-telemetry", "cache-30s"]
+      }
+    ],
+    "capabilities": [
+      {
+        "id": "cap.tool.ocr-analyze",
+        "kind": "tool",
+        "displayName": "Yumlog OCR analyze",
+        "description": "Invokes packaged Yumlog.Native Windows AI OCR over a captured frame.",
+        "contractVersion": "1.0",
+        "provider": "yumlog.native",
+        "entryPoint": "urn:yumlog:acp:tool:yumlog.ocr.analyze:v1",
+        "transport": "acp",
+        "stability": "stable",
+        "permissions": ["invoke"],
+        "requires": ["paperboy.capture.latest"],
+        "inputSchemaUri": "urn:yumlog:acp:tool:yumlog.ocr.analyze:input:v1",
+        "outputSchemaUri": "urn:yumlog:acp:tool:yumlog.ocr.analyze:output:v1",
+        "tags": ["ocr", "local-only"],
+        "activation": {
+          "mode": "manual"
+        }
+      },
+      {
+        "id": "cap.skill.tile-summarize",
+        "kind": "skill",
+        "displayName": "LiveTile summarizer",
+        "description": "Summarizes capture deltas into a single adaptive tile headline.",
+        "contractVersion": "1.0",
+        "provider": "paperboy.foundrylocal",
+        "entryPoint": "urn:yumlog:skill:paperboy.tile.summarize:v1",
+        "transport": "inProcess",
+        "stability": "preview",
+        "permissions": ["read"],
+        "requires": ["cap.tool.ocr-analyze"],
+        "inputSchemaUri": "urn:yumlog:widget:skill:summarize:input:v1",
+        "outputSchemaUri": "urn:yumlog:widget:skill:summarize:output:v1",
+        "tags": ["foundry-local", "offline"],
+        "activation": {
+          "mode": "onLoad"
+        }
+      },
+      {
+        "id": "cap.workflow.capture-to-tile",
+        "kind": "workflow",
+        "displayName": "Capture to tile workflow",
+        "description": "Chains capture retrieval, OCR analysis, and summarization into tile state.",
+        "contractVersion": "1.0",
+        "provider": "yumlog.widgetstudio",
+        "entryPoint": "urn:yumlog:workflow:paperboy.capture-to-tile:v1",
+        "transport": "inProcess",
+        "stability": "preview",
+        "permissions": ["read", "invoke"],
+        "requires": ["cap.tool.ocr-analyze", "cap.skill.tile-summarize", "acp.tile.refresh"],
+        "inputSchemaUri": "urn:yumlog:widget:workflow:capture-to-tile:input:v1",
+        "outputSchemaUri": "urn:yumlog:widget:workflow:capture-to-tile:output:v1",
+        "tags": ["pipeline"],
+        "activation": {
+          "mode": "event",
+          "eventTopic": "yumlog.paperboy.capture.changed"
+        }
+      },
+      {
+        "id": "cap.connector.apim-capture",
+        "kind": "connector",
+        "displayName": "APIM capture connector",
+        "description": "Local APIM route connector for the latest capture operation.",
+        "contractVersion": "1.0",
+        "provider": "yumlog.apim.service",
+        "entryPoint": "http://localhost:41417/yumlog/native/captures/latest",
+        "transport": "apim",
+        "stability": "stable",
+        "permissions": ["read"],
+        "requires": ["apim.capture.latest"],
+        "inputSchemaUri": "",
+        "outputSchemaUri": "urn:yumlog:widget:data:latest-capture:v1",
+        "tags": ["loopback", "no-telemetry"],
+        "activation": {
+          "mode": "interval",
+          "intervalSeconds": 30
+        }
+      },
+      {
+        "id": "cap.plugin.modelcard-cache",
+        "kind": "plugin",
+        "displayName": "Model-card cache plugin",
+        "description": "Host-loaded plugin that keeps Foundry Local model cards warm for the tile.",
+        "contractVersion": "1.0",
+        "provider": "paperboy.desktop",
+        "entryPoint": "urn:paperboy:plugin:modelcard-cache:v1",
+        "transport": "inProcess",
+        "stability": "experimental",
+        "permissions": ["read", "write"],
+        "requires": [],
+        "tags": ["cache"],
+        "activation": {
+          "mode": "onLoad"
+        },
+        "config": {
+          "preferredModel": "qwen3-0.6b",
+          "maxCards": 12
+        }
+      },
+      {
+        "id": "cap.extension.theme-paperboy",
+        "kind": "extension",
+        "displayName": "Paperboy theme extension",
+        "description": "Supplies the paperboy render theme tokens to the preview and host shell.",
+        "contractVersion": "1.0",
+        "provider": "yumlog.widgetstudio",
+        "entryPoint": "urn:yumlog:widget:theme:paperboy:v1",
+        "transport": "file",
+        "stability": "stable",
+        "permissions": ["read"],
+        "requires": [],
+        "tags": ["theme"],
+        "activation": {
+          "mode": "onLoad"
+        }
+      },
+      {
+        "id": "cap.mcp.paperboy-bridge",
+        "kind": "mcpServer",
+        "displayName": "Paperboy MCP bridge",
+        "description": "Exposes bundle, resource, prompt, and ACP capability surfaces over MCP stdio.",
+        "contractVersion": "1.0",
+        "provider": "paperboy.mcp",
+        "entryPoint": "mcp+stdio://paperboy.mcp",
+        "transport": "mcp",
+        "stability": "preview",
+        "permissions": ["read", "invoke"],
+        "requires": ["paperboy.context.plan"],
+        "inputSchemaUri": "urn:yumlog:paperboy:acp-capabilities:v1",
+        "outputSchemaUri": "urn:yumlog:paperboy:acp-capabilities:v1",
+        "tags": ["mcp", "stdio"],
+        "activation": {
+          "mode": "onLoad"
+        }
+      },
+      {
+        "id": "cap.api.widgetstudio-validate",
+        "kind": "apiSurface",
+        "displayName": "Widget Studio validate API",
+        "description": "Local APIM/ACP surface that validates Widget Studio projects on demand.",
+        "contractVersion": "1.0",
+        "provider": "yumlog.apim.service",
+        "entryPoint": "http://localhost:41418/acp/tools/widgetstudio.project.validate",
+        "transport": "http",
+        "stability": "preview",
+        "permissions": ["invoke"],
+        "requires": [],
+        "inputSchemaUri": "urn:yumlog:acp:tool:widgetstudio.project.validate:input:v1",
+        "outputSchemaUri": "urn:yumlog:acp:tool:widgetstudio.project.validate:output:v1",
+        "tags": ["api", "loopback"],
+        "activation": {
+          "mode": "manual"
+        }
+      },
+      {
+        "id": "cap.continuous.tile-watch",
+        "kind": "continuousAi",
+        "displayName": "Continuous tile watcher",
+        "description": "Continuous AI loop that re-plans tile state as MDKG layers change.",
+        "contractVersion": "1.0",
+        "provider": "paperboy.desktop",
+        "entryPoint": "urn:yumlog:continuous:paperboy.tile-watch:v1",
+        "transport": "event",
+        "stability": "experimental",
+        "permissions": ["read", "invoke"],
+        "requires": ["cap.workflow.capture-to-tile", "paperboy.mdkg.widgetstudio"],
+        "inputSchemaUri": "urn:yumlog:mdkg:layer:widget-studio:v1",
+        "outputSchemaUri": "urn:yumlog:widget:plan-result:v1",
+        "tags": ["continuous-ai", "offline"],
+        "activation": {
+          "mode": "continuous",
+          "intervalSeconds": 120,
+          "eventTopic": "yumlog.mdkg.widget-studio.changed",
+          "schedule": ""
+        }
+      },
+      {
+        "id": "cap.x-darbot.tile-telemetry",
+        "kind": "x-darbot.observer",
+        "displayName": "Vendor tile observer",
+        "description": "Vendor-extension capability kind proving the x- escape hatch stays loadable.",
+        "contractVersion": "1.0",
+        "provider": "darbot.labs",
+        "entryPoint": "urn:darbot:observer:tile-telemetry:v1",
+        "transport": "x-darbot.inproc",
+        "stability": "experimental",
+        "permissions": ["read"],
+        "requires": [],
+        "tags": ["vendor-extension"],
+        "activation": {
+          "mode": "manual"
+        }
+      }
+    ],
+    "render": {
+      "schemaUri": "urn:yumlog:widget:render:v1",
+      "layout": "card",
+      "theme": "paperboy",
+      "states": [
+        {
+          "id": "tile.idle",
+          "title": "Idle",
+          "intent": "Waiting for a capture or ACP event",
+          "visibleWhen": ["status == 'idle'"]
+        },
+        {
+          "id": "tile.ready",
+          "title": "Ready",
+          "intent": "Show latest capture health and next action",
+          "visibleWhen": ["status == 'ready'"]
+        },
+        {
+          "id": "tile.error",
+          "title": "Error",
+          "intent": "Expose APIM, ACP, or capability failure state",
+          "visibleWhen": ["status == 'error'"]
+        }
+      ],
+      "bindings": [
+        {
+          "id": "binding.status.badge",
+          "sourceId": "paperboy.capture.latest",
+          "fieldPath": "$.status",
+          "target": "hero.badge",
+          "format": "status"
+        },
+        {
+          "id": "binding.summary.text",
+          "sourceId": "paperboy.capture.latest",
+          "fieldPath": "$.summary",
+          "target": "body.summary",
+          "format": "text"
+        },
+        {
+          "id": "binding.plan.intent",
+          "sourceId": "paperboy.context.plan",
+          "fieldPath": "$.intent",
+          "target": "actions.primary",
+          "format": "text"
+        }
+      ]
+    },
+    "refreshCadence": {
+      "mode": "interval",
+      "intervalSeconds": 30,
+      "jitterSeconds": 5,
+      "staleAfterSeconds": 120,
+      "cron": "",
+      "eventTopic": "yumlog.paperboy.capture.changed"
+    }
+  },
+  "package": {
+    "packageId": "paperboy.livetile.capability-mesh.widget",
+    "format": "yumlog.widget.v1+zip",
+    "includePreview": true,
+    "includeSchemas": true,
+    "includeCapabilityIndex": true
+  },
+  "handoffNotes": [
+    "Capability hosts should read capabilities/index.json and reject entries whose contractVersion major exceeds their supported major.",
+    "Vendor kinds and transports use the x- prefix and must be ignored, not rejected, by core hosts."
+  ],
+  "extensions": {
+    "x-darbot.mdkg": {
+      "layer": "widget-studio",
+      "schemaUri": "urn:yumlog:mdkg:layer:widget-studio:v1"
+    },
+    "x-darbot.continuous-ai": {
+      "loop": "cap.continuous.tile-watch",
+      "budgetSeconds": 900
+    }
+  }
+}
