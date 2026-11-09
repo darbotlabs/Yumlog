@@ -2,7 +2,7 @@
 
 ## Screen Capture & Recording
 
-darbot.yumlog provides local Windows tools for desktop screen capture, recording, and lightweight screen analysis. The legacy PowerShell tools remain available, and the native `Yumlog.Native` F# CLI is the no-PowerShell path for capture, recording orchestration, analysis manifests, and follow-me step extraction.
+darbot.yumlog provides local Windows tools for desktop screen capture, recording, and lightweight screen analysis. The PowerShell tools remain supported alongside the native `Yumlog.Native` F# CLI for capture, recording orchestration, analysis manifests, and follow-me step extraction.
 
 Paperboy is Yumlog's lightweight courier layer: it can sample recordings with
 half-step navigation and can pack files into small manifest-backed bundles that
@@ -13,6 +13,24 @@ Yumlog also includes a local APIM service foundation under
 ACP resource/tool/prompt metadata, authenticated local envelope routes, and
 APIM route invocation scaffolding for the Paperboy APIM app, MCP bridge,
 Widget Studio, LiveTile, OCR, and MDKG workflows.
+
+### Repository ownership
+
+Yumlog is the source of truth for capture, recording, Windows AI OCR, native
+analysis/follow manifests, and MDKG metadata contracts. The standalone Paperboy
+application owns delivery/bundling, orchestration, its client SDK, APIM execution,
+and widget authoring/runtime development.
+
+The Paperboy-related components in this checkout remain available with the
+behavior documented here. They are not automatically synchronized with the
+standalone application: in particular, this checkout's APIM service is still
+the documented foundation, not a fully connected execution backend. No existing
+commands are removed by this ownership split.
+
+Integrations should exchange versioned manifests and bundles, not assume a
+shared working directory or copy unreviewed implementation changes between
+repositories. See [the ownership and compatibility policy](Tasklist.md#ownership-and-compatibility)
+before changing shared contracts.
 
 ### Components and prerequisites
 
@@ -321,6 +339,12 @@ supported invocation. The older `Test-ScreenSkills.Tests.ps1` uses Pester 3
 syntax and mocked files, not actual screen capture. OCR and MSIX installation
 are separate, machine-dependent checks; do not run installation scripts as
 ordinary unit tests. APIM round-trip reports and `dist` output stay local.
+
+CI builds the maintained desktop/MCP, APIM, and Widget Studio components and
+runs their meaningful contract suites plus native extension/MDKG round trips.
+It does not download FFmpeg, capture a desktop, provision OCR, sign packages,
+or install a service. The always-passing/mock screen tests are not evidence of
+capture readiness and are not release gates.
 
 ---
 

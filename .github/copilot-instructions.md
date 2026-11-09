@@ -14,6 +14,13 @@ Darbot Yumlog is a Windows local-first capture and automation toolkit with a nat
 
 ## Architecture
 
+### Ownership boundary
+- Yumlog owns capture, recording, OCR, native domain/configuration/serialization, and MDKG.
+- The standalone Paperboy application owns delivery/orchestration, SDK, executable APIM integration, and widget lifecycle.
+- Retain this checkout's documented Paperboy components and existing commands; ownership is not deprecation.
+- Publish native contract changes here with explicit format/schema compatibility evidence; downstream consumers adopt reviewed commits.
+- Never copy private downstream code or data into this public repository without explicit publication approval.
+
 ### Directory Structure
 - `Skills/`: Reusable PowerShell functions/modules (core functionality)
 - `launchers/`: Top-level PowerShell scripts for user interaction

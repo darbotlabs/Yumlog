@@ -199,6 +199,46 @@ The Skills/ directory contains reusable PowerShell functions for screen capture,
 
 Contributions are welcome! Please fork the repo, create a branch, and submit a pull request.
 
+### Ownership and compatibility
+
+| Area | Source of truth | Consumer responsibility |
+|---|---|---|
+| Capture, recording, OCR, native analysis/follow | Yumlog | Detect capability readiness and preserve native command semantics |
+| MDKG, native domain/serialization/configuration contracts | Yumlog | Pin an exact upstream revision and review schema/format changes |
+| Bundle delivery, desktop/MCP orchestration, client SDK | Standalone Paperboy application | Preserve existing bundle/schema identifiers and document API changes |
+| Executable APIM integration and widget lifecycle | Standalone Paperboy application | Distinguish implemented execution from authoring and catalog metadata |
+
+This checkout retains its documented Paperboy components for existing users.
+The ownership split does not delete features, deprecate working commands, or
+turn the local APIM scaffold into an executable backend.
+
+For native contract changes, propose the source change in Yumlog first, keep
+the MDKG format/version and schema URNs explicit, and include round-trip and
+old-input compatibility evidence. Consumers adopt an exact reviewed commit;
+they must not silently track `main`. Content fingerprints can expose accidental
+copy drift, but do not prove semantic compatibility.
+
+Shared contract changes should be additive where possible. If readers cannot
+safely interpret a new shape, version the affected contract and document
+migration rather than changing the meaning of an existing identifier. SDK
+package versions, application versions, and data-format versions are separate.
+
+Changes flowing back from restricted downstream repositories require explicit
+publication approval. Do not copy private implementation, credentials, data,
+or internal roadmap details into public issues, commits, or pull requests.
+
+### Integration and delivery sequence
+
+The current integration slice establishes ownership and covers maintained
+components in CI. Next is one synthetic end-to-end capture/analysis manifest to
+MDKG to bundle handoff, before expanding native/model HTTP operations and widget
+runtime behavior in their owning application.
+
+Previously committed build outputs or recordings need a separate, reviewed
+index-cleanup change. Adding ignore rules does not remove tracked files.
+Do not delete local captures, force-push, or rewrite existing history as part of
+an ordinary source/documentation integration.
+
 Keep source, required package assets, schemas, samples, and documentation together.
 Do not newly stage `bin`, `obj`, `dist`, generated APIM reports, local signing
 certificates, or the downloaded `archive\51PercentCrew` media collection.
