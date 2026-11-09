@@ -1,0 +1,169 @@
+{
+  "schemaVersion": "1.0",
+  "projectId": "yumlog.widgetstudio.paperboy",
+  "name": "Paperboy LiveTile Widget Studio Seed",
+  "version": "0.1.0",
+  "owner": "widget-studio-agent",
+  "widget": {
+    "id": "paperboy.livetile.apim-symphony",
+    "displayName": "Paperboy APIM LiveTile",
+    "description": "Adaptive LiveTile foundation for Yumlog capture status, APIM operation state, and ACP agent actions.",
+    "kind": "adaptiveLiveTile",
+    "tags": ["apim-symphony", "phase-6", "paperboy", "livetile"],
+    "dataSources": [
+      {
+        "id": "paperboy.capture.latest",
+        "type": "apimOperation",
+        "displayName": "Latest capture summary",
+        "bindingRef": "apim.capture.latest",
+        "payloadSchemaUri": "urn:yumlog:widget:data:latest-capture:v1",
+        "refreshPolicy": "inherit",
+        "samplePayload": {
+          "status": "ready",
+          "summary": "3 new screenshots indexed",
+          "lastUpdatedUtc": "2026-06-27T07:39:55Z",
+          "changeScore": 0.82
+        }
+      },
+      {
+        "id": "paperboy.context.plan",
+        "type": "acpEnvelope",
+        "displayName": "ACP tile planning context",
+        "bindingRef": "acp.tile.plan",
+        "payloadSchemaUri": "urn:yumlog:acp:context-envelope:v1",
+        "refreshPolicy": "eventDriven",
+        "samplePayload": {
+          "capability": "paperboy.livetile.plan",
+          "intent": "Suggest the next offline Paperboy pipeline action"
+        }
+      },
+      {
+        "id": "paperboy.modelcards.cache",
+        "type": "staticJson",
+        "displayName": "Model-card cache state",
+        "bindingRef": "paperboy.cards.modelcache",
+        "payloadSchemaUri": "urn:paperboy:model-card-cache:v1",
+        "refreshPolicy": "manual",
+        "samplePayload": {
+          "models": ["qwen3-0.6b", "qwen2.5-0.5b", "phi-3.5-mini"],
+          "preferred": "qwen3-0.6b"
+        }
+      }
+    ],
+    "acpActions": [
+      {
+        "id": "acp.tile.refresh",
+        "displayName": "Refresh tile context",
+        "capability": "paperboy.livetile.refresh",
+        "envelopeSchemaUri": "urn:yumlog:acp:context-envelope:v1",
+        "inputSchemaUri": "urn:yumlog:widget:refresh-request:v1",
+        "outputSchemaUri": "urn:yumlog:widget:refresh-result:v1",
+        "permission": "invoke",
+        "targetDataSourceId": "paperboy.capture.latest"
+      },
+      {
+        "id": "acp.tile.plan",
+        "displayName": "Plan next Paperboy step",
+        "capability": "paperboy.livetile.plan",
+        "envelopeSchemaUri": "urn:yumlog:acp:context-envelope:v1",
+        "inputSchemaUri": "urn:yumlog:widget:plan-request:v1",
+        "outputSchemaUri": "urn:yumlog:widget:plan-result:v1",
+        "permission": "invoke",
+        "targetDataSourceId": "paperboy.context.plan"
+      }
+    ],
+    "apimBindings": [
+      {
+        "id": "apim.capture.latest",
+        "backendId": "yumlog.native",
+        "operationId": "yumlog.native.capture.latest",
+        "method": "GET",
+        "route": "/yumlog/native/captures/latest",
+        "baseUrl": "http://localhost:41417",
+        "authScheme": "none",
+        "requestSchemaUri": "",
+        "responseSchemaUri": "urn:yumlog:widget:data:latest-capture:v1",
+        "policyTags": ["local-only", "no-telemetry", "cache-30s"]
+      }
+    ],
+    "render": {
+      "schemaUri": "urn:yumlog:widget:render:v1",
+      "layout": "card",
+      "theme": "paperboy",
+      "states": [
+        {
+          "id": "tile.idle",
+          "title": "Idle",
+          "intent": "Waiting for a capture or ACP event",
+          "visibleWhen": ["status == 'idle'"]
+        },
+        {
+          "id": "tile.ready",
+          "title": "Ready",
+          "intent": "Show latest capture health and next action",
+          "visibleWhen": ["status == 'ready'"]
+        },
+        {
+          "id": "tile.stale",
+          "title": "Stale",
+          "intent": "Warn that APIM data is older than the stale threshold",
+          "visibleWhen": ["ageSeconds > 120"]
+        },
+        {
+          "id": "tile.error",
+          "title": "Error",
+          "intent": "Expose APIM or ACP action failure state",
+          "visibleWhen": ["status == 'error'"]
+        }
+      ],
+      "bindings": [
+        {
+          "id": "binding.status.badge",
+          "sourceId": "paperboy.capture.latest",
+          "fieldPath": "$.status",
+          "target": "hero.badge",
+          "format": "status"
+        },
+        {
+          "id": "binding.summary.text",
+          "sourceId": "paperboy.capture.latest",
+          "fieldPath": "$.summary",
+          "target": "body.summary",
+          "format": "text"
+        },
+        {
+          "id": "binding.change.score",
+          "sourceId": "paperboy.capture.latest",
+          "fieldPath": "$.changeScore",
+          "target": "metrics.changeScore",
+          "format": "number"
+        },
+        {
+          "id": "binding.plan.intent",
+          "sourceId": "paperboy.context.plan",
+          "fieldPath": "$.intent",
+          "target": "actions.primary",
+          "format": "text"
+        }
+      ]
+    },
+    "refreshCadence": {
+      "mode": "interval",
+      "intervalSeconds": 30,
+      "jitterSeconds": 5,
+      "staleAfterSeconds": 120,
+      "cron": "",
+      "eventTopic": "yumlog.paperboy.capture.changed"
+    }
+  },
+  "package": {
+    "packageId": "paperboy.livetile.apim-symphony.widget",
+    "format": "yumlog.widget.v1+zip",
+    "includePreview": true,
+    "includeSchemas": true
+  },
+  "handoffNotes": [
+    "Package agents should consume the .widget.zip entries widget.json, schemas/widget-studio.project.schema.json, preview/index.html, validation-report.json, and package-manifest.json.",
+    "Verification agents should run dotnet run --project apps\\Yumlog.WidgetStudio\\Yumlog.WidgetStudio.csproj -- self-test before promoting packages."
+  ]
+}

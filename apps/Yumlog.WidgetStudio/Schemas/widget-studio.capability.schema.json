@@ -1,0 +1,245 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://darbotlabs.github.io/yumlog/widget-studio.capability.schema.json",
+  "title": "Yumlog Widget Studio Capability Contract",
+  "description": "Versioned plugin/extension capability contract for Yumlog widgets: tools, skills, workflows, connectors, plugins, extensions, MCP/API surfaces, and continuous AI loops.",
+  "x-contractMetadata": {
+    "contractSchemaUri": "urn:yumlog:widget:capability:v1",
+    "indexSchemaUri": "urn:yumlog:widget:capability-index:v1",
+    "supportedContractMajor": 1
+  },
+  "$ref": "#/$defs/capability",
+  "$defs": {
+    "semanticId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(\\.[a-z0-9][a-z0-9-]*)+$"
+    },
+    "vendorExtensible": {
+      "type": "string",
+      "minLength": 1
+    },
+    "contractVersion": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+(\\.\\d+)?$"
+    },
+    "capabilityKind": {
+      "description": "Core capability kinds. Vendor kinds must use an 'x-' prefix and may be ignored by hosts.",
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "tool",
+            "skill",
+            "workflow",
+            "connector",
+            "plugin",
+            "extension",
+            "mcpServer",
+            "apiSurface",
+            "continuousAi"
+          ]
+        },
+        {
+          "type": "string",
+          "pattern": "^x-[a-zA-Z0-9]+([.-][a-zA-Z0-9]+)*$"
+        }
+      ]
+    },
+    "capabilityTransport": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": ["inProcess", "stdio", "http", "mcp", "acp", "apim", "event", "file"]
+        },
+        {
+          "type": "string",
+          "pattern": "^x-[a-zA-Z0-9]+([.-][a-zA-Z0-9]+)*$"
+        }
+      ]
+    },
+    "activation": {
+      "type": "object",
+      "required": ["mode"],
+      "additionalProperties": false,
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": ["manual", "onLoad", "interval", "event", "continuous"]
+        },
+        "intervalSeconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 86400
+        },
+        "eventTopic": {
+          "type": "string"
+        },
+        "schedule": {
+          "type": "string"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "mode": {
+                "const": "interval"
+              }
+            },
+            "required": ["mode"]
+          },
+          "then": {
+            "required": ["intervalSeconds"],
+            "properties": {
+              "intervalSeconds": {
+                "minimum": 5
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "mode": {
+                "const": "event"
+              }
+            },
+            "required": ["mode"]
+          },
+          "then": {
+            "required": ["eventTopic"],
+            "properties": {
+              "eventTopic": {
+                "minLength": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "capability": {
+      "type": "object",
+      "required": ["id", "kind", "displayName", "contractVersion"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/semanticId"
+        },
+        "kind": {
+          "$ref": "#/$defs/capabilityKind"
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string"
+        },
+        "contractVersion": {
+          "$ref": "#/$defs/contractVersion"
+        },
+        "provider": {
+          "type": "string"
+        },
+        "entryPoint": {
+          "type": "string"
+        },
+        "transport": {
+          "$ref": "#/$defs/capabilityTransport"
+        },
+        "stability": {
+          "type": "string",
+          "enum": ["experimental", "preview", "stable", "deprecated"]
+        },
+        "permissions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["read", "invoke", "write", "admin"]
+          }
+        },
+        "requires": {
+          "description": "Ids of capabilities, data sources, ACP actions, or APIM bindings this capability depends on.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/semanticId"
+          }
+        },
+        "inputSchemaUri": {
+          "type": "string"
+        },
+        "outputSchemaUri": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "replacedBy": {
+          "type": "string"
+        },
+        "activation": {
+          "$ref": "#/$defs/activation"
+        },
+        "config": true
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "transport": {
+                "enum": ["http", "mcp", "acp", "apim", "stdio", "event", "file"]
+              }
+            },
+            "required": ["transport"]
+          },
+          "then": {
+            "required": ["entryPoint"],
+            "properties": {
+              "entryPoint": {
+                "minLength": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "continuousAi"
+              }
+            },
+            "required": ["kind"]
+          },
+          "then": {
+            "required": ["activation"],
+            "properties": {
+              "activation": {
+                "properties": {
+                  "mode": {
+                    "enum": ["interval", "event", "continuous"]
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "stability": {
+                "const": "deprecated"
+              }
+            },
+            "required": ["stability"]
+          },
+          "then": {
+            "required": ["replacedBy"]
+          }
+        }
+      ]
+    }
+  }
+}
