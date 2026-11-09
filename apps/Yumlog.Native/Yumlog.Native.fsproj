@@ -43,6 +43,7 @@
     <Compile Include="NativeUi.fs" />
     <Compile Include="Analysis.fs" />
     <Compile Include="Navigation.fs" />
+    <Compile Include="Handoff.fs" />
     <Compile Include="Orchestration.fs" />
     <Compile Include="Extensibility.fs" />
     <Compile Include="Cli.fs" />

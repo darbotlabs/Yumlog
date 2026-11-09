@@ -44,6 +44,9 @@ module Program =
             let manifestPath = Path.Combine(config.OutDir, "follow-manifest.json")
             writeJsonFile manifestPath manifest
             0
+        | Handoff config ->
+            NativeHandoff.run config |> writeJson
+            0
         | Orchestrate(planPath, _) ->
             NativeOrchestration.runPlan planPath |> writeJson
             0

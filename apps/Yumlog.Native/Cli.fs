@@ -11,6 +11,7 @@ Usage:
   Yumlog.Native capture [--config path] [--out-dir path] [--fps n] [--duration n] [--count n] [--primary]
   Yumlog.Native record [--config path] [--out-file path] [--fps n] [--duration n] [--ffmpeg path]
   Yumlog.Native analyze [--config path] [--input path] [--ocr none|auto|windows-ai|raw-com] [--json-out path]
+  Yumlog.Native handoff --input path --out-dir path [--ocr none|auto|windows-ai|raw-com] [--resume]
   Yumlog.Native follow [--config path] [--out-dir path] [--fps n] [--duration n] [--change-threshold n] [--ocr mode]
   Yumlog.Native orchestrate --plan path
   Yumlog.Native config show [--config path]
@@ -41,6 +42,31 @@ Extension kinds:
 
         loop args NativeConfig.defaultConfigPath Map.empty
 
+    let private parseHandoff args =
+        let rec loop remaining options =
+            match remaining with
+            | [] -> options
+            | "--resume" :: rest when not (Map.containsKey "resume" options) ->
+                loop rest (Map.add "resume" "true" options)
+            | key :: value :: rest
+                when List.contains key [ "--input"; "--out-dir"; "--ocr" ]
+                     && not (value.StartsWith("--"))
+                     && not (Map.containsKey key options) ->
+                loop rest (Map.add key value options)
+            | token :: _ -> invalidArg "args" $"Unexpected, duplicate, or incomplete handoff option '{token}'."
+
+        let options = loop args Map.empty
+        let required key =
+            options
+            |> Map.tryFind key
+            |> Option.filter (String.IsNullOrWhiteSpace >> not)
+            |> Option.defaultWith (fun () -> invalidArg "args" $"Missing {key} path.")
+
+        { Input = required "--input"
+          OutDir = required "--out-dir"
+          OcrMode = options |> Map.tryFind "--ocr" |> Option.defaultValue "none"
+          Resume = Map.containsKey "resume" options }
+
     let parse argv =
         match Array.toList argv with
         | [] -> Help
@@ -57,6 +83,8 @@ Extension kinds:
             let configPath, options = parseOptions args
             let appConfig = NativeConfig.load configPath
             Analyze(NativeConfig.mergeAnalyze appConfig.Analyze options, configPath)
+        | "handoff" :: args ->
+            Handoff(parseHandoff args)
         | "follow" :: args ->
             let configPath, options = parseOptions args
             let appConfig = NativeConfig.load configPath

@@ -392,10 +392,55 @@ type McpServerManifest =
       Description: string
       Tools: McpToolDescriptor array }
 
+[<CLIMutable>]
+type HandoffConfig =
+    { Input: string
+      OutDir: string
+      OcrMode: string
+      Resume: bool }
+
+[<CLIMutable>]
+type HandoffOptions =
+    { OcrMode: string }
+
+[<CLIMutable>]
+type HandoffProducer =
+    { Name: string
+      Version: string }
+
+[<CLIMutable>]
+type HandoffFile =
+    { Role: string
+      Path: string
+      Sha256: string
+      SizeBytes: int64 }
+
+[<CLIMutable>]
+type HandoffSource =
+    { SourcePath: string
+      Path: string
+      Sha256: string
+      SizeBytes: int64 }
+
+[<CLIMutable>]
+type HandoffManifest =
+    { Schema: string
+      SchemaVersion: string
+      SessionId: string
+      Producer: HandoffProducer
+      CreatedUtc: DateTimeOffset
+      CompletedUtc: DateTimeOffset
+      AnalysisPath: string
+      MdkgPath: string
+      Options: HandoffOptions
+      Sources: HandoffSource array
+      Files: HandoffFile array }
+
 type NativeCommand =
     | Capture of CaptureConfig * string
     | Record of RecordConfig * string
     | Analyze of AnalyzeConfig * string
+    | Handoff of HandoffConfig
     | Follow of FollowConfig * string
     | Orchestrate of string * string
     | ConfigShow of string

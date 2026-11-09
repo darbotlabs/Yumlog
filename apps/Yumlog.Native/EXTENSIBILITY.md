@@ -152,6 +152,63 @@ configured sources, not re-enable them. `--kind`/`--name` apply to list/show, no
 `list`/`mcp` omit invalid files without returning their load issues; use `validate` to inspect
 errors before consuming the catalog.
 
+## Portable image handoff CLI
+
+```powershell
+dotnet $native handoff --input .\images --out-dir .\sessions\new-session --ocr none
+dotnet $native handoff --input .\images --out-dir .\sessions\new-session --ocr none --resume
+```
+
+`handoff --input <image|directory> --out-dir <new-session> [--ocr none|auto|windows-ai|raw-com] [--resume]`
+uses the native image analyzer and actual MDKG writer/producers. OCR defaults to **none**
+independently of application configuration; other modes retain the readiness/provisioning behavior
+described above. Directory input selects top-level PNG/JPEG/BMP images in ordinal filename order.
+The command copies them to `frames/000001.bmp` (retaining their normalized extensions), analyzes
+the copies, and emits portable relative paths. It does not capture, record, mux, install, or sign.
+
+`handoff.json` uses this transport contract (additional native resume fields are shown):
+
+```json
+{
+  "schema": "urn:yumlog:handoff:v1",
+  "schemaVersion": "1.0",
+  "sessionId": "<UUID>",
+  "createdUtc": "<UTC timestamp>",
+  "completedUtc": "<UTC timestamp>",
+  "producer": { "name": "Yumlog.Native", "version": "<assembly version>" },
+  "analysisPath": "analysis.json",
+  "mdkgPath": "session.mdkg",
+  "files": [
+    { "role": "source", "path": "frames/000001.bmp", "sha256": "<lowercase SHA256>", "sizeBytes": 58 },
+    { "role": "analysis", "path": "analysis.json", "sha256": "<lowercase SHA256>", "sizeBytes": 0 },
+    { "role": "mdkg", "path": "session.mdkg", "sha256": "<lowercase SHA256>", "sizeBytes": 0 }
+  ],
+  "options": { "ocrMode": "none" },
+  "sources": [
+    { "sourcePath": "original.bmp", "path": "frames/000001.bmp", "sha256": "<lowercase SHA256>", "sizeBytes": 58 }
+  ]
+}
+```
+
+Byte lengths above are illustrative; every emitted entry has its actual signed 64-bit byte length.
+`analysis.json` is the native analysis array; MDKG contains timing, OCR-text and UI-affordance
+samples for every image, ordered on a **synthetic 1 Hz timeline**, not a capture clock or video.
+All standard layers are registered; unused layers have no samples.
+
+Publication uses a unique sibling staging directory and a final non-overwriting directory rename.
+Failures retain the unpublished staging directory with its location in the error. An existing output
+is never modified. `--resume` verifies the original image names/content/order, normalized OCR option,
+every payload size/hash, and exact output inventory (including unexpected files/directories);
+it returns the original manifest without rewriting anything. If the target does not exist, it
+creates a new session. Input and output must not overlap. Reparse-point inputs/outputs/ancestors
+are rejected, and manifest paths must match the generated fixed inventory before file reads.
+
+`handoff.sha256` holds the lowercase SHA256 of the exact `handoff.json` bytes, followed by a newline.
+It is required for **native resume**, but deliberately is not a `files` payload; consumers can copy
+only the manifest and listed payloads. Such copies remain consumable but need the unchanged
+sidecar (and matching source inputs) for native resume. Checksums detect corruption, not malicious
+rewrites of both content and checksums; this is not signing or authenticated provenance.
+
 ## Extension manifests
 
 A manifest uses the `urn:yumlog:native:extension-manifest:v1` record shape. It requires a semantic
@@ -216,6 +273,7 @@ Constructors (`identifier`, `invocation`, `capability`, `manifest`) validate thr
 # From the repository root:
 .\apps\Yumlog.Native\Test-YumlogNativeExtensibility.ps1
 .\launchers\Test-YumlogNativeMdkgRoundTrip.ps1
+.\launchers\Test-YumlogNativeHandoff.ps1
 ```
 
 Mirrors `launchers/Test-YumlogNativeMdkgRoundTrip.ps1`: it builds the project, generates an F#
@@ -223,8 +281,13 @@ script against the built assembly, and checks kind coverage, manifest loading, i
 reporting, legacy config normalization, filters, the MCP projection, and the MDKG round trip, then
 smoke-tests the three CLI commands.
 
-Both tests build and write deterministic fixtures below native `obj`; they do not capture,
+These tests build and write synthetic fixtures below native `obj`; they do not capture,
 record, install/register packages, alter certificate trust, or run model provisioning.
 Extensibility discovery may probe Windows AI readiness. Test runners fail on build/F# script
 failures, and the expected invalid-manifest CLI exit is consumed rather than reported as an
 overall test failure.
+
+The handoff regression creates tiny BMPs with OCR disabled, checks initial publication, portable
+manifest/analysis, unchanged resume, corrupt/missing/extra outputs, changed inputs/options, CLI/path
+safety and failed-publication isolation, and reads generated MDKG timing/OCR/UI samples using the
+actual reader. Its unique fixture directory is removed after the run.
