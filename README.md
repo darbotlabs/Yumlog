@@ -8,16 +8,52 @@ Paperboy is Yumlog's lightweight courier layer: it can sample recordings with
 half-step navigation and can pack files into small manifest-backed bundles that
 are easy to copy, attach, or "toss" to another workspace.
 
+Yumlog also includes a local APIM service foundation under
+`apps\Yumlog.APIM.Service`. The service exposes loopback health endpoints,
+ACP resource/tool/prompt metadata, authenticated local envelope routes, and
+APIM route invocation scaffolding for the Paperboy APIM app, MCP bridge,
+Widget Studio, LiveTile, OCR, and MDKG workflows.
+
+### Components and prerequisites
+
+Run the examples below from the repository root on Windows.
+
+| Component | Purpose | Documentation |
+|---|---|---|
+| `apps\Yumlog.Native` | F# capture, recording, OCR, MDKG, and extension catalog | [Extension contract](apps/Yumlog.Native/EXTENSIBILITY.md) and [MDKG format](apps/Yumlog.Native/hevc-swarm-out/MDKG-SPEC.md) |
+| `apps\Paperboy.Desktop` | WPF bundle UI, model manager, live tile, tray, and capability catalog | [Paperboy guide](apps/Paperboy.Desktop/README.md) |
+| `apps\Paperboy.Mcp` | Paperboy stdio MCP host | [MCP configuration](apps/Paperboy.Desktop/README.md) |
+| `apps\Yumlog.APIM.Service` | Local HTTP/ACP service foundation | [Service guide](apps/Yumlog.APIM.Service/README.md) |
+| `apps\Yumlog.WidgetStudio` | Widget manifest validation, HTML preview, and package export | [Widget Studio guide](apps/Yumlog.WidgetStudio/README.md) |
+| `Skills`, `launchers`, `snap` | PowerShell utilities, packaging/service launchers, and fast screenshot executable | [Development guide](Tasklist.md) |
+
+Use the .NET SDK versions required by the component projects: Paperboy, APIM,
+and Widget Studio target .NET 11, while Yumlog.Native targets .NET 10 with
+Windows 11 24H2 projections. Install matching runtimes for framework-dependent
+execution, including the Windows Desktop runtime for Paperboy Desktop and
+Yumlog.Native.
+PowerShell is required for launcher scripts; FFmpeg is required for recording.
+`launchers\install.ps1` can download FFmpeg and build the optional `snap` helper.
+Windows AI OCR has additional hardware, runtime, and package-identity requirements
+described below. Foundry Local is optional and must be installed/configured
+separately for model workflows.
+
+The tools default to local operation, but dependency downloads, model acquisition,
+and explicitly configured HTTP/connectors can use the network. Do not commit
+API keys, signing certificates, recordings, or generated reports.
+
 ### Web Interface
 
 For a visual interface to manage, configure, and use Yumlog, open `yumlog-manager.html` in your web browser. The HTML interface provides:
 
 - Easy command generation for recording and capturing
-- Statistics overview
-- Configuration viewer
+- Commands for retrieving statistics
+- Configuration editor with manual load/save instructions
 - PowerShell command reference
 
 Simply double-click `yumlog-manager.html` to launch the interface in your default browser.
+It generates commands and instructions; it does not execute them or automatically
+read local recordings/configuration.
 
 ### Usage Examples
 
@@ -43,13 +79,73 @@ dotnet run --project .\apps\Yumlog.Native\Yumlog.Native.fsproj -c Release -- fol
 dotnet run --project .\apps\Yumlog.Native\Yumlog.Native.fsproj -c Release -- config show
 dotnet run --project .\apps\Yumlog.Native\Yumlog.Native.fsproj -c Release -- config init --force
 
-# Build an unsigned MSIX package layout and package artifact
-dotnet msbuild .\apps\Yumlog.Native\Yumlog.Native.fsproj -t:PackageMsix -p:Configuration=Release
+# Build an unsigned MSIX without installing or changing certificate trust
+.\launchers\Build-YumlogNativeMsix.ps1 `
+  -ProjectPath .\apps\Yumlog.Native\Yumlog.Native.fsproj `
+  -OutputRoot .\dist\Yumlog.Native -Configuration Release -NoSign
 ```
+
+The MSIX launcher requires Windows SDK `makeappx.exe` and rebuilds the package
+layout under the specified output root. **Omitting `-NoSign` creates/reuses a
+signing certificate and modifies CurrentUser certificate trust.** Installation
+is a separate explicit action. The older project `PackageMsix` target references
+two missing Paperboy image assets; use the documented native launcher instead.
+See the [packaging details](apps/Yumlog.Native/EXTENSIBILITY.md#package-identity-and-ocr)
+before running install or OCR helpers.
+
+#### Using the local APIM service
+
+```powershell
+# Build the APIM service
+dotnet build .\apps\Yumlog.APIM.Service\Yumlog.APIM.Service.fsproj -c Release
+
+# Run a temporary local round-trip validation on http://127.0.0.1:5119
+.\launchers\Test-YumlogAPIMRoundTrip.ps1
+
+# Install/start/stop as a Windows Service from an elevated PowerShell session
+.\launchers\Install-YumlogAPIMService.ps1
+.\launchers\Start-YumlogAPIMService.ps1
+.\launchers\Stop-YumlogAPIMService.ps1
+.\launchers\Uninstall-YumlogAPIMService.ps1
+```
+
+APIM service endpoints include `/health`, `/ready`, `/version`,
+`/capabilities`, `/acp/resources`, `/acp/resources/read`, `/acp/tools`,
+`/acp/tools/call`, `/acp/prompts`, `/acp/prompts/get`, `/apim/routes`, and
+`/apim/routes/invoke`. If `YUMLOG_APIM_API_KEY` or `Auth:ApiKey` is set,
+protected requests must provide the key in `X-Yumlog-APIM-Key`,
+`Authorization: Bearer <key>`, or `auth.token` in the JSON envelope. The service
+is a foundation: catalog/validation and envelope responses do not imply that
+OCR, bundling, model inference, or arbitrary route backends are executed.
+See the service guide for public endpoints and implementation limits.
 
 `Yumlog.Native` is local-only and uses `config\yumlog.native.json` by default. Capture uses .NET desktop APIs directly. Recording uses FFmpeg as a native child process. OCR uses the Windows AI Text Recognition stack: `--ocr auto`, `--ocr windows-ai`, and `--ocr raw-com` (alias of `windows-ai`) run the full recognition pipeline and return lines, words, polygon bounds, and confidence values. The pipeline is implemented in F# (`WindowsAiOcr.fs`) on the managed `Microsoft.WindowsAppSDK.AI` projections: it bootstraps the Windows App Runtime, checks `TextRecognizer.GetReadyState`, provisions the on-device model via `TextRecognizer.EnsureReadyAsync` when `NotReady`, creates a recognizer with `CreateAsync`, decodes the image to a BGRA8 `SoftwareBitmap`/`ImageBuffer`, and projects `RecognizeTextFromImage` results into the native data model. Windows AI OCR requires Windows App SDK runtime registration, package/sparse-package identity with `systemAIModels` (run the packaged build so `EnsureReadyAsync` can deploy the `Windows.Workload.ContentExtraction` model), and Copilot+/NPU-class hardware; the unpackaged exe reports `CapabilityMissing` by design. `apps\Yumlog.Native\Package.appxmanifest` declares the `systemAIModels` capability and an `appExecutionAlias` so the packaged CLI is invocable as `Yumlog.Native.exe`.
 
-`Mdkg.fs` implements the `.mdkg` binary container format (Magic: `MDKG\r\n\x1A\n`, version 1.0). MDKG is a layered metadata track format designed to carry frame-accurate metadata alongside HEVC/MP4 recordings. Layers are indexed by ID (Timing=1, OcrText=2, ChangeScore=3, Navigation=4, Embedding=5, Custom=0x1000+) and carry UTF-8 JSON payloads in a binary-indexed container. Layer samples align to the `MovieTimescale` (10,000,000 ticks/sec). The format is independent of MP4 and can be embedded as a `mett` timed-metadata track or stored as a standalone `.mdkg` sidecar. See `apps/Yumlog.Native/hevc-swarm-out/MDKG-SPEC.md` for the full byte-layout specification.
+`Mdkg.fs` implements the `.mdkg` binary container format (Magic: `MDKG\r\n\x1A\n`, version 1.0). MDKG carries timestamped metadata alongside recordings as a standalone sidecar. The typed layer contracts cover timing, OCR, change scores, navigation, embeddings, semantic and integration metadata, and the extension catalog. The binary format and its proposed MP4 integration are documented in [MDKG-SPEC.md](apps/Yumlog.Native/hevc-swarm-out/MDKG-SPEC.md); writing a sidecar does not itself mux metadata into an MP4.
+
+#### Native extension catalog
+
+```powershell
+dotnet run --project .\apps\Yumlog.Native\Yumlog.Native.fsproj -c Release -- extensions list
+dotnet run --project .\apps\Yumlog.Native\Yumlog.Native.fsproj -c Release -- extensions validate --dir .\apps\Yumlog.Native\Samples
+dotnet run --project .\apps\Yumlog.Native\Yumlog.Native.fsproj -c Release -- extensions mcp
+```
+
+The catalog combines built-in capability descriptors with optional JSON extension
+manifests. The MCP command exports a manifest; it does not start a tool server or
+execute the declared extensions. See the [extension guide](apps/Yumlog.Native/EXTENSIBILITY.md).
+
+#### Widget Studio
+
+```powershell
+dotnet run --project .\apps\Yumlog.WidgetStudio\Yumlog.WidgetStudio.csproj -c Release -- validate .\apps\Yumlog.WidgetStudio\Samples\paperboy-capability-mesh.widget.json
+dotnet run --project .\apps\Yumlog.WidgetStudio\Yumlog.WidgetStudio.csproj -c Release -- preview .\apps\Yumlog.WidgetStudio\Samples\paperboy-livetile.widget.json .\dist\widgetstudio\paperboy.preview.html
+dotnet run --project .\apps\Yumlog.WidgetStudio\Yumlog.WidgetStudio.csproj -c Release -- self-test
+```
+
+Widget Studio supports schema versions `1.0` and `1.1`, semantic validation,
+capability indexes, static HTML previews, and `.widget.zip` exports. It is an
+authoring CLI, not an always-running widget host.
 
 #### Using the Unified CLI
 
@@ -120,7 +216,7 @@ dotnet publish .\apps\Paperboy.Desktop\Paperboy.Desktop.csproj `
 The desktop app provides a modern drag-and-drop UI for selecting files and
 folders, choosing compression, creating `.paperboy.zip` bundles, inspecting
 manifests, unpacking bundles, and tossing bundles to an outbox folder.
-It uses Windows App SDK visual assets for its showcase shell and ships
+It uses WPF for its showcase shell and ships
 composable agent-card metadata for A2A/livetile surfaces plus a companion
 `Paperboy.Mcp` stdio host for agent tool calls.
 
@@ -207,27 +303,24 @@ surface backed by PMM:
 The widget is intentionally a live tile: small by default, expandable on demand,
 and model-backed rather than a static status badge.
 
-#### Run Unit Tests
-
-```powershell
-# Executes Pester with detailed output
-.\Skills\Simple.Tests.ps1
-```
-
-- Output files are saved to `./yumlogs` by default, or as specified by parameters.
-- FFmpeg is automatically installed if not present (via `install.ps1`).
-
----
-
 ### Testing
 
-Run tests directly with Pester or PowerShell:
+Use the existing component suites rather than `Simple.Tests.ps1`, which is only
+an always-passing placeholder:
 
 ```powershell
-.\Skills\Simple.Tests.ps1
+Invoke-Pester -Path .\Skills\Test-PaperboyBundle.Tests.ps1, .\Skills\Test-PaperboyExtensions.Tests.ps1 -Output Detailed
+.\apps\Yumlog.Native\Test-YumlogNativeExtensibility.ps1
+.\launchers\Test-YumlogNativeMdkgRoundTrip.ps1
+.\launchers\Test-YumlogAPIMRoundTrip.ps1
+dotnet run --project .\apps\Yumlog.WidgetStudio\Yumlog.WidgetStudio.csproj -c Release -- self-test
 ```
 
-Compatible with Pester 3.4.0+ (included in Windows PowerShell).
+The Paperboy suites use modern Pester syntax; see the component guide for the
+supported invocation. The older `Test-ScreenSkills.Tests.ps1` uses Pester 3
+syntax and mocked files, not actual screen capture. OCR and MSIX installation
+are separate, machine-dependent checks; do not run installation scripts as
+ordinary unit tests. APIM round-trip reports and `dist` output stay local.
 
 ---
 
@@ -235,13 +328,12 @@ Compatible with Pester 3.4.0+ (included in Windows PowerShell).
 
 | Command                | Description                                      |
 |------------------------|--------------------------------------------------|
-| start yumlog [‑Fps n] [‑DurationSec n] [‑OutFile path] | Start a new yumlog screen recording (video)      |
-| pause yumlog           | Pause the current yumlog recording (if supported)|
-| stop yumlog            | Stop the current yumlog recording                |
-| get yumlog             | Get the latest yumlog file path                  |
-| yumlog count           | Number of yumlog files in the default folder     |
-| yumlog size            | Cumulative size of all yumlog files              |
-| yumlog config          | Show current yumlog configuration (tools.json)   |
+| `.\launchers\yumlog.ps1 start` | Record with optional `-Fps`, `-DurationSec`, and `-OutFile` |
+| `.\launchers\yumlog.ps1 capture` | Capture with optional `-Fps`, `-DurationSec`, and `-OutDir` |
+| `.\launchers\yumlog.ps1 pause` / `stop` | Placeholders; process control is not implemented |
+| `.\launchers\yumlog.ps1 get` | Get the latest recording path |
+| `.\launchers\yumlog.ps1 count` / `size` | Recording count / total size |
+| `.\launchers\yumlog.ps1 config` | Print `config\tools.json` |
 | Record-Terminals.ps1   | Record terminal windows and extract Paperboy frames |
 | paperboy.ps1 pack      | Create a `.paperboy.zip` bundle with manifest    |
 | paperboy.ps1 list      | Print a Paperboy bundle manifest                 |
@@ -268,17 +360,20 @@ darbot.yumlog/
 │   ├── Record-Terminals.ps1
 │   └── yumlog.ps1
 ├── apps/
-│   └── Paperboy.Desktop/
+│   ├── Paperboy.Desktop/
 │       ├── MainWindow.xaml
 │       └── Services/PaperboyBundleService.cs
-│   └── Paperboy.Mcp/
-│       └── Program.cs
+│   ├── Paperboy.Mcp/
+│   ├── Yumlog.Native/
+│   ├── Yumlog.APIM.Service/
+│   └── Yumlog.WidgetStudio/
 ├── bisect-test/
 │   ├── bisect-extractor.html
 │   ├── library.html
 │   └── terminal-viewer.html
 ├── config/
-│   └── tools.json
+│   ├── tools.json
+│   └── yumlog.native.json
 ├── .github/
 │   └── copilot-instructions.md
 ├── yumlog-manager.html
@@ -288,3 +383,8 @@ darbot.yumlog/
 ---
 
 For more details, see `Tasklist.md` and inline comments in each script.
+
+Local media under `archive\51PercentCrew` and generated integration reports under
+`Scratchpad\apim-roundtrip` are not application source and are excluded from new
+commits. Historical research notes under `hevc-swarm-out` describe design work;
+the component guides distinguish implemented behavior from planned integration.
