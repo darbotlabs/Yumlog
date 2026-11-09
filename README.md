@@ -98,6 +98,10 @@ This writes a real standalone MDKG sidecar; it does not mux metadata into MP4.
 See the [native guide](apps/Yumlog.Native/EXTENSIBILITY.md) for the full handoff
 contract and explicit OCR side effects.
 
+`handoff` OCR never provisions models. Use `readiness --ocr windows-ai` for a
+read-only `{ready,code,message}` probe; existing `analyze`/`follow` behavior is
+unchanged and may provision when explicitly invoked with OCR.
+
 #### Using the native F# CLI
 
 ```powershell
