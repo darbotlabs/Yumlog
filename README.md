@@ -75,6 +75,29 @@ read local recordings/configuration.
 
 ### Usage Examples
 
+#### Portable analysis and MDKG handoff
+
+```powershell
+# Analyze existing images, copy sources, and emit a portable verified handoff.
+# No desktop capture or OCR model provisioning with --ocr none.
+dotnet run --project .\apps\Yumlog.Native\Yumlog.Native.fsproj -c Release -- handoff --input .\screenshots --out-dir .\yumlogs\handoff-one --ocr none
+
+# Reuse only if the original inputs/options and every completed output match.
+dotnet run --project .\apps\Yumlog.Native\Yumlog.Native.fsproj -c Release -- handoff --input .\screenshots --out-dir .\yumlogs\handoff-one --ocr none --resume
+```
+
+The versioned `handoff.json` identifies copied frames, `analysis.json`, and
+`session.mdkg` using relative paths, lengths, and SHA-256 hashes. `handoff.sha256`
+protects native resume against an accidentally modified manifest. Output is
+promoted from unique staging only on completion; existing directories are not
+overwritten. Downstream consumers can package this directory without depending
+on the producer's original absolute image paths. Checksums detect corruption,
+not malicious replacement of both content and checksums.
+
+This writes a real standalone MDKG sidecar; it does not mux metadata into MP4.
+See the [native guide](apps/Yumlog.Native/EXTENSIBILITY.md) for the full handoff
+contract and explicit OCR side effects.
+
 #### Using the native F# CLI
 
 ```powershell
@@ -330,6 +353,7 @@ an always-passing placeholder:
 Invoke-Pester -Path .\Skills\Test-PaperboyBundle.Tests.ps1, .\Skills\Test-PaperboyExtensions.Tests.ps1 -Output Detailed
 .\apps\Yumlog.Native\Test-YumlogNativeExtensibility.ps1
 .\launchers\Test-YumlogNativeMdkgRoundTrip.ps1
+.\launchers\Test-YumlogNativeHandoff.ps1
 .\launchers\Test-YumlogAPIMRoundTrip.ps1
 dotnet run --project .\apps\Yumlog.WidgetStudio\Yumlog.WidgetStudio.csproj -c Release -- self-test
 ```

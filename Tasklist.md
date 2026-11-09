@@ -229,10 +229,13 @@ or internal roadmap details into public issues, commits, or pull requests.
 
 ### Integration and delivery sequence
 
-The current integration slice establishes ownership and covers maintained
-components in CI. Next is one synthetic end-to-end capture/analysis manifest to
-MDKG to bundle handoff, before expanding native/model HTTP operations and widget
-runtime behavior in their owning application.
+The ownership and CI slice is complete. Native `handoff` now produces copied
+source frames, analysis, an actual MDKG sidecar, and a versioned integrity
+manifest from existing images. Its regression script
+`launchers\Test-YumlogNativeHandoff.ps1` exercises synthetic images, MDKG reads,
+resume, tampering, and failure cases without capturing the desktop or
+provisioning a model. Delivery packaging and runtime consumption belong to the
+downstream application; this repository does not claim to implement that host.
 
 Previously committed build outputs or recordings need a separate, reviewed
 index-cleanup change. Adding ignore rules does not remove tracked files.
