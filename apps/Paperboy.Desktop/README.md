@@ -166,6 +166,14 @@ route execution remain placeholders (`forwarded: false` / `executed: false`).
 `launchers\Stop-YumlogAPIMService.ps1`. Install/configure that service separately
 and use the permissions required by those scripts.
 
+The standalone host defaults to `http://127.0.0.1:5118`, with public health and
+capability endpoints, not the desktop's `:8787/paperboy` route layout. Its
+ACP/APIM routes support optional API-key authentication; the desktop health
+probes do not attach authentication headers. Starting that host alone therefore
+does not connect the displayed Paperboy routes or make `/paperboy/status`
+available. See [the APIM service README](../Yumlog.APIM.Service/README.md) for
+its actual routes and configuration.
+
 Desktop validation probes the configured gateway `/status` and Foundry
 `/v1/models`, checks MCP output files, and resolves the OCR executable/project.
 It does not execute OCR, run a full MCP round trip, or prove that every displayed
