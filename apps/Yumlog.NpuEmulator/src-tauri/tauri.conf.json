@@ -1,0 +1,33 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Yumlog NPU Emulator",
+  "version": "0.1.0",
+  "identifier": "com.darbotlabs.yumlog.npuemulator",
+  "build": {
+    "frontendDist": "../ui"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [
+      {
+        "title": "Yumlog NPU Emulator",
+        "width": 1180,
+        "height": 820,
+        "minWidth": 820,
+        "minHeight": 640,
+        "resizable": true
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "publisher": "Darbot Labs",
+    "category": "DeveloperTool",
+    "shortDescription": "CPU-native NPU emulation harness for Yumlog",
+    "longDescription": "Native Rust/Tauri runtime that models NPU-gated Windows AI feature readiness, provisioning, execution, and trace capture."
+  }
+}

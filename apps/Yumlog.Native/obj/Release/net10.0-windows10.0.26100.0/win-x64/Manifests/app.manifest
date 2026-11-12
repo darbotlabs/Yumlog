@@ -9,6 +9,7 @@
         <winrtv1:activatableClass name="Microsoft.UI.Composition.AnimationController" threadingModel="both"></winrtv1:activatableClass>
         <winrtv1:activatableClass name="Microsoft.UI.Composition.CompositionAnimation" threadingModel="both"></winrtv1:activatableClass>
         <winrtv1:activatableClass name="Microsoft.UI.Composition.CompositionApiInformation" threadingModel="both"></winrtv1:activatableClass>
+        <winrtv1:activatableClass name="Microsoft.UI.Composition.CompositionEngine" threadingModel="both"></winrtv1:activatableClass>
         <winrtv1:activatableClass name="Microsoft.UI.Composition.CompositionBrush" threadingModel="both"></winrtv1:activatableClass>
         <winrtv1:activatableClass name="Microsoft.UI.Composition.CompositionCapabilities" threadingModel="both"></winrtv1:activatableClass>
         <winrtv1:activatableClass name="Microsoft.UI.Composition.CompositionClip" threadingModel="both"></winrtv1:activatableClass>

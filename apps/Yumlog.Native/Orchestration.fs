@@ -8,25 +8,38 @@ open System.Reflection
 open System.Text
 
 module NativeFollow =
-    let private frameChangeScore (previousPath: string) (currentPath: string) =
+    /// Fraction of sampled pixels that differ between two frames.
+    ///
+    /// sampleStep trades sensitivity for cost. The default derived step is tuned for
+    /// whole-window changes; text-level UI churn on a large desktop moves well under
+    /// 1% of pixels and needs a finer grid to register at all.
+    let frameChangeScoreAt (sampleStep: int) (previousPath: string) (currentPath: string) =
         if String.IsNullOrWhiteSpace(previousPath) || not (File.Exists(previousPath)) then
             1.0
         else
             use previous = new Bitmap(previousPath)
             use current = new Bitmap(currentPath)
-            let sampleStep = max 1 (min previous.Width previous.Height / 64)
+            let step =
+                if sampleStep > 0 then
+                    sampleStep
+                else
+                    max 1 (min previous.Width previous.Height / 64)
+
             let mutable total = 0
             let mutable changed = 0
 
             let width = min previous.Width current.Width
             let height = min previous.Height current.Height
-            for x in 0 .. sampleStep .. (width - 1) do
-                for y in 0 .. sampleStep .. (height - 1) do
+            for x in 0 .. step .. (width - 1) do
+                for y in 0 .. step .. (height - 1) do
                     total <- total + 1
                     if previous.GetPixel(x, y).ToArgb() <> current.GetPixel(x, y).ToArgb() then
                         changed <- changed + 1
 
             if total = 0 then 0.0 else float changed / float total
+
+    let frameChangeScore (previousPath: string) (currentPath: string) =
+        frameChangeScoreAt 0 previousPath currentPath
 
     let follow (config: FollowConfig) =
         let started = DateTimeOffset.UtcNow
@@ -73,6 +86,9 @@ module NativeOrchestration =
             | assembly when String.IsNullOrWhiteSpace(assembly.Location) ->
                 failwith "Could not locate the Yumlog.Native entry assembly path for orchestration."
             | assembly -> assembly.Location
+
+        if not (String.Equals(Path.GetFileNameWithoutExtension(assemblyPath), "Yumlog.Native.Cli", StringComparison.OrdinalIgnoreCase)) then
+            failwith "Orchestration is available through Yumlog.Native.Cli to keep the desktop UI isolated from automation runs."
 
         match Environment.ProcessPath with
         | null | "" ->

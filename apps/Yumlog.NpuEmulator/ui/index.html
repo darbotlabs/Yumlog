@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Yumlog NPU Emulator</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Yumlog adaptive runtime</p>
+          <h1>NPU Emulator Container</h1>
+          <p class="lede">
+            CPU-native harness for NPU-style readiness, provisioning, execution,
+            and trace capture.
+          </p>
+        </div>
+        <div class="state-card">
+          <span class="label">TextRecognizer state</span>
+          <strong id="ready-state">Loading...</strong>
+          <span id="ready-detail">Starting runtime probe.</span>
+        </div>
+      </section>
+
+      <section class="grid">
+        <article class="panel">
+          <h2>Runtime controls</h2>
+          <div class="actions">
+            <button id="refresh">Refresh state</button>
+            <button id="ensure">Provision emulated NPU worker</button>
+            <button id="probe">Probe container runtime</button>
+          </div>
+          <pre id="runtime-output" class="output"></pre>
+        </article>
+
+        <article class="panel">
+          <h2>Recognition probe</h2>
+          <label for="image-path">Image path</label>
+          <input id="image-path" type="text" placeholder="E:\\Yumlog\\screenshots\\frame.png" />
+          <button id="recognize">Run OCR through emulator contract</button>
+          <pre id="recognize-output" class="output"></pre>
+        </article>
+
+        <article class="panel">
+          <h2>Models</h2>
+          <pre id="models-output" class="output"></pre>
+        </article>
+
+        <article class="panel">
+          <h2>Trace journal</h2>
+          <pre id="traces-output" class="output"></pre>
+        </article>
+      </section>
+    </main>
+
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

@@ -34,18 +34,23 @@ darbot.yumlog is a local screen capture and logging utility for Windows, designe
 
 ## Features
 
-* **Native F# CLI:** `apps\Yumlog.Native` provides no-PowerShell capture, record, analyze, follow, orchestrate, and config commands.
-* **MDKG Container Format:** `Mdkg.fs` implements the `.mdkg` binary layered metadata track format for frame-accurate HEVC/MP4 metadata embedding (OCR text, timing, change scores, navigation steps, embeddings). See `apps/Yumlog.Native/hevc-swarm-out/MDKG-SPEC.md`.
-* **Screen Recording:** Record the desktop at configurable FPS and duration to MP4 using FFmpeg.
+* **Native F# CLI:** `apps\Yumlog.Native.Cli` provides no-PowerShell capture, record, analyze, follow, orchestrate, runbook, reason, watch, models, selftest, and config commands. See [`docs/NATIVE-CLI.md`](docs/NATIVE-CLI.md).
+* **Hardware HEVC Recording:** Windows Graphics Capture into NVENC, with automatic fallback to x265 then FFmpeg (`--backend auto|nvenc|x265|ffmpeg`), including a lossless mode.
+* **MDKG Container Format:** `Mdkg.fs` implements the `.mdkg` binary layered metadata track format for frame-accurate HEVC/MP4 metadata embedding. Layers: `Timing`(1), `OcrText`(2), `UiAffordance`(3), `SemanticGraph`(4), `InputEvent`(5). Unregistered layer IDs are skipped, so the format is forward-compatible. See `apps/Yumlog.Native/hevc-swarm-out/MDKG-SPEC.md`.
+* **Verifiable Runbooks:** `MdkgIntel.fs` turns a recording into ordered steps where every claim carries a resolvable `mdkg://` citation, so a runbook can be checked rather than trusted.
+* **On-Device Reasoning:** `reason` answers questions about a recording using a local model through ONNX Runtime GenAI. Fully offline. See [`docs/ON-DEVICE-REASONING.md`](docs/ON-DEVICE-REASONING.md).
+* **Live Screen Watching:** `watch` observes the screen and narrates on an interval, skipping frames below a change threshold.
+* **Built-in Self Test:** `selftest` runs 16 correctness checks over the container, intelligence layer, and hardware probes, including a negative control on timing coverage.
+* **Screen Recording:** Record the desktop at configurable FPS and duration.
 * **Screenshot Capture:** Capture periodic screenshots at configurable FPS and duration.
 * **Screen Analysis:** Emit JSON image metadata, hashes, dimensions, and OCR provider status.
 * **Follow-Me Manifests:** Capture frame sequences, estimate visual changes, and emit navigation-step manifests.
 * **Simple CLI:** One-liner PowerShell scripts for all major actions.
 * **No Dependencies:** FFmpeg is auto-installed if not present.
 * **Scriptable:** Designed for automation and integration in CI/CD or test workflows.
-* **Configurable:** All defaults are in `config/tools.json`.
-* **No Telemetry:** 100% local execution.
-* **Testable:** Built-in Pester test suite to verify functionality.
+* **Configurable:** All defaults are in `config/tools.json` and `config/yumlog.native.json`.
+* **No Telemetry:** 100% local execution, including the reasoning path.
+* **Testable:** Built-in Pester test suite plus the native `selftest` suite.
 
 ## Project Structure
 
@@ -65,7 +70,14 @@ darbot.yumlog/
 │   └── tools.json          # Default yumlog configuration
 │   └── yumlog.native.json  # Native CLI configuration
 ├── apps/
-│   └── Yumlog.Native/      # Native .NET F# CLI
+│   ├── Yumlog.Native/      # F# implementation library (capture, encode, mdkg, llm)
+│   ├── Yumlog.Native.Cli/  # Runnable native CLI entry point
+│   └── Yumlog.NpuEmulator/ # Rust/Tauri NPU-emulation runtime
+├── docs/
+│   ├── NATIVE-CLI.md       # Native CLI command reference
+│   └── ON-DEVICE-REASONING.md
+├── hevc-swarm-out/
+│   └── baseline/           # CDP drivers and recording artifacts
 ├── .github/                # GitHub configuration
 │   └── copilot-instructions.md  # GitHub Copilot instructions
 ├── yumlog-manager.html     # Web-based management interface
@@ -119,14 +131,23 @@ The web interface is completely local and requires no server setup.
 ### Native F# CLI
 
 ```powershell
-dotnet build .\apps\Yumlog.Native\Yumlog.Native.fsproj -c Release
-dotnet run --project .\apps\Yumlog.Native\Yumlog.Native.fsproj -c Release -- capture --out-dir .\screenshots --duration 1
-dotnet run --project .\apps\Yumlog.Native\Yumlog.Native.fsproj -c Release -- analyze --input .\screenshots --ocr auto
-dotnet run --project .\apps\Yumlog.Native\Yumlog.Native.fsproj -c Release -- follow --out-dir .\yumlogs\follow --duration 10 --ocr auto
+dotnet build .\apps\Yumlog.Native.Cli\Yumlog.Native.Cli.fsproj -c Release
+$exe = ".\apps\Yumlog.Native.Cli\bin\Release\net10.0-windows10.0.26100.0\win-x64\Yumlog.Native.Cli.exe"
+
+& $exe capture --out-dir .\screenshots --duration 1
+& $exe record  --out-file .\out.mp4 --timed-metadata-out .\out.mdkg --duration 10 --fps 30
+& $exe analyze --input .\screenshots --ocr auto
+& $exe follow  --out-dir .\yumlogs\follow --duration 10 --ocr auto
+& $exe runbook --input .\out.mdkg --markdown-out .\runbook.md
+& $exe reason  --input .\out.mdkg --provider cpu --question "What happened in this recording?"
+& $exe selftest
+
 dotnet msbuild .\apps\Yumlog.Native\Yumlog.Native.fsproj -t:PackageMsix -p:Configuration=Release
 ```
 
 The native CLI targets `net10.0-windows10.0.26100.0` in this repo because the raw Windows AI path needs versioned WinRT platform projections. It has no PowerShell entry points. The Windows AI OCR integration is capability-gated: `--ocr raw-com` uses F# Windows App Runtime bootstrap plus raw `RoGetActivationFactory`/vtable dispatch for `TextRecognizer.GetReadyState`, and includes raw async-operation/vector traversal helpers for recognized lines and words. Full text extraction still depends on Windows App SDK runtime registration, package/sparse-package identity with `systemAIModels`, NPU-backed hardware, and model readiness.
+
+Note that `bin/` and `obj/` are committed in this repository despite appearing in `.gitignore`. A stale binary can report outdated results, so rebuild before trusting `selftest`. Unknown CLI arguments are currently ignored silently rather than rejected.
 
 ### Screenshot Capture
 

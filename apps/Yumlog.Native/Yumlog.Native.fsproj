@@ -1,7 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <WindowsPackageType>None</WindowsPackageType>
@@ -11,38 +11,45 @@
     <AssemblyName>Yumlog.Native</AssemblyName>
     <RootNamespace>Yumlog.Native</RootNamespace>
     <Nullable>enable</Nullable>
+    <!-- Nullness analysis is clean; keep it that way. -->
+    <WarningsAsErrors>FS3261;FS3265</WarningsAsErrors>
     <Optimize>true</Optimize>
     <Deterministic>true</Deterministic>
-    <Version>0.4.0</Version>
+    <Version>0.4.1</Version>
     <Authors>Darbot Labs</Authors>
     <Description>Native .NET F# screen capture, recording, analysis, and follow-me orchestration for Yumlog.</Description>
     <YumlogNativePackageDir>$(MSBuildProjectDirectory)\..\..\dist\Yumlog.Native\</YumlogNativePackageDir>
     <YumlogNativePackageLayout>$(YumlogNativePackageDir)layout</YumlogNativePackageLayout>
     <YumlogNativeMsixPath>$(YumlogNativePackageDir)Yumlog.Native_$(Version)_$(RuntimeIdentifier).msix</YumlogNativeMsixPath>
+    <YumlogNativeCliTargetDir>$(MSBuildProjectDirectory)\..\Yumlog.Native.Cli\bin\$(Configuration)\net10.0-windows10.0.26100.0\$(RuntimeIdentifier)\</YumlogNativeCliTargetDir>
     <YumlogMakeAppx Condition="'$(YumlogMakeAppx)' == ''">C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\x64\makeappx.exe</YumlogMakeAppx>
+    <YumlogSignTool Condition="'$(YumlogSignTool)' == ''">C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\x64\signtool.exe</YumlogSignTool>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.WindowsAppSDK.AI" Version="2.2.3" />
+    <PackageReference Include="Microsoft.WindowsAppSDK.AI" Version="2.3.4" />
+    <!-- Pinned to the versions NuGet already resolves. The AI package requests
+         Foundation 2.3.2 / InteractiveExperiences 2.1.1, which were never published,
+         so restore silently floats upward (NU1603). Pinning makes restore deterministic. -->
+    <PackageReference Include="Microsoft.WindowsAppSDK.Foundation" Version="2.3.5" />
+    <PackageReference Include="Microsoft.WindowsAppSDK.InteractiveExperiences" Version="2.1.3" />
+    <!-- CPU execution provider for the on-device model (OnDeviceLlm.fs), which is in
+         the shared compile list and so must resolve for both projects. -->
+    <PackageReference Include="Microsoft.ML.OnnxRuntimeGenAI" Version="0.15.1" />
+    <ProjectReference Include="..\Yumlog.Native.Cli\Yumlog.Native.Cli.fsproj" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
+  <!-- Single shared source list - see Yumlog.Native.Core.props. NativeUi.fs is
+       WinExe-only and sits between the two shared halves. -->
+  <Import Project="Yumlog.Native.Core.props" />
+
   <ItemGroup>
-    <Compile Include="Domain.fs" />
-    <Compile Include="Json.fs" />
-    <Compile Include="Mdkg.fs" />
-    <Compile Include="Config.fs" />
-    <Compile Include="Capture.fs" />
-    <Compile Include="Recording.fs" />
-    <Compile Include="RuntimeIdentity.fs" />
-    <Compile Include="WinAppRuntime.fs" />
-    <Compile Include="RawWinRt.fs" />
-    <Compile Include="WindowsAiOcr.fs" />
-    <Compile Include="Ocr.fs" />
     <Compile Include="NativeUi.fs" />
-    <Compile Include="Analysis.fs" />
-    <Compile Include="Navigation.fs" />
-    <Compile Include="Orchestration.fs" />
-    <Compile Include="Cli.fs" />
+  </ItemGroup>
+
+  <Import Project="Yumlog.Native.Tail.props" />
+
+  <ItemGroup>
     <Compile Include="Program.fs" />
   </ItemGroup>
 
@@ -56,11 +63,17 @@
 
     <ItemGroup>
       <YumlogNativePayload Include="$(TargetDir)**\*.*" />
+      <YumlogNativeCliPayload Include="$(YumlogNativeCliTargetDir)**\*.*" />
     </ItemGroup>
 
     <Copy
       SourceFiles="@(YumlogNativePayload)"
       DestinationFiles="@(YumlogNativePayload->'$(YumlogNativePackageLayout)\%(RecursiveDir)%(Filename)%(Extension)')"
+      SkipUnchangedFiles="false" />
+
+    <Copy
+      SourceFiles="@(YumlogNativeCliPayload)"
+      DestinationFiles="@(YumlogNativeCliPayload->'$(YumlogNativePackageLayout)\%(RecursiveDir)%(Filename)%(Extension)')"
       SkipUnchangedFiles="false" />
 
     <Copy
@@ -86,6 +99,12 @@
     <Delete Files="$(YumlogNativeMsixPath)" />
     <Exec Command="&quot;$(YumlogMakeAppx)&quot; pack /d &quot;$(YumlogNativePackageLayout)&quot; /p &quot;$(YumlogNativeMsixPath)&quot; /o" />
     <Message Importance="high" Text="Created $(YumlogNativeMsixPath)" />
+  </Target>
+
+  <Target Name="SignMsix" AfterTargets="PackageMsix" Condition="'$(YumlogSigningThumbprint)' != ''">
+    <Error Condition="!Exists('$(YumlogSignTool)')" Text="signtool.exe was not found at '$(YumlogSignTool)'. Set /p:YumlogSignTool=&lt;path&gt; to override." />
+    <Exec Command="&quot;$(YumlogSignTool)&quot; sign /fd SHA256 /sha1 $(YumlogSigningThumbprint) &quot;$(YumlogNativeMsixPath)&quot;" />
+    <Message Importance="high" Text="Signed $(YumlogNativeMsixPath)" />
   </Target>
 
 </Project>

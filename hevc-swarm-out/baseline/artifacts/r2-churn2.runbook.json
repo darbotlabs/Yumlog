@@ -1,0 +1,3419 @@
+{
+  "source": "E:\\Yumlog\\hevc-swarm-out\\baseline\\artifacts\\r2-churn2.mdkg",
+  "generatedUtc": "2026-08-03T08:43:44.6125331+00:00",
+  "timescaleTicksPerSecond": 10000000,
+  "durationSeconds": 6.0665579,
+  "stepCount": 155,
+  "steps": [
+    {
+      "index": 1,
+      "ptsTicks": 0,
+      "offsetSeconds": 0,
+      "title": "Step at 0.000s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@0#/frameIndex",
+          "value": "0"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@0#/ptsTicks",
+          "value": "0"
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "ptsTicks": 333311,
+      "offsetSeconds": 0.0333311,
+      "title": "Step at 0.033s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@333311#/frameIndex",
+          "value": "1"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@333311#/ptsTicks",
+          "value": "333311"
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "ptsTicks": 666623,
+      "offsetSeconds": 0.0666623,
+      "title": "Step at 0.067s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@666623#/frameIndex",
+          "value": "2"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@666623#/ptsTicks",
+          "value": "666623"
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "ptsTicks": 1999902,
+      "offsetSeconds": 0.1999902,
+      "title": "Step at 0.200s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@1999902#/frameIndex",
+          "value": "3"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@1999902#/ptsTicks",
+          "value": "1999902"
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "ptsTicks": 2333230,
+      "offsetSeconds": 0.233323,
+      "title": "Step at 0.233s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@2333230#/frameIndex",
+          "value": "4"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@2333230#/ptsTicks",
+          "value": "2333230"
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "ptsTicks": 2666556,
+      "offsetSeconds": 0.2666556,
+      "title": "Step at 0.267s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@2666556#/frameIndex",
+          "value": "5"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@2666556#/ptsTicks",
+          "value": "2666556"
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "ptsTicks": 2999876,
+      "offsetSeconds": 0.2999876,
+      "title": "Step at 0.300s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@2999876#/frameIndex",
+          "value": "6"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@2999876#/ptsTicks",
+          "value": "2999876"
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "ptsTicks": 3333194,
+      "offsetSeconds": 0.3333194,
+      "title": "Step at 0.333s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@3333194#/frameIndex",
+          "value": "7"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@3333194#/ptsTicks",
+          "value": "3333194"
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "ptsTicks": 3666522,
+      "offsetSeconds": 0.3666522,
+      "title": "Step at 0.367s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@3666522#/frameIndex",
+          "value": "8"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@3666522#/ptsTicks",
+          "value": "3666522"
+        }
+      ]
+    },
+    {
+      "index": 10,
+      "ptsTicks": 3999843,
+      "offsetSeconds": 0.3999843,
+      "title": "Step at 0.400s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@3999843#/frameIndex",
+          "value": "9"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@3999843#/ptsTicks",
+          "value": "3999843"
+        }
+      ]
+    },
+    {
+      "index": 11,
+      "ptsTicks": 4333180,
+      "offsetSeconds": 0.433318,
+      "title": "Step at 0.433s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@4333180#/frameIndex",
+          "value": "10"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@4333180#/ptsTicks",
+          "value": "4333180"
+        }
+      ]
+    },
+    {
+      "index": 12,
+      "ptsTicks": 4666502,
+      "offsetSeconds": 0.4666502,
+      "title": "Step at 0.467s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@4666502#/frameIndex",
+          "value": "11"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@4666502#/ptsTicks",
+          "value": "4666502"
+        }
+      ]
+    },
+    {
+      "index": 13,
+      "ptsTicks": 4999821,
+      "offsetSeconds": 0.4999821,
+      "title": "Step at 0.500s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@4999821#/frameIndex",
+          "value": "12"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@4999821#/ptsTicks",
+          "value": "4999821"
+        }
+      ]
+    },
+    {
+      "index": 14,
+      "ptsTicks": 5333132,
+      "offsetSeconds": 0.5333132,
+      "title": "Step at 0.533s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@5333132#/frameIndex",
+          "value": "13"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@5333132#/ptsTicks",
+          "value": "5333132"
+        }
+      ]
+    },
+    {
+      "index": 15,
+      "ptsTicks": 5666446,
+      "offsetSeconds": 0.5666446,
+      "title": "Step at 0.567s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@5666446#/frameIndex",
+          "value": "14"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@5666446#/ptsTicks",
+          "value": "5666446"
+        }
+      ]
+    },
+    {
+      "index": 16,
+      "ptsTicks": 5999768,
+      "offsetSeconds": 0.5999768,
+      "title": "Step at 0.600s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@5999768#/frameIndex",
+          "value": "15"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@5999768#/ptsTicks",
+          "value": "5999768"
+        }
+      ]
+    },
+    {
+      "index": 17,
+      "ptsTicks": 6333091,
+      "offsetSeconds": 0.6333091,
+      "title": "Step at 0.633s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@6333091#/frameIndex",
+          "value": "16"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@6333091#/ptsTicks",
+          "value": "6333091"
+        }
+      ]
+    },
+    {
+      "index": 18,
+      "ptsTicks": 6666421,
+      "offsetSeconds": 0.6666421,
+      "title": "Step at 0.667s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@6666421#/frameIndex",
+          "value": "17"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@6666421#/ptsTicks",
+          "value": "6666421"
+        }
+      ]
+    },
+    {
+      "index": 19,
+      "ptsTicks": 6999745,
+      "offsetSeconds": 0.6999745,
+      "title": "Step at 0.700s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@6999745#/frameIndex",
+          "value": "18"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@6999745#/ptsTicks",
+          "value": "6999745"
+        }
+      ]
+    },
+    {
+      "index": 20,
+      "ptsTicks": 7333067,
+      "offsetSeconds": 0.7333067,
+      "title": "Step at 0.733s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@7333067#/frameIndex",
+          "value": "19"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@7333067#/ptsTicks",
+          "value": "7333067"
+        }
+      ]
+    },
+    {
+      "index": 21,
+      "ptsTicks": 7666379,
+      "offsetSeconds": 0.7666379,
+      "title": "Step at 0.767s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@7666379#/frameIndex",
+          "value": "20"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@7666379#/ptsTicks",
+          "value": "7666379"
+        }
+      ]
+    },
+    {
+      "index": 22,
+      "ptsTicks": 7999700,
+      "offsetSeconds": 0.79997,
+      "title": "Step at 0.800s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@7999700#/frameIndex",
+          "value": "21"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@7999700#/ptsTicks",
+          "value": "7999700"
+        }
+      ]
+    },
+    {
+      "index": 23,
+      "ptsTicks": 8333023,
+      "offsetSeconds": 0.8333023,
+      "title": "Step at 0.833s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@8333023#/frameIndex",
+          "value": "22"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@8333023#/ptsTicks",
+          "value": "8333023"
+        }
+      ]
+    },
+    {
+      "index": 24,
+      "ptsTicks": 8666351,
+      "offsetSeconds": 0.8666351,
+      "title": "Step at 0.867s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@8666351#/frameIndex",
+          "value": "23"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@8666351#/ptsTicks",
+          "value": "8666351"
+        }
+      ]
+    },
+    {
+      "index": 25,
+      "ptsTicks": 8999675,
+      "offsetSeconds": 0.8999675,
+      "title": "Step at 0.900s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@8999675#/frameIndex",
+          "value": "24"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@8999675#/ptsTicks",
+          "value": "8999675"
+        }
+      ]
+    },
+    {
+      "index": 26,
+      "ptsTicks": 9333001,
+      "offsetSeconds": 0.9333001,
+      "title": "Step at 0.933s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@9333001#/frameIndex",
+          "value": "25"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@9333001#/ptsTicks",
+          "value": "9333001"
+        }
+      ]
+    },
+    {
+      "index": 27,
+      "ptsTicks": 9666324,
+      "offsetSeconds": 0.9666324,
+      "title": "Step at 0.967s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@9666324#/frameIndex",
+          "value": "26"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@9666324#/ptsTicks",
+          "value": "9666324"
+        }
+      ]
+    },
+    {
+      "index": 28,
+      "ptsTicks": 9999651,
+      "offsetSeconds": 0.9999651,
+      "title": "Step at 1.000s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@9999651#/frameIndex",
+          "value": "27"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@9999651#/ptsTicks",
+          "value": "9999651"
+        }
+      ]
+    },
+    {
+      "index": 29,
+      "ptsTicks": 10332965,
+      "offsetSeconds": 1.0332965,
+      "title": "Step at 1.033s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@10332965#/frameIndex",
+          "value": "28"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@10332965#/ptsTicks",
+          "value": "10332965"
+        }
+      ]
+    },
+    {
+      "index": 30,
+      "ptsTicks": 10666282,
+      "offsetSeconds": 1.0666282,
+      "title": "Step at 1.067s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@10666282#/frameIndex",
+          "value": "29"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@10666282#/ptsTicks",
+          "value": "10666282"
+        }
+      ]
+    },
+    {
+      "index": 31,
+      "ptsTicks": 10999605,
+      "offsetSeconds": 1.0999605,
+      "title": "Step at 1.100s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@10999605#/frameIndex",
+          "value": "30"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@10999605#/ptsTicks",
+          "value": "10999605"
+        }
+      ]
+    },
+    {
+      "index": 32,
+      "ptsTicks": 11332926,
+      "offsetSeconds": 1.1332926,
+      "title": "Step at 1.133s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@11332926#/frameIndex",
+          "value": "31"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@11332926#/ptsTicks",
+          "value": "11332926"
+        }
+      ]
+    },
+    {
+      "index": 33,
+      "ptsTicks": 11666252,
+      "offsetSeconds": 1.1666252,
+      "title": "Step at 1.167s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@11666252#/frameIndex",
+          "value": "32"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@11666252#/ptsTicks",
+          "value": "11666252"
+        }
+      ]
+    },
+    {
+      "index": 34,
+      "ptsTicks": 11999575,
+      "offsetSeconds": 1.1999575,
+      "title": "Step at 1.200s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@11999575#/frameIndex",
+          "value": "33"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@11999575#/ptsTicks",
+          "value": "11999575"
+        }
+      ]
+    },
+    {
+      "index": 35,
+      "ptsTicks": 12332904,
+      "offsetSeconds": 1.2332904,
+      "title": "Step at 1.233s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@12332904#/frameIndex",
+          "value": "34"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@12332904#/ptsTicks",
+          "value": "12332904"
+        }
+      ]
+    },
+    {
+      "index": 36,
+      "ptsTicks": 12666228,
+      "offsetSeconds": 1.2666228,
+      "title": "Step at 1.267s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@12666228#/frameIndex",
+          "value": "35"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@12666228#/ptsTicks",
+          "value": "12666228"
+        }
+      ]
+    },
+    {
+      "index": 37,
+      "ptsTicks": 12999548,
+      "offsetSeconds": 1.2999548,
+      "title": "Step at 1.300s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@12999548#/frameIndex",
+          "value": "36"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@12999548#/ptsTicks",
+          "value": "12999548"
+        }
+      ]
+    },
+    {
+      "index": 38,
+      "ptsTicks": 13332876,
+      "offsetSeconds": 1.3332876,
+      "title": "Step at 1.333s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@13332876#/frameIndex",
+          "value": "37"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@13332876#/ptsTicks",
+          "value": "13332876"
+        }
+      ]
+    },
+    {
+      "index": 39,
+      "ptsTicks": 13666205,
+      "offsetSeconds": 1.3666205,
+      "title": "Step at 1.367s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@13666205#/frameIndex",
+          "value": "38"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@13666205#/ptsTicks",
+          "value": "13666205"
+        }
+      ]
+    },
+    {
+      "index": 40,
+      "ptsTicks": 13999519,
+      "offsetSeconds": 1.3999519,
+      "title": "Step at 1.400s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@13999519#/frameIndex",
+          "value": "39"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@13999519#/ptsTicks",
+          "value": "13999519"
+        }
+      ]
+    },
+    {
+      "index": 41,
+      "ptsTicks": 14332845,
+      "offsetSeconds": 1.4332845,
+      "title": "Step at 1.433s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@14332845#/frameIndex",
+          "value": "40"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@14332845#/ptsTicks",
+          "value": "14332845"
+        }
+      ]
+    },
+    {
+      "index": 42,
+      "ptsTicks": 14666166,
+      "offsetSeconds": 1.4666166,
+      "title": "Step at 1.467s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@14666166#/frameIndex",
+          "value": "41"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@14666166#/ptsTicks",
+          "value": "14666166"
+        }
+      ]
+    },
+    {
+      "index": 43,
+      "ptsTicks": 14999490,
+      "offsetSeconds": 1.499949,
+      "title": "Step at 1.500s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@14999490#/frameIndex",
+          "value": "42"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@14999490#/ptsTicks",
+          "value": "14999490"
+        }
+      ]
+    },
+    {
+      "index": 44,
+      "ptsTicks": 15332801,
+      "offsetSeconds": 1.5332801,
+      "title": "Step at 1.533s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@15332801#/frameIndex",
+          "value": "43"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@15332801#/ptsTicks",
+          "value": "15332801"
+        }
+      ]
+    },
+    {
+      "index": 45,
+      "ptsTicks": 15666120,
+      "offsetSeconds": 1.566612,
+      "title": "Step at 1.567s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@15666120#/frameIndex",
+          "value": "44"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@15666120#/ptsTicks",
+          "value": "15666120"
+        }
+      ]
+    },
+    {
+      "index": 46,
+      "ptsTicks": 15999438,
+      "offsetSeconds": 1.5999438,
+      "title": "Step at 1.600s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@15999438#/frameIndex",
+          "value": "45"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@15999438#/ptsTicks",
+          "value": "15999438"
+        }
+      ]
+    },
+    {
+      "index": 47,
+      "ptsTicks": 16332766,
+      "offsetSeconds": 1.6332766,
+      "title": "Step at 1.633s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@16332766#/frameIndex",
+          "value": "46"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@16332766#/ptsTicks",
+          "value": "16332766"
+        }
+      ]
+    },
+    {
+      "index": 48,
+      "ptsTicks": 16666094,
+      "offsetSeconds": 1.6666094,
+      "title": "Step at 1.667s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@16666094#/frameIndex",
+          "value": "47"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@16666094#/ptsTicks",
+          "value": "16666094"
+        }
+      ]
+    },
+    {
+      "index": 49,
+      "ptsTicks": 16999419,
+      "offsetSeconds": 1.6999419,
+      "title": "Step at 1.700s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@16999419#/frameIndex",
+          "value": "48"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@16999419#/ptsTicks",
+          "value": "16999419"
+        }
+      ]
+    },
+    {
+      "index": 50,
+      "ptsTicks": 17332744,
+      "offsetSeconds": 1.7332744,
+      "title": "Step at 1.733s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@17332744#/frameIndex",
+          "value": "49"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@17332744#/ptsTicks",
+          "value": "17332744"
+        }
+      ]
+    },
+    {
+      "index": 51,
+      "ptsTicks": 17666068,
+      "offsetSeconds": 1.7666068,
+      "title": "Step at 1.767s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@17666068#/frameIndex",
+          "value": "50"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@17666068#/ptsTicks",
+          "value": "17666068"
+        }
+      ]
+    },
+    {
+      "index": 52,
+      "ptsTicks": 17999394,
+      "offsetSeconds": 1.7999394,
+      "title": "Step at 1.800s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@17999394#/frameIndex",
+          "value": "51"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@17999394#/ptsTicks",
+          "value": "17999394"
+        }
+      ]
+    },
+    {
+      "index": 53,
+      "ptsTicks": 18332719,
+      "offsetSeconds": 1.8332719,
+      "title": "Step at 1.833s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@18332719#/frameIndex",
+          "value": "52"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@18332719#/ptsTicks",
+          "value": "18332719"
+        }
+      ]
+    },
+    {
+      "index": 54,
+      "ptsTicks": 18666058,
+      "offsetSeconds": 1.8666058,
+      "title": "Step at 1.867s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@18666058#/frameIndex",
+          "value": "53"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@18666058#/ptsTicks",
+          "value": "18666058"
+        }
+      ]
+    },
+    {
+      "index": 55,
+      "ptsTicks": 18999388,
+      "offsetSeconds": 1.8999388,
+      "title": "Step at 1.900s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@18999388#/frameIndex",
+          "value": "54"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@18999388#/ptsTicks",
+          "value": "18999388"
+        }
+      ]
+    },
+    {
+      "index": 56,
+      "ptsTicks": 19332722,
+      "offsetSeconds": 1.9332722,
+      "title": "Step at 1.933s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@19332722#/frameIndex",
+          "value": "55"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@19332722#/ptsTicks",
+          "value": "19332722"
+        }
+      ]
+    },
+    {
+      "index": 57,
+      "ptsTicks": 19666046,
+      "offsetSeconds": 1.9666046,
+      "title": "Step at 1.967s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@19666046#/frameIndex",
+          "value": "56"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@19666046#/ptsTicks",
+          "value": "19666046"
+        }
+      ]
+    },
+    {
+      "index": 58,
+      "ptsTicks": 19999368,
+      "offsetSeconds": 1.9999368,
+      "title": "Step at 2.000s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@19999368#/frameIndex",
+          "value": "57"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@19999368#/ptsTicks",
+          "value": "19999368"
+        }
+      ]
+    },
+    {
+      "index": 59,
+      "ptsTicks": 20332694,
+      "offsetSeconds": 2.0332694,
+      "title": "Step at 2.033s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@20332694#/frameIndex",
+          "value": "58"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@20332694#/ptsTicks",
+          "value": "20332694"
+        }
+      ]
+    },
+    {
+      "index": 60,
+      "ptsTicks": 20666029,
+      "offsetSeconds": 2.0666029,
+      "title": "Step at 2.067s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@20666029#/frameIndex",
+          "value": "59"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@20666029#/ptsTicks",
+          "value": "20666029"
+        }
+      ]
+    },
+    {
+      "index": 61,
+      "ptsTicks": 20999351,
+      "offsetSeconds": 2.0999351,
+      "title": "Step at 2.100s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@20999351#/frameIndex",
+          "value": "60"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@20999351#/ptsTicks",
+          "value": "20999351"
+        }
+      ]
+    },
+    {
+      "index": 62,
+      "ptsTicks": 21332682,
+      "offsetSeconds": 2.1332682,
+      "title": "Step at 2.133s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@21332682#/frameIndex",
+          "value": "61"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@21332682#/ptsTicks",
+          "value": "21332682"
+        }
+      ]
+    },
+    {
+      "index": 63,
+      "ptsTicks": 21666009,
+      "offsetSeconds": 2.1666009,
+      "title": "Step at 2.167s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@21666009#/frameIndex",
+          "value": "62"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@21666009#/ptsTicks",
+          "value": "21666009"
+        }
+      ]
+    },
+    {
+      "index": 64,
+      "ptsTicks": 21999341,
+      "offsetSeconds": 2.1999341,
+      "title": "Step at 2.200s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@21999341#/frameIndex",
+          "value": "63"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@21999341#/ptsTicks",
+          "value": "21999341"
+        }
+      ]
+    },
+    {
+      "index": 65,
+      "ptsTicks": 22332665,
+      "offsetSeconds": 2.2332665,
+      "title": "Step at 2.233s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@22332665#/frameIndex",
+          "value": "64"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@22332665#/ptsTicks",
+          "value": "22332665"
+        }
+      ]
+    },
+    {
+      "index": 66,
+      "ptsTicks": 22665993,
+      "offsetSeconds": 2.2665993,
+      "title": "Step at 2.267s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@22665993#/frameIndex",
+          "value": "65"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@22665993#/ptsTicks",
+          "value": "22665993"
+        }
+      ]
+    },
+    {
+      "index": 67,
+      "ptsTicks": 22999323,
+      "offsetSeconds": 2.2999323,
+      "title": "Step at 2.300s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@22999323#/frameIndex",
+          "value": "66"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@22999323#/ptsTicks",
+          "value": "22999323"
+        }
+      ]
+    },
+    {
+      "index": 68,
+      "ptsTicks": 23332649,
+      "offsetSeconds": 2.3332649,
+      "title": "Step at 2.333s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@23332649#/frameIndex",
+          "value": "67"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@23332649#/ptsTicks",
+          "value": "23332649"
+        }
+      ]
+    },
+    {
+      "index": 69,
+      "ptsTicks": 23665979,
+      "offsetSeconds": 2.3665979,
+      "title": "Step at 2.367s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@23665979#/frameIndex",
+          "value": "68"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@23665979#/ptsTicks",
+          "value": "23665979"
+        }
+      ]
+    },
+    {
+      "index": 70,
+      "ptsTicks": 23999306,
+      "offsetSeconds": 2.3999306,
+      "title": "Step at 2.400s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@23999306#/frameIndex",
+          "value": "69"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@23999306#/ptsTicks",
+          "value": "23999306"
+        }
+      ]
+    },
+    {
+      "index": 71,
+      "ptsTicks": 24332629,
+      "offsetSeconds": 2.4332629,
+      "title": "Step at 2.433s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@24332629#/frameIndex",
+          "value": "70"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@24332629#/ptsTicks",
+          "value": "24332629"
+        }
+      ]
+    },
+    {
+      "index": 72,
+      "ptsTicks": 24665963,
+      "offsetSeconds": 2.4665963,
+      "title": "Step at 2.467s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@24665963#/frameIndex",
+          "value": "71"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@24665963#/ptsTicks",
+          "value": "24665963"
+        }
+      ]
+    },
+    {
+      "index": 73,
+      "ptsTicks": 24999287,
+      "offsetSeconds": 2.4999287,
+      "title": "Step at 2.500s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@24999287#/frameIndex",
+          "value": "72"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@24999287#/ptsTicks",
+          "value": "24999287"
+        }
+      ]
+    },
+    {
+      "index": 74,
+      "ptsTicks": 25332611,
+      "offsetSeconds": 2.5332611,
+      "title": "Step at 2.533s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@25332611#/frameIndex",
+          "value": "73"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@25332611#/ptsTicks",
+          "value": "25332611"
+        }
+      ]
+    },
+    {
+      "index": 75,
+      "ptsTicks": 25665927,
+      "offsetSeconds": 2.5665927,
+      "title": "Step at 2.567s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@25665927#/frameIndex",
+          "value": "74"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@25665927#/ptsTicks",
+          "value": "25665927"
+        }
+      ]
+    },
+    {
+      "index": 76,
+      "ptsTicks": 25999248,
+      "offsetSeconds": 2.5999248,
+      "title": "Step at 2.600s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@25999248#/frameIndex",
+          "value": "75"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@25999248#/ptsTicks",
+          "value": "25999248"
+        }
+      ]
+    },
+    {
+      "index": 77,
+      "ptsTicks": 26332574,
+      "offsetSeconds": 2.6332574,
+      "title": "Step at 2.633s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@26332574#/frameIndex",
+          "value": "76"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@26332574#/ptsTicks",
+          "value": "26332574"
+        }
+      ]
+    },
+    {
+      "index": 78,
+      "ptsTicks": 26665897,
+      "offsetSeconds": 2.6665897,
+      "title": "Step at 2.667s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@26665897#/frameIndex",
+          "value": "77"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@26665897#/ptsTicks",
+          "value": "26665897"
+        }
+      ]
+    },
+    {
+      "index": 79,
+      "ptsTicks": 26999222,
+      "offsetSeconds": 2.6999222,
+      "title": "Step at 2.700s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@26999222#/frameIndex",
+          "value": "78"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@26999222#/ptsTicks",
+          "value": "26999222"
+        }
+      ]
+    },
+    {
+      "index": 80,
+      "ptsTicks": 27332555,
+      "offsetSeconds": 2.7332555,
+      "title": "Step at 2.733s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@27332555#/frameIndex",
+          "value": "79"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@27332555#/ptsTicks",
+          "value": "27332555"
+        }
+      ]
+    },
+    {
+      "index": 81,
+      "ptsTicks": 27665878,
+      "offsetSeconds": 2.7665878,
+      "title": "Step at 2.767s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@27665878#/frameIndex",
+          "value": "80"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@27665878#/ptsTicks",
+          "value": "27665878"
+        }
+      ]
+    },
+    {
+      "index": 82,
+      "ptsTicks": 27999207,
+      "offsetSeconds": 2.7999207,
+      "title": "Step at 2.800s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@27999207#/frameIndex",
+          "value": "81"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@27999207#/ptsTicks",
+          "value": "27999207"
+        }
+      ]
+    },
+    {
+      "index": 83,
+      "ptsTicks": 28332539,
+      "offsetSeconds": 2.8332539,
+      "title": "Step at 2.833s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@28332539#/frameIndex",
+          "value": "82"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@28332539#/ptsTicks",
+          "value": "28332539"
+        }
+      ]
+    },
+    {
+      "index": 84,
+      "ptsTicks": 28665867,
+      "offsetSeconds": 2.8665867,
+      "title": "Step at 2.867s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@28665867#/frameIndex",
+          "value": "83"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@28665867#/ptsTicks",
+          "value": "28665867"
+        }
+      ]
+    },
+    {
+      "index": 85,
+      "ptsTicks": 28999192,
+      "offsetSeconds": 2.8999192,
+      "title": "Step at 2.900s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@28999192#/frameIndex",
+          "value": "84"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@28999192#/ptsTicks",
+          "value": "28999192"
+        }
+      ]
+    },
+    {
+      "index": 86,
+      "ptsTicks": 29332518,
+      "offsetSeconds": 2.9332518,
+      "title": "Step at 2.933s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@29332518#/frameIndex",
+          "value": "85"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@29332518#/ptsTicks",
+          "value": "29332518"
+        }
+      ]
+    },
+    {
+      "index": 87,
+      "ptsTicks": 29665845,
+      "offsetSeconds": 2.9665845,
+      "title": "Step at 2.967s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@29665845#/frameIndex",
+          "value": "86"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@29665845#/ptsTicks",
+          "value": "29665845"
+        }
+      ]
+    },
+    {
+      "index": 88,
+      "ptsTicks": 29999174,
+      "offsetSeconds": 2.9999174,
+      "title": "Step at 3.000s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@29999174#/frameIndex",
+          "value": "87"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@29999174#/ptsTicks",
+          "value": "29999174"
+        }
+      ]
+    },
+    {
+      "index": 89,
+      "ptsTicks": 30332518,
+      "offsetSeconds": 3.0332518,
+      "title": "Step at 3.033s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@30332518#/frameIndex",
+          "value": "88"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@30332518#/ptsTicks",
+          "value": "30332518"
+        }
+      ]
+    },
+    {
+      "index": 90,
+      "ptsTicks": 30665842,
+      "offsetSeconds": 3.0665842,
+      "title": "Step at 3.067s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@30665842#/frameIndex",
+          "value": "89"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@30665842#/ptsTicks",
+          "value": "30665842"
+        }
+      ]
+    },
+    {
+      "index": 91,
+      "ptsTicks": 30999166,
+      "offsetSeconds": 3.0999166,
+      "title": "Step at 3.100s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@30999166#/frameIndex",
+          "value": "90"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@30999166#/ptsTicks",
+          "value": "30999166"
+        }
+      ]
+    },
+    {
+      "index": 92,
+      "ptsTicks": 31332498,
+      "offsetSeconds": 3.1332498,
+      "title": "Step at 3.133s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@31332498#/frameIndex",
+          "value": "91"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@31332498#/ptsTicks",
+          "value": "31332498"
+        }
+      ]
+    },
+    {
+      "index": 93,
+      "ptsTicks": 31665837,
+      "offsetSeconds": 3.1665837,
+      "title": "Step at 3.167s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@31665837#/frameIndex",
+          "value": "92"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@31665837#/ptsTicks",
+          "value": "31665837"
+        }
+      ]
+    },
+    {
+      "index": 94,
+      "ptsTicks": 31999173,
+      "offsetSeconds": 3.1999173,
+      "title": "Step at 3.200s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@31999173#/frameIndex",
+          "value": "93"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@31999173#/ptsTicks",
+          "value": "31999173"
+        }
+      ]
+    },
+    {
+      "index": 95,
+      "ptsTicks": 32332499,
+      "offsetSeconds": 3.2332499,
+      "title": "Step at 3.233s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@32332499#/frameIndex",
+          "value": "94"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@32332499#/ptsTicks",
+          "value": "32332499"
+        }
+      ]
+    },
+    {
+      "index": 96,
+      "ptsTicks": 32665835,
+      "offsetSeconds": 3.2665835,
+      "title": "Step at 3.267s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@32665835#/frameIndex",
+          "value": "95"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@32665835#/ptsTicks",
+          "value": "32665835"
+        }
+      ]
+    },
+    {
+      "index": 97,
+      "ptsTicks": 32999163,
+      "offsetSeconds": 3.2999163,
+      "title": "Step at 3.300s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@32999163#/frameIndex",
+          "value": "96"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@32999163#/ptsTicks",
+          "value": "32999163"
+        }
+      ]
+    },
+    {
+      "index": 98,
+      "ptsTicks": 33332496,
+      "offsetSeconds": 3.3332496,
+      "title": "Step at 3.333s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@33332496#/frameIndex",
+          "value": "97"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@33332496#/ptsTicks",
+          "value": "33332496"
+        }
+      ]
+    },
+    {
+      "index": 99,
+      "ptsTicks": 33665831,
+      "offsetSeconds": 3.3665831,
+      "title": "Step at 3.367s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@33665831#/frameIndex",
+          "value": "98"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@33665831#/ptsTicks",
+          "value": "33665831"
+        }
+      ]
+    },
+    {
+      "index": 100,
+      "ptsTicks": 33999163,
+      "offsetSeconds": 3.3999163,
+      "title": "Step at 3.400s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@33999163#/frameIndex",
+          "value": "99"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@33999163#/ptsTicks",
+          "value": "33999163"
+        }
+      ]
+    },
+    {
+      "index": 101,
+      "ptsTicks": 34332493,
+      "offsetSeconds": 3.4332493,
+      "title": "Step at 3.433s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@34332493#/frameIndex",
+          "value": "100"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@34332493#/ptsTicks",
+          "value": "34332493"
+        }
+      ]
+    },
+    {
+      "index": 102,
+      "ptsTicks": 34665822,
+      "offsetSeconds": 3.4665822,
+      "title": "Step at 3.467s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@34665822#/frameIndex",
+          "value": "101"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@34665822#/ptsTicks",
+          "value": "34665822"
+        }
+      ]
+    },
+    {
+      "index": 103,
+      "ptsTicks": 34999154,
+      "offsetSeconds": 3.4999154,
+      "title": "Step at 3.500s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@34999154#/frameIndex",
+          "value": "102"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@34999154#/ptsTicks",
+          "value": "34999154"
+        }
+      ]
+    },
+    {
+      "index": 104,
+      "ptsTicks": 35332472,
+      "offsetSeconds": 3.5332472,
+      "title": "Step at 3.533s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@35332472#/frameIndex",
+          "value": "103"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@35332472#/ptsTicks",
+          "value": "35332472"
+        }
+      ]
+    },
+    {
+      "index": 105,
+      "ptsTicks": 35665803,
+      "offsetSeconds": 3.5665803,
+      "title": "Step at 3.567s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@35665803#/frameIndex",
+          "value": "104"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@35665803#/ptsTicks",
+          "value": "35665803"
+        }
+      ]
+    },
+    {
+      "index": 106,
+      "ptsTicks": 35999125,
+      "offsetSeconds": 3.5999125,
+      "title": "Step at 3.600s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@35999125#/frameIndex",
+          "value": "105"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@35999125#/ptsTicks",
+          "value": "35999125"
+        }
+      ]
+    },
+    {
+      "index": 107,
+      "ptsTicks": 36332461,
+      "offsetSeconds": 3.6332461,
+      "title": "Step at 3.633s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@36332461#/frameIndex",
+          "value": "106"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@36332461#/ptsTicks",
+          "value": "36332461"
+        }
+      ]
+    },
+    {
+      "index": 108,
+      "ptsTicks": 36665797,
+      "offsetSeconds": 3.6665797,
+      "title": "Step at 3.667s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@36665797#/frameIndex",
+          "value": "107"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@36665797#/ptsTicks",
+          "value": "36665797"
+        }
+      ]
+    },
+    {
+      "index": 109,
+      "ptsTicks": 36999123,
+      "offsetSeconds": 3.6999123,
+      "title": "Step at 3.700s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@36999123#/frameIndex",
+          "value": "108"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@36999123#/ptsTicks",
+          "value": "36999123"
+        }
+      ]
+    },
+    {
+      "index": 110,
+      "ptsTicks": 37332451,
+      "offsetSeconds": 3.7332451,
+      "title": "Step at 3.733s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@37332451#/frameIndex",
+          "value": "109"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@37332451#/ptsTicks",
+          "value": "37332451"
+        }
+      ]
+    },
+    {
+      "index": 111,
+      "ptsTicks": 37665781,
+      "offsetSeconds": 3.7665781,
+      "title": "Step at 3.767s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@37665781#/frameIndex",
+          "value": "110"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@37665781#/ptsTicks",
+          "value": "37665781"
+        }
+      ]
+    },
+    {
+      "index": 112,
+      "ptsTicks": 37999110,
+      "offsetSeconds": 3.799911,
+      "title": "Step at 3.800s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@37999110#/frameIndex",
+          "value": "111"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@37999110#/ptsTicks",
+          "value": "37999110"
+        }
+      ]
+    },
+    {
+      "index": 113,
+      "ptsTicks": 38999096,
+      "offsetSeconds": 3.8999096,
+      "title": "Step at 3.900s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@38999096#/frameIndex",
+          "value": "112"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@38999096#/ptsTicks",
+          "value": "38999096"
+        }
+      ]
+    },
+    {
+      "index": 114,
+      "ptsTicks": 39332434,
+      "offsetSeconds": 3.9332434,
+      "title": "Step at 3.933s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@39332434#/frameIndex",
+          "value": "113"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@39332434#/ptsTicks",
+          "value": "39332434"
+        }
+      ]
+    },
+    {
+      "index": 115,
+      "ptsTicks": 39665764,
+      "offsetSeconds": 3.9665764,
+      "title": "Step at 3.967s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@39665764#/frameIndex",
+          "value": "114"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@39665764#/ptsTicks",
+          "value": "39665764"
+        }
+      ]
+    },
+    {
+      "index": 116,
+      "ptsTicks": 39999094,
+      "offsetSeconds": 3.9999094,
+      "title": "Step at 4.000s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@39999094#/frameIndex",
+          "value": "115"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@39999094#/ptsTicks",
+          "value": "39999094"
+        }
+      ]
+    },
+    {
+      "index": 117,
+      "ptsTicks": 40332424,
+      "offsetSeconds": 4.0332424,
+      "title": "Step at 4.033s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@40332424#/frameIndex",
+          "value": "116"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@40332424#/ptsTicks",
+          "value": "40332424"
+        }
+      ]
+    },
+    {
+      "index": 118,
+      "ptsTicks": 40665741,
+      "offsetSeconds": 4.0665741,
+      "title": "Step at 4.067s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@40665741#/frameIndex",
+          "value": "117"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@40665741#/ptsTicks",
+          "value": "40665741"
+        }
+      ]
+    },
+    {
+      "index": 119,
+      "ptsTicks": 40999060,
+      "offsetSeconds": 4.099906,
+      "title": "Step at 4.100s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@40999060#/frameIndex",
+          "value": "118"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@40999060#/ptsTicks",
+          "value": "40999060"
+        }
+      ]
+    },
+    {
+      "index": 120,
+      "ptsTicks": 41999057,
+      "offsetSeconds": 4.1999057,
+      "title": "Step at 4.200s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@41999057#/frameIndex",
+          "value": "119"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@41999057#/ptsTicks",
+          "value": "41999057"
+        }
+      ]
+    },
+    {
+      "index": 121,
+      "ptsTicks": 42999038,
+      "offsetSeconds": 4.2999038,
+      "title": "Step at 4.300s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@42999038#/frameIndex",
+          "value": "120"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@42999038#/ptsTicks",
+          "value": "42999038"
+        }
+      ]
+    },
+    {
+      "index": 122,
+      "ptsTicks": 43665713,
+      "offsetSeconds": 4.3665713,
+      "title": "Step at 4.367s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@43665713#/frameIndex",
+          "value": "121"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@43665713#/ptsTicks",
+          "value": "43665713"
+        }
+      ]
+    },
+    {
+      "index": 123,
+      "ptsTicks": 44665725,
+      "offsetSeconds": 4.4665725,
+      "title": "Step at 4.467s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@44665725#/frameIndex",
+          "value": "122"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@44665725#/ptsTicks",
+          "value": "44665725"
+        }
+      ]
+    },
+    {
+      "index": 124,
+      "ptsTicks": 44999061,
+      "offsetSeconds": 4.4999061,
+      "title": "Step at 4.500s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@44999061#/frameIndex",
+          "value": "123"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@44999061#/ptsTicks",
+          "value": "44999061"
+        }
+      ]
+    },
+    {
+      "index": 125,
+      "ptsTicks": 45332382,
+      "offsetSeconds": 4.5332382,
+      "title": "Step at 4.533s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@45332382#/frameIndex",
+          "value": "124"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@45332382#/ptsTicks",
+          "value": "45332382"
+        }
+      ]
+    },
+    {
+      "index": 126,
+      "ptsTicks": 45999021,
+      "offsetSeconds": 4.5999021,
+      "title": "Step at 4.600s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@45999021#/frameIndex",
+          "value": "125"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@45999021#/ptsTicks",
+          "value": "45999021"
+        }
+      ]
+    },
+    {
+      "index": 127,
+      "ptsTicks": 46332345,
+      "offsetSeconds": 4.6332345,
+      "title": "Step at 4.633s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@46332345#/frameIndex",
+          "value": "126"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@46332345#/ptsTicks",
+          "value": "46332345"
+        }
+      ]
+    },
+    {
+      "index": 128,
+      "ptsTicks": 46665666,
+      "offsetSeconds": 4.6665666,
+      "title": "Step at 4.667s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@46665666#/frameIndex",
+          "value": "127"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@46665666#/ptsTicks",
+          "value": "46665666"
+        }
+      ]
+    },
+    {
+      "index": 129,
+      "ptsTicks": 46998997,
+      "offsetSeconds": 4.6998997,
+      "title": "Step at 4.700s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@46998997#/frameIndex",
+          "value": "128"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@46998997#/ptsTicks",
+          "value": "46998997"
+        }
+      ]
+    },
+    {
+      "index": 130,
+      "ptsTicks": 47332325,
+      "offsetSeconds": 4.7332325,
+      "title": "Step at 4.733s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@47332325#/frameIndex",
+          "value": "129"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@47332325#/ptsTicks",
+          "value": "47332325"
+        }
+      ]
+    },
+    {
+      "index": 131,
+      "ptsTicks": 47665663,
+      "offsetSeconds": 4.7665663,
+      "title": "Step at 4.767s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@47665663#/frameIndex",
+          "value": "130"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@47665663#/ptsTicks",
+          "value": "47665663"
+        }
+      ]
+    },
+    {
+      "index": 132,
+      "ptsTicks": 47998994,
+      "offsetSeconds": 4.7998994,
+      "title": "Step at 4.800s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@47998994#/frameIndex",
+          "value": "131"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@47998994#/ptsTicks",
+          "value": "47998994"
+        }
+      ]
+    },
+    {
+      "index": 133,
+      "ptsTicks": 49999018,
+      "offsetSeconds": 4.9999018,
+      "title": "Step at 5.000s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@49999018#/frameIndex",
+          "value": "132"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@49999018#/ptsTicks",
+          "value": "49999018"
+        }
+      ]
+    },
+    {
+      "index": 134,
+      "ptsTicks": 50332356,
+      "offsetSeconds": 5.0332356,
+      "title": "Step at 5.033s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@50332356#/frameIndex",
+          "value": "133"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@50332356#/ptsTicks",
+          "value": "50332356"
+        }
+      ]
+    },
+    {
+      "index": 135,
+      "ptsTicks": 50665681,
+      "offsetSeconds": 5.0665681,
+      "title": "Step at 5.067s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@50665681#/frameIndex",
+          "value": "134"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@50665681#/ptsTicks",
+          "value": "50665681"
+        }
+      ]
+    },
+    {
+      "index": 136,
+      "ptsTicks": 52332366,
+      "offsetSeconds": 5.2332366,
+      "title": "Step at 5.233s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@52332366#/frameIndex",
+          "value": "135"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@52332366#/ptsTicks",
+          "value": "52332366"
+        }
+      ]
+    },
+    {
+      "index": 137,
+      "ptsTicks": 52665705,
+      "offsetSeconds": 5.2665705,
+      "title": "Step at 5.267s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@52665705#/frameIndex",
+          "value": "136"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@52665705#/ptsTicks",
+          "value": "52665705"
+        }
+      ]
+    },
+    {
+      "index": 138,
+      "ptsTicks": 52999046,
+      "offsetSeconds": 5.2999046,
+      "title": "Step at 5.300s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@52999046#/frameIndex",
+          "value": "137"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@52999046#/ptsTicks",
+          "value": "52999046"
+        }
+      ]
+    },
+    {
+      "index": 139,
+      "ptsTicks": 53332384,
+      "offsetSeconds": 5.3332384,
+      "title": "Step at 5.333s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@53332384#/frameIndex",
+          "value": "138"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@53332384#/ptsTicks",
+          "value": "53332384"
+        }
+      ]
+    },
+    {
+      "index": 140,
+      "ptsTicks": 53665713,
+      "offsetSeconds": 5.3665713,
+      "title": "Step at 5.367s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@53665713#/frameIndex",
+          "value": "139"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@53665713#/ptsTicks",
+          "value": "53665713"
+        }
+      ]
+    },
+    {
+      "index": 141,
+      "ptsTicks": 53999033,
+      "offsetSeconds": 5.3999033,
+      "title": "Step at 5.400s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@53999033#/frameIndex",
+          "value": "140"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@53999033#/ptsTicks",
+          "value": "53999033"
+        }
+      ]
+    },
+    {
+      "index": 142,
+      "ptsTicks": 54332360,
+      "offsetSeconds": 5.433236,
+      "title": "Step at 5.433s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@54332360#/frameIndex",
+          "value": "141"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@54332360#/ptsTicks",
+          "value": "54332360"
+        }
+      ]
+    },
+    {
+      "index": 143,
+      "ptsTicks": 54665680,
+      "offsetSeconds": 5.466568,
+      "title": "Step at 5.467s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@54665680#/frameIndex",
+          "value": "142"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@54665680#/ptsTicks",
+          "value": "54665680"
+        }
+      ]
+    },
+    {
+      "index": 144,
+      "ptsTicks": 54999009,
+      "offsetSeconds": 5.4999009,
+      "title": "Step at 5.500s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@54999009#/frameIndex",
+          "value": "143"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@54999009#/ptsTicks",
+          "value": "54999009"
+        }
+      ]
+    },
+    {
+      "index": 145,
+      "ptsTicks": 55332335,
+      "offsetSeconds": 5.5332335,
+      "title": "Step at 5.533s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@55332335#/frameIndex",
+          "value": "144"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@55332335#/ptsTicks",
+          "value": "55332335"
+        }
+      ]
+    },
+    {
+      "index": 146,
+      "ptsTicks": 55665658,
+      "offsetSeconds": 5.5665658,
+      "title": "Step at 5.567s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@55665658#/frameIndex",
+          "value": "145"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@55665658#/ptsTicks",
+          "value": "55665658"
+        }
+      ]
+    },
+    {
+      "index": 147,
+      "ptsTicks": 55998984,
+      "offsetSeconds": 5.5998984,
+      "title": "Step at 5.600s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@55998984#/frameIndex",
+          "value": "146"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@55998984#/ptsTicks",
+          "value": "55998984"
+        }
+      ]
+    },
+    {
+      "index": 148,
+      "ptsTicks": 56332306,
+      "offsetSeconds": 5.6332306,
+      "title": "Step at 5.633s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@56332306#/frameIndex",
+          "value": "147"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@56332306#/ptsTicks",
+          "value": "56332306"
+        }
+      ]
+    },
+    {
+      "index": 149,
+      "ptsTicks": 56665631,
+      "offsetSeconds": 5.6665631,
+      "title": "Step at 5.667s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@56665631#/frameIndex",
+          "value": "148"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@56665631#/ptsTicks",
+          "value": "56665631"
+        }
+      ]
+    },
+    {
+      "index": 150,
+      "ptsTicks": 56998958,
+      "offsetSeconds": 5.6998958,
+      "title": "Step at 5.700s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@56998958#/frameIndex",
+          "value": "149"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@56998958#/ptsTicks",
+          "value": "56998958"
+        }
+      ]
+    },
+    {
+      "index": 151,
+      "ptsTicks": 57332287,
+      "offsetSeconds": 5.7332287,
+      "title": "Step at 5.733s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@57332287#/frameIndex",
+          "value": "150"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@57332287#/ptsTicks",
+          "value": "57332287"
+        }
+      ]
+    },
+    {
+      "index": 152,
+      "ptsTicks": 57665614,
+      "offsetSeconds": 5.7665614,
+      "title": "Step at 5.767s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@57665614#/frameIndex",
+          "value": "151"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@57665614#/ptsTicks",
+          "value": "57665614"
+        }
+      ]
+    },
+    {
+      "index": 153,
+      "ptsTicks": 57998948,
+      "offsetSeconds": 5.7998948,
+      "title": "Step at 5.800s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@57998948#/frameIndex",
+          "value": "152"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@57998948#/ptsTicks",
+          "value": "57998948"
+        }
+      ]
+    },
+    {
+      "index": 154,
+      "ptsTicks": 58332275,
+      "offsetSeconds": 5.8332275,
+      "title": "Step at 5.833s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@58332275#/frameIndex",
+          "value": "153"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@58332275#/ptsTicks",
+          "value": "58332275"
+        }
+      ]
+    },
+    {
+      "index": 155,
+      "ptsTicks": 60332246,
+      "offsetSeconds": 6.0332246,
+      "title": "Step at 6.033s",
+      "observedText": "",
+      "affordances": [],
+      "graphNodeCount": 0,
+      "graphEdgeCount": 0,
+      "proofs": [
+        {
+          "claim": "frame index at this step",
+          "path": "mdkg://timing@60332246#/frameIndex",
+          "value": "154"
+        },
+        {
+          "claim": "presentation timestamp",
+          "path": "mdkg://timing@60332246#/ptsTicks",
+          "value": "60332246"
+        }
+      ]
+    }
+  ]
+}

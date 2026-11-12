@@ -1,0 +1,44 @@
+<Project>
+
+  <!--
+    Shared F# compile list, part 1 of 2 (Domain.fs .. Ocr.fs).
+
+    Yumlog.Native and Yumlog.Native.Cli compile the SAME sources. Before this file
+    existed, each .fsproj carried its own hand-maintained copy of the list, and the
+    two drifted every time a file was added - F# is order-sensitive, so a mismatch
+    surfaced as a confusing "module not defined" error in only one of the projects.
+
+    Add a new source file HERE (or in Yumlog.Native.Tail.props) exactly once.
+
+    The list is split in two because Yumlog.Native inserts NativeUi.fs between Ocr.fs
+    and Analysis.fs, while Yumlog.Native.Cli does not. MSBuild expands each Import in
+    document order, so the consuming project controls that seam by where it places
+    the two Import elements.
+  -->
+
+  <PropertyGroup>
+    <YumlogNativeDir Condition="'$(YumlogNativeDir)' == ''">$(MSBuildThisFileDirectory)</YumlogNativeDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="$(YumlogNativeDir)Domain.fs" Link="Domain.fs" />
+    <Compile Include="$(YumlogNativeDir)Json.fs" Link="Json.fs" />
+    <Compile Include="$(YumlogNativeDir)Mdkg.fs" Link="Mdkg.fs" />
+    <Compile Include="$(YumlogNativeDir)MdkgIntel.fs" Link="MdkgIntel.fs" />
+    <Compile Include="$(YumlogNativeDir)SelfTest.fs" Link="SelfTest.fs" />
+    <Compile Include="$(YumlogNativeDir)Config.fs" Link="Config.fs" />
+    <Compile Include="$(YumlogNativeDir)Capture.fs" Link="Capture.fs" />
+    <Compile Include="$(YumlogNativeDir)RuntimeIdentity.fs" Link="RuntimeIdentity.fs" />
+    <Compile Include="$(YumlogNativeDir)WinAppRuntime.fs" Link="WinAppRuntime.fs" />
+    <Compile Include="$(YumlogNativeDir)RawWinRt.fs" Link="RawWinRt.fs" />
+    <Compile Include="$(YumlogNativeDir)WgcCapture.fs" Link="WgcCapture.fs" />
+    <Compile Include="$(YumlogNativeDir)NvencHevc.fs" Link="NvencHevc.fs" />
+    <Compile Include="$(YumlogNativeDir)X265Encoder.fs" Link="X265Encoder.fs" />
+    <Compile Include="$(YumlogNativeDir)Encoder.fs" Link="Encoder.fs" />
+    <Compile Include="$(YumlogNativeDir)HevcMux.fs" Link="HevcMux.fs" />
+    <Compile Include="$(YumlogNativeDir)Recording.fs" Link="Recording.fs" />
+    <Compile Include="$(YumlogNativeDir)WindowsAiOcr.fs" Link="WindowsAiOcr.fs" />
+    <Compile Include="$(YumlogNativeDir)Ocr.fs" Link="Ocr.fs" />
+  </ItemGroup>
+
+</Project>

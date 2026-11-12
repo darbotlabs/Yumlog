@@ -1,3 +1,6 @@
+E:\Yumlog\apps\Yumlog.Native\bin\Release\net10.0-windows10.0.26100.0\win-x64\Yumlog.Native.Cli.deps.json
+E:\Yumlog\apps\Yumlog.Native\bin\Release\net10.0-windows10.0.26100.0\win-x64\Yumlog.Native.Cli.runtimeconfig.json
+E:\Yumlog\apps\Yumlog.Native\bin\Release\net10.0-windows10.0.26100.0\win-x64\Yumlog.Native.Cli.exe
 E:\Yumlog\apps\Yumlog.Native\bin\Release\net10.0-windows10.0.26100.0\win-x64\CoreMessagingXP.dll
 E:\Yumlog\apps\Yumlog.Native\bin\Release\net10.0-windows10.0.26100.0\win-x64\dcompi.dll
 E:\Yumlog\apps\Yumlog.Native\bin\Release\net10.0-windows10.0.26100.0\win-x64\dwmcorei.dll

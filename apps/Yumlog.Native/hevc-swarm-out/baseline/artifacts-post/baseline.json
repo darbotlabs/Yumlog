@@ -1,0 +1,76 @@
+{
+  "CapturedUtc": "2026-08-03T07:33:11.2911898Z",
+  "Machine": {
+    "Gpu": "NVIDIA T1000 8GB; Intel(R) UHD Graphics 770",
+    "Cpus": 24,
+    "Os": "Microsoft Windows NT 10.0.29639.0"
+  },
+  "Settings": {
+    "DurationSec": 10,
+    "Fps": 30
+  },
+  "Runs": [
+    {
+      "Backend": "auto",
+      "ExitCode": 0,
+      "WallMs": 10825.8,
+      "CpuMs": 1375.0,
+      "CpuPercentOfWall": 12.7,
+      "PeakWsMb": 306.2,
+      "FileSizeMb": 1.64,
+      "ReportedBackend": "nvenc",
+      "Lossless": false,
+      "FrameCount": 300,
+      "DroppedFrames": 0,
+      "MetadataSamples": 300,
+      "Probe": {
+        "Codec": "hevc",
+        "Tag": "hvc1",
+        "Width": 3840,
+        "Height": 2160,
+        "PixFmt": "yuv444p",
+        "StreamCount": 2,
+        "MetadataTrack": "mett",
+        "DurationSec": 10.066,
+        "BitrateMbps": 1.3
+      },
+      "Pacing": {
+        "NominalIntervalMs": 33.333,
+        "MeanIntervalMs": 33.555,
+        "MinIntervalMs": 33.33,
+        "MaxIntervalMs": 99.995,
+        "MeanJitterMs": 0.224,
+        "MaxJitterMs": 66.662,
+        "SampleCount": 300
+      },
+      "Error": ""
+    },
+    {
+      "Backend": "ffmpeg",
+      "ExitCode": 0,
+      "WallMs": 11298.3,
+      "CpuMs": 343.8,
+      "CpuPercentOfWall": 3.0,
+      "PeakWsMb": 33.9,
+      "FileSizeMb": 0.64,
+      "ReportedBackend": "ffmpeg",
+      "Lossless": false,
+      "FrameCount": 0,
+      "DroppedFrames": 0,
+      "MetadataSamples": 0,
+      "Probe": {
+        "Codec": "hevc",
+        "Tag": "hev1",
+        "Width": 3840,
+        "Height": 2160,
+        "PixFmt": "yuv420p",
+        "StreamCount": 1,
+        "MetadataTrack": "none",
+        "DurationSec": 9.967,
+        "BitrateMbps": 0.51
+      },
+      "Pacing": null,
+      "Error": ""
+    }
+  ]
+}

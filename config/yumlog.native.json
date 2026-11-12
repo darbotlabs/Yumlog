@@ -13,7 +13,16 @@
     "durationSec": 10,
     "ffmpegPath": "",
     "encoder": "libx264",
-    "preset": "ultrafast"
+    "preset": "ultrafast",
+    "backend": "auto",
+    "codec": "hevc",
+    "lossless": true,
+    "container": "mp4",
+    "x265Path": "",
+    "captureBackend": "wgc",
+    "monitorIndex": 0,
+    "disableCaptureBorder": true,
+    "timedMetadataOut": ""
   },
   "analyze": {
     "input": "./screenshots",

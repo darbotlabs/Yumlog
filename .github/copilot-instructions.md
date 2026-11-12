@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Darbot Yumlog is a lightweight, efficient PowerShell-based screen capture and recording utility that acts as "vision" for AI by taking screenshots at set intervals and analyzing them. The tool is designed to be simple, reliable, and robust.
+Darbot Yumlog is a local Windows screen capture, recording, and analysis utility that acts as "vision" for AI. It has two layers: the original lightweight PowerShell/FFmpeg tooling, and a native F# stack (`apps/Yumlog.Native`) that adds hardware HEVC recording, a layered `.mdkg` metadata container, verifiable runbooks, and fully offline on-device reasoning. The tool is designed to be simple, reliable, and robust.
 
 ## Core Principles
 
@@ -11,13 +11,17 @@ Darbot Yumlog is a lightweight, efficient PowerShell-based screen capture and re
 - **Efficient**: Optimize for performance using FFmpeg
 - **Reliable**: Ensure consistent behavior across runs
 - **Robust**: Handle edge cases and errors gracefully
+- **Evidence over assertion**: Claims about a recording should carry a resolvable citation
 
 ## Architecture
 
 ### Directory Structure
 - `Skills/`: Reusable PowerShell functions/modules (core functionality)
 - `launchers/`: Top-level PowerShell scripts for user interaction
-- `config/`: Configuration files (tools.json)
+- `apps/Yumlog.Native/`: F# implementation library (capture, encode, mdkg, reasoning)
+- `apps/Yumlog.Native.Cli/`: Runnable native CLI entry point
+- `docs/`: `NATIVE-CLI.md`, `ON-DEVICE-REASONING.md`
+- `config/`: Configuration files (`tools.json`, `yumlog.native.json`)
 - `.tools/`: Auto-installed dependencies (FFmpeg)
 
 ### Key Components
@@ -26,6 +30,25 @@ Darbot Yumlog is a lightweight, efficient PowerShell-based screen capture and re
 3. **Run-FFmpeg.ps1**: FFmpeg execution wrapper
 4. **yumlog.ps1**: Unified CLI for all operations
 5. **yumlog-manager.html**: Web-based UI for managing recordings
+6. **WgcCapture.fs / NvencHevc.fs / X265Encoder.fs / HevcMux.fs**: Native capture and HEVC encode path
+7. **Mdkg.fs / MdkgIntel.fs**: `.mdkg` container plus timeline, citations, and runbooks
+8. **OnDeviceLlm.fs**: Offline model reasoning and live screen watching
+9. **SelfTest.fs**: Built-in 16-check correctness suite
+
+## Working on the native stack
+
+- Build `apps/Yumlog.Native.Cli`, not `apps/Yumlog.Native` — the latter is a library.
+- `bin/` and `obj/` are committed despite appearing in `.gitignore`. **Rebuild before trusting `selftest`**; a stale binary once reported 15 checks while the source defined 16.
+- `selftest` JSON keys are `passed`, `passedCount`, `failedCount`, `cases`.
+- CLI JSON output has trailing non-JSON text; slice between the first `{` and last `}`.
+- Unknown CLI arguments are ignored silently, so a flag typo exits 0 and does nothing.
+- To make a fact visible to `reason`, put it in the grounding string in `OnDeviceLlm.fs`. Runbook proofs are **not** sent to the model.
+
+### Testing the screen-observation features
+
+**Never fabricate screen content to test screen observation.** Generating synthetic full-screen windows proves only that the tool can see the fabrication, and it hijacks the operator's display. Validate `watch` and `follow` against real application activity, with explicit consent.
+
+Prefer control experiments over single passing cases. Frame-rate reporting is verified at 12, 15, and 30 fps precisely because one passing rate cannot distinguish a correct read from a latched constant.
 
 ## Development Guidelines
 

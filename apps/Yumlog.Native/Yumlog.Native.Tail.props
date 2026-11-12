@@ -1,0 +1,22 @@
+<Project>
+
+  <!--
+    Shared F# compile list, part 2 of 2 (Analysis.fs .. Cli.fs).
+    See Yumlog.Native.Core.props for why this list is shared and why it is split.
+
+    Each consuming project appends its own Program.fs after importing this file.
+  -->
+
+  <PropertyGroup>
+    <YumlogNativeDir Condition="'$(YumlogNativeDir)' == ''">$(MSBuildThisFileDirectory)</YumlogNativeDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="$(YumlogNativeDir)Analysis.fs" Link="Analysis.fs" />
+    <Compile Include="$(YumlogNativeDir)Navigation.fs" Link="Navigation.fs" />
+    <Compile Include="$(YumlogNativeDir)Orchestration.fs" Link="Orchestration.fs" />
+    <Compile Include="$(YumlogNativeDir)OnDeviceLlm.fs" Link="OnDeviceLlm.fs" />
+    <Compile Include="$(YumlogNativeDir)Cli.fs" Link="Cli.fs" />
+  </ItemGroup>
+
+</Project>

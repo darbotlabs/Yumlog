@@ -223,8 +223,17 @@ module Mdkg =
     let serializeJson<'T> (value: 'T) =
         JsonSerializer.SerializeToUtf8Bytes(value, jsonOptions)
 
-    let deserializeJson<'T> (payload: byte array) =
-        JsonSerializer.Deserialize<'T>(payload, jsonOptions)
+    /// Deserializes a layer payload. A null JSON document is a corrupt container,
+    /// not a valid value, so fail loudly here rather than surfacing a
+    /// NullReferenceException far away from the actual cause.
+    let deserializeJson<'T> (payload: byte array) : 'T =
+        match JsonSerializer.Deserialize(System.ReadOnlySpan<byte>(payload), typeof<'T>, jsonOptions) with
+        | null ->
+            failwithf
+                "Corrupt .mdkg payload: %d bytes did not deserialize to %s (document was null)."
+                payload.Length
+                typeof<'T>.Name
+        | value -> value :?> 'T
 
     let frameDurationTicksFromFps fps =
         if fps <= 0 then
@@ -341,7 +350,7 @@ module Mdkg =
             stream.Write(bytes, 0, bytes.Length)
 
         member this.WriteString16(value: string) =
-            let actual = if isNull value then "" else value
+            let actual = orEmptyIfNull value
             let bytes = Encoding.UTF8.GetBytes(actual)
 
             if bytes.Length > int UInt16.MaxValue then
@@ -463,14 +472,24 @@ module Mdkg =
         let reader = BeReader(stream)
         let count = reader.ReadUInt32() |> int
 
+        // Field order MUST mirror writeLayerTable exactly. Read into explicit
+        // let-bindings rather than inline record fields so the wire order is
+        // independent of record declaration order.
         [| for _ in 1 .. count do
+               let id = reader.ReadUInt32()
+               let flags = reader.ReadUInt32()
+               let name = reader.ReadString16()
+               let schemaUri = reader.ReadString16()
+               let codec = reader.ReadString16()
+               let description = reader.ReadString16()
+
                yield
-                   { Id = reader.ReadUInt32()
-                     Name = reader.ReadString16()
-                     SchemaUri = reader.ReadString16()
-                     Codec = reader.ReadString16()
-                     Flags = reader.ReadUInt32()
-                     Description = reader.ReadString16() } |]
+                   { Id = id
+                     Name = name
+                     SchemaUri = schemaUri
+                     Codec = codec
+                     Flags = flags
+                     Description = description } |]
 
     let private writeSampleIndex (entriesByLayer: Dictionary<uint32, ResizeArray<MdkgSampleEntry>>) =
         use ms = new MemoryStream()
@@ -510,13 +529,20 @@ module Mdkg =
 
             let samples =
                 [| for _ in 1 .. sampleCount do
+                       // Explicit ordering to mirror writeSampleIndex on the wire.
+                       let ptsTicks = reader.ReadInt64()
+                       let durationTicks = reader.ReadInt64()
+                       let byteOffset = reader.ReadUInt64()
+                       let byteLength = reader.ReadUInt32()
+                       let flags = reader.ReadUInt32()
+
                        yield
                            { LayerId = layerId
-                             PtsTicks = reader.ReadInt64()
-                             DurationTicks = reader.ReadInt64()
-                             ByteOffset = reader.ReadUInt64()
-                             ByteLength = reader.ReadUInt32()
-                             Flags = reader.ReadUInt32() } |]
+                             PtsTicks = ptsTicks
+                             DurationTicks = durationTicks
+                             ByteOffset = byteOffset
+                             ByteLength = byteLength
+                             Flags = flags } |]
 
             result[layerId] <- samples
 
@@ -614,7 +640,7 @@ module Mdkg =
             if closed then
                 invalidOp "Cannot write samples after close()."
 
-            if isNull payload then
+            if isNullRef payload then
                 invalidArg (nameof payload) "Payload must not be null."
 
             if durationTicks < 0L then
@@ -818,8 +844,8 @@ module Mdkg =
         let encode (sample: MdkgCarrierSample) =
             use ms = new MemoryStream()
             let writer = BeWriter(ms)
-            let codecBytes = Encoding.UTF8.GetBytes(if isNull sample.Codec then "" else sample.Codec)
-            let payload = if isNull sample.Payload then Array.empty else sample.Payload
+            let codecBytes = Encoding.UTF8.GetBytes(orEmptyIfNull sample.Codec)
+            let payload = if isNullRef sample.Payload then Array.empty else sample.Payload
 
             if codecBytes.Length > int UInt16.MaxValue then
                 invalidArg (nameof sample) "Carrier codec string is too long."
@@ -892,3 +918,121 @@ module Mdkg =
 
     let openReader (path: string) =
         MdkgReader.Open(path)
+
+    /// Reconstruction of the semantic-graph layer: the graph state at any T is
+    /// the most recent key-frame sample at or before T, with every subsequent
+    /// delta up to and including T applied in PTS order.
+    module SemanticGraph =
+
+        type GraphState =
+            { GraphId: string
+              PtsTicks: int64
+              Nodes: Map<string, SemanticGraphNode>
+              Edges: Map<string, SemanticGraphEdge> }
+
+        let empty =
+            { GraphId = ""
+              PtsTicks = 0L
+              Nodes = Map.empty
+              Edges = Map.empty }
+
+        let private items (value: 'a array) =
+            if isNull (box value) then Array.empty else value
+
+        let applyDelta (state: GraphState) (delta: SemanticGraphDelta) =
+            if isNull (box delta) then
+                state
+            else
+                let nodes =
+                    (state.Nodes, items delta.AddNodes)
+                    ||> Array.fold (fun acc node -> Map.add node.Id node acc)
+
+                let nodes =
+                    (nodes, items delta.UpdateNodes)
+                    ||> Array.fold (fun acc node ->
+                        // Update merges over the existing node, preserving FirstPtsTicks.
+                        match Map.tryFind node.Id acc with
+                        | Some existing -> Map.add node.Id { node with FirstPtsTicks = existing.FirstPtsTicks } acc
+                        | None -> Map.add node.Id node acc)
+
+                let nodes =
+                    (nodes, items delta.RemoveNodeIds)
+                    ||> Array.fold (fun acc id -> Map.remove id acc)
+
+                let edges =
+                    (state.Edges, items delta.AddEdges)
+                    ||> Array.fold (fun acc edge -> Map.add edge.Id edge acc)
+
+                let edges =
+                    (edges, items delta.UpdateEdges)
+                    ||> Array.fold (fun acc edge ->
+                        match Map.tryFind edge.Id acc with
+                        | Some existing -> Map.add edge.Id { edge with FirstPtsTicks = existing.FirstPtsTicks } acc
+                        | None -> Map.add edge.Id edge acc)
+
+                let edges =
+                    (edges, items delta.RemoveEdgeIds)
+                    ||> Array.fold (fun acc id -> Map.remove id acc)
+
+                // Dangling-edge pruning: an edge whose endpoints were removed is dropped,
+                // so a reconstructed state is always internally consistent.
+                let edges =
+                    edges
+                    |> Map.filter (fun _ edge ->
+                        Map.containsKey edge.SourceNodeId nodes
+                        && Map.containsKey edge.TargetNodeId nodes)
+
+                { state with Nodes = nodes; Edges = edges }
+
+        /// Folds one layer sample into the running state. A key-frame sample
+        /// replaces the state outright; a delta sample mutates it.
+        let applySample (state: GraphState) (sample: SemanticGraphLayerSample) =
+            let baseState =
+                if sample.IsKeyFrame then
+                    let nodes =
+                        items sample.KeyFrameNodes
+                        |> Array.map (fun node -> node.Id, node)
+                        |> Map.ofArray
+
+                    let edges =
+                        items sample.KeyFrameEdges
+                        |> Array.map (fun edge -> edge.Id, edge)
+                        |> Map.ofArray
+                        |> Map.filter (fun _ edge ->
+                            Map.containsKey edge.SourceNodeId nodes
+                            && Map.containsKey edge.TargetNodeId nodes)
+
+                    { GraphId = sample.GraphId
+                      PtsTicks = sample.PtsTicks
+                      Nodes = nodes
+                      Edges = edges }
+                else
+                    { state with
+                        GraphId = (if String.IsNullOrEmpty(sample.GraphId) then state.GraphId else sample.GraphId)
+                        PtsTicks = sample.PtsTicks }
+
+            applyDelta baseState sample.Delta
+
+        /// Reconstructs the graph as of ptsTicks by replaying from the newest
+        /// key frame at or before that time. Returns None when no key frame
+        /// precedes the requested time.
+        let reconstructAt (reader: MdkgReader) (ptsTicks: int64) =
+            let entries =
+                reader.ReadLayer(LayerId.SemanticGraph)
+                |> Array.sortBy _.PtsTicks
+
+            let upTo =
+                entries |> Array.filter (fun entry -> entry.PtsTicks <= ptsTicks)
+
+            let keyFrameIndex =
+                upTo
+                |> Array.tryFindIndexBack (fun entry ->
+                    entry.Flags &&& uint32 MdkgSampleFlags.KeyFrame <> 0u)
+
+            match keyFrameIndex with
+            | None -> None
+            | Some startIndex ->
+                upTo[startIndex..]
+                |> Array.map reader.ReadSemanticGraph
+                |> Array.fold applySample empty
+                |> Some

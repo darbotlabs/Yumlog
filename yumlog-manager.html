@@ -240,6 +240,64 @@
             }
         }
         
+        .ai-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            padding: 12px 15px;
+            border-radius: 6px;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            margin-bottom: 15px;
+        }
+
+        .ai-badge {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 3px 9px;
+            border-radius: 10px;
+            background: #6c757d;
+            color: #fff;
+            white-space: nowrap;
+        }
+
+        .ai-badge.ok { background: #28a745; }
+        .ai-badge.warn { background: #f0a000; }
+        .ai-badge.bad { background: #dc3545; }
+
+        .ai-stream {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.55;
+            padding: 15px;
+            border-radius: 6px;
+            min-height: 90px;
+            max-height: 340px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+            margin-top: 15px;
+        }
+
+        .ai-progress {
+            height: 6px;
+            border-radius: 3px;
+            background: #dee2e6;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .ai-progress > div {
+            height: 100%;
+            width: 0%;
+            background: #667eea;
+            transition: width 0.2s ease;
+        }
+
         .config-editor {
             background: #2d2d2d;
             color: #f8f8f2;
@@ -418,6 +476,85 @@
                 </div>
             </div>
             
+            <!-- mdkg Intelligence Section -->
+            <div class="section">
+                <h2>mdkg Intelligence (On-Device)</h2>
+                <p style="margin-bottom: 15px;">
+                    Stream reasoning over a recording's mdkg metadata using the on-device language model
+                    built into Microsoft Edge. Nothing leaves this machine - no API key, no network inference.
+                </p>
+
+                <div class="ai-status" id="aiStatus">
+                    <span class="ai-badge" id="aiBadge">CHECKING</span>
+                    <span id="aiStatusText">Detecting on-device model support...</span>
+                </div>
+
+                <div class="control-group">
+                    <label>Step 1 - Export mdkg to JSON</label>
+                    <p style="font-size: 13px; color: #666; margin-bottom: 8px;">
+                        mdkg is a binary container. Run this to emit the runbook JSON this panel reads:
+                    </p>
+                    <div class="command-display" id="mdkgExportCmd">.\apps\Yumlog.Native.Cli\bin\Release\net10.0-windows10.0.26100.0\win-x64\Yumlog.Native.Cli.exe runbook --input .\myvideo.mdkg --json-out .\myvideo.runbook.json</div>
+                </div>
+
+                <div class="control-group">
+                    <label for="mdkgFile">Step 2 - Load the runbook JSON</label>
+                    <input type="file" id="mdkgFile" accept=".json,application/json" onchange="loadRunbookJson(event)">
+                    <p style="font-size: 13px; color: #666; margin-top: 8px;" id="mdkgFileInfo">No runbook loaded.</p>
+                </div>
+
+                <div class="control-group">
+                    <label for="aiQuestion">Step 3 - Ask a question about the session</label>
+                    <input type="text" id="aiQuestion" value="What activity happened during this recording, and were there any anomalies?">
+                </div>
+
+                <button onclick="analyzeRunbook()" id="aiRunBtn" disabled>Analyze On-Device</button>
+                <button onclick="cancelAnalysis()" class="secondary" id="aiCancelBtn" disabled>Cancel</button>
+
+                <div class="ai-progress" id="aiProgressWrap" style="display: none;"><div id="aiProgressBar"></div></div>
+                <div class="ai-stream" id="aiStream">Awaiting input.</div>
+            </div>
+
+            <!-- Continuous Context Section -->
+            <div class="section">
+                <h2>Continuous Context (Hot Swap)</h2>
+                <p style="margin-bottom: 15px;">
+                    Keeps one resident model session and streams telemetry into it with
+                    <code>append()</code>. When the context window fills, the session is swapped for a
+                    fresh one seeded with an exact, bounded carry-over state, so analysis runs
+                    indefinitely over a recording longer than the context window. The carry-over is
+                    computed deterministically rather than by the model, so it cannot hallucinate and
+                    cannot grow past the swap threshold.
+                </p>
+
+                <div class="grid-2">
+                    <div class="control-group">
+                        <label for="ccInterval">Ingest interval (ms per segment)</label>
+                        <input type="number" id="ccInterval" value="120" min="0" max="5000">
+                    </div>
+                    <div class="control-group">
+                        <label for="ccHighWater">Hot-swap threshold (% of context window)</label>
+                        <input type="number" id="ccHighWater" value="70" min="20" max="95">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label for="ccQuestion">Rolling question (re-answered as context evolves)</label>
+                    <input type="text" id="ccQuestion" value="What is happening most recently, and has anything changed?">
+                </div>
+
+                <button onclick="startContinuous()" id="ccStartBtn" disabled>Start Continuous</button>
+                <button onclick="stopContinuous()" class="secondary" id="ccStopBtn" disabled>Stop</button>
+
+                <div class="ai-progress" id="ccGaugeWrap"><div id="ccGauge"></div></div>
+                <div class="ai-status" style="margin-top: 12px;">
+                    <span class="ai-badge" id="ccBadge">IDLE</span>
+                    <span id="ccStats">No session.</span>
+                </div>
+
+                <div class="ai-stream" id="ccStream">Load a runbook above, then start.</div>
+            </div>
+
             <!-- About Section -->
             <div class="section">
                 <h2>ℹ️ About Yumlog</h2>
@@ -551,6 +688,593 @@
         window.onload = function() {
             console.log('Yumlog Manager initialized');
         };
+        // ---------------------------------------------------------------
+        // mdkg Intelligence - on-device streaming reasoning (Edge Prompt API)
+        // ---------------------------------------------------------------
+
+        let runbookData = null;
+        let aiAbort = null;
+
+        const aiEls = () => ({
+            badge: document.getElementById('aiBadge'),
+            status: document.getElementById('aiStatusText'),
+            stream: document.getElementById('aiStream'),
+            runBtn: document.getElementById('aiRunBtn'),
+            cancelBtn: document.getElementById('aiCancelBtn'),
+            progWrap: document.getElementById('aiProgressWrap'),
+            progBar: document.getElementById('aiProgressBar')
+        });
+
+        function aiSetBadge(text, kind) {
+            const b = aiEls().badge;
+            b.textContent = text;
+            b.className = 'ai-badge' + (kind ? ' ' + kind : '');
+        }
+
+        function aiWrite(text) {
+            const s = aiEls().stream;
+            s.textContent += text;
+            s.scrollTop = s.scrollHeight;
+        }
+
+        function aiReset(text) {
+            aiEls().stream.textContent = text || '';
+        }
+
+        // Availability is a static on LanguageModel; the model itself is only
+        // present in Edge Canary/Dev with the on-device Prompt API flag on.
+        async function detectOnDeviceModel() {
+            const { status, runBtn } = aiEls();
+            if (typeof LanguageModel === 'undefined') {
+                aiSetBadge('UNAVAILABLE', 'bad');
+                status.innerHTML = 'No on-device model in this browser. Use Edge Canary or Dev, open ' +
+                    '<code>edge://flags</code>, and enable "Prompt API for on-device language model".';
+                runBtn.disabled = true;
+                return 'unavailable';
+            }
+            let avail = 'unavailable';
+            try { avail = await LanguageModel.availability(); } catch (e) { avail = 'unavailable'; }
+
+            if (avail === 'available') {
+                aiSetBadge('READY', 'ok');
+                status.textContent = 'On-device model is loaded and ready.';
+            } else if (avail === 'downloadable' || avail === 'downloading') {
+                aiSetBadge(avail.toUpperCase(), 'warn');
+                status.textContent = 'Model weights are not on disk yet. The first analysis will trigger ' +
+                    'the download (several GB); the button click supplies the required user gesture.';
+            } else {
+                aiSetBadge('UNAVAILABLE', 'bad');
+                status.textContent = 'Model reported unavailable. Check hardware eligibility at edge://on-device-internals.';
+            }
+            runBtn.disabled = !runbookData;
+            return avail;
+        }
+
+        function loadRunbookJson(event) {
+            const file = event.target.files && event.target.files[0];
+            const info = document.getElementById('mdkgFileInfo');
+            if (!file) { return; }
+            const reader = new FileReader();
+            reader.onload = () => {
+                try {
+                    const parsed = JSON.parse(reader.result);
+                    if (!parsed || !Array.isArray(parsed.steps)) {
+                        throw new Error('Not a Yumlog runbook: missing steps array.');
+                    }
+                    runbookData = parsed;
+                    const proofs = parsed.steps.reduce((n, s) => n + ((s.proofs && s.proofs.length) || 0), 0);
+                    info.textContent = file.name + ' - ' + parsed.steps.length + ' steps, ' +
+                        proofs + ' proofs, ' + (parsed.durationSeconds || 0).toFixed(3) + 's duration.';
+                    aiReset('Runbook loaded. Ready to analyze.');
+                    const enabled = (typeof LanguageModel === 'undefined');
+                    document.getElementById('aiRunBtn').disabled = enabled;
+                    document.getElementById('ccStartBtn').disabled = enabled;
+                } catch (err) {
+                    runbookData = null;
+                    info.textContent = 'Failed to load: ' + err.message;
+                    document.getElementById('aiRunBtn').disabled = true;
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Collapse consecutive steps with an identical signature into ranges so
+        // a 155-step static capture costs a handful of lines instead of 155.
+        function compactSteps(steps) {
+            const lines = [];
+            let run = null;
+            const sig = (s) => JSON.stringify([
+                (s.observedText || '').trim(),
+                (s.affordances || []).map(a => (typeof a === 'string' ? a : (a.name || a.label || JSON.stringify(a)))),
+                s.graphNodeCount || 0,
+                s.graphEdgeCount || 0
+            ]);
+            const flush = () => {
+                if (!run) return;
+                const span = run.from === run.to
+                    ? 't=' + run.from.toFixed(2) + 's'
+                    : 't=' + run.from.toFixed(2) + 's..' + run.to.toFixed(2) + 's (' + run.count + ' frames)';
+                const parts = [span];
+                if (run.text) parts.push('text="' + run.text.slice(0, 300) + '"');
+                if (run.aff.length) parts.push('ui=[' + run.aff.join(', ').slice(0, 300) + ']');
+                parts.push('graph=' + run.nodes + 'n/' + run.edges + 'e');
+                lines.push(parts.join(' | '));
+                run = null;
+            };
+            for (const s of steps) {
+                const k = sig(s);
+                const t = typeof s.offsetSeconds === 'number' ? s.offsetSeconds : 0;
+                if (run && run.key === k) { run.to = t; run.count++; continue; }
+                flush();
+                const a = (s.affordances || []).map(x => (typeof x === 'string' ? x : (x.name || x.label || JSON.stringify(x))));
+                run = {
+                    key: k, from: t, to: t, count: 1,
+                    text: (s.observedText || '').trim(), aff: a,
+                    nodes: s.graphNodeCount || 0, edges: s.graphEdgeCount || 0
+                };
+            }
+            flush();
+            return lines;
+        }
+
+        // Pack compacted lines into chunks that fit the model's context window.
+        async function packChunks(session, header, lines) {
+            const budget = Math.floor((session.contextWindow || 4096) * 0.5);
+            const chunks = [];
+            let cur = [];
+            let curCost = await session.measureContextUsage(header);
+            for (const line of lines) {
+                const cost = await session.measureContextUsage(line);
+                if (cur.length && curCost + cost > budget) {
+                    chunks.push(cur);
+                    cur = [];
+                    curCost = await session.measureContextUsage(header);
+                }
+                cur.push(line);
+                curCost += cost;
+            }
+            if (cur.length) chunks.push(cur);
+            return chunks;
+        }
+
+        const AI_SCHEMA = {
+            type: 'object',
+            properties: {
+                summary: { type: 'string' },
+                activities: { type: 'array', items: { type: 'string' } },
+                anomalies: { type: 'array', items: { type: 'string' } }
+            },
+            required: ['summary', 'activities', 'anomalies'],
+            additionalProperties: false
+        };
+
+        // Edge 152 + Aion-1.0-Instruct rejects responseConstraint with
+        // "kErrorUnknown", and promptStreaming with a constraint hangs silently
+        // instead of rejecting. Probe the capability once, then fall back to
+        // instructed JSON plus defensive extraction.
+        let aiConstraintSupported = null;
+
+        async function probeResponseConstraint(session) {
+            if (aiConstraintSupported !== null) return aiConstraintSupported;
+            try {
+                await session.prompt('Summarize: a test.', {
+                    responseConstraint: {
+                        type: 'object',
+                        properties: { summary: { type: 'string' } },
+                        required: ['summary']
+                    }
+                });
+                aiConstraintSupported = true;
+            } catch (e) {
+                aiConstraintSupported = false;
+            }
+            return aiConstraintSupported;
+        }
+
+        // Streams with an idle watchdog so a stalled generator cannot lock the UI.
+        async function streamWithWatchdog(stream, onPiece, idleMs) {
+            const iterator = stream[Symbol.asyncIterator]();
+            let acc = '';
+            for (;;) {
+                let guard;
+                const stall = new Promise((_, reject) => {
+                    guard = setTimeout(
+                        () => reject(new Error('Model produced no output for ' + (idleMs / 1000) + 's; giving up.')),
+                        idleMs);
+                });
+                let step;
+                try { step = await Promise.race([iterator.next(), stall]); }
+                finally { clearTimeout(guard); }
+                if (step.done) return acc;
+                acc += step.value;
+                onPiece(step.value);
+            }
+        }
+
+        function extractJsonObject(text) {
+            const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/i);
+            const candidate = fenced ? fenced[1] : text;
+            const start = candidate.indexOf('{');
+            const end = candidate.lastIndexOf('}');
+            if (start === -1 || end === -1 || end <= start) return null;
+            try { return JSON.parse(candidate.slice(start, end + 1)); } catch (e) { return null; }
+        }
+
+        function cancelAnalysis() {
+            if (aiAbort) aiAbort.abort();
+        }
+
+        async function analyzeRunbook() {
+            if (!runbookData) { aiReset('Load a runbook JSON first.'); return; }
+            const { runBtn, cancelBtn, progWrap, progBar, status } = aiEls();
+
+            runBtn.disabled = true;
+            cancelBtn.disabled = false;
+            aiAbort = new AbortController();
+            aiReset('');
+
+            let session = null;
+            try {
+                // Called first so the click's user gesture is still live - the API
+                // rejects create() without one while availability is downloadable.
+                aiWrite('Creating on-device session...\n');
+                session = await LanguageModel.create({
+                    initialPrompts: [{
+                        role: 'system',
+                        content: 'You analyze screen-recording telemetry from Yumlog mdkg metadata. ' +
+                            'Each line is a time range with observed OCR text, UI affordances, and semantic graph counts. ' +
+                            'Be factual and concise. Never invent activity that the telemetry does not show.'
+                    }],
+                    monitor: (m) => {
+                        m.addEventListener('downloadprogress', (e) => {
+                            const pct = Math.round((e.loaded || 0) * 100);
+                            progWrap.style.display = 'block';
+                            progBar.style.width = pct + '%';
+                            status.textContent = 'Downloading model weights: ' + pct + '%';
+                        });
+                    },
+                    signal: aiAbort.signal
+                });
+
+                progWrap.style.display = 'none';
+                aiSetBadge('READY', 'ok');
+                status.textContent = 'Session active. Context window: ' + session.contextWindow + ' tokens.';
+
+                const durationText = (runbookData.durationSeconds || 0).toFixed(3);
+                const header = 'Recording telemetry segment.\n' +
+                    'Ground facts (authoritative - never contradict or recompute these):\n' +
+                    '- total recording duration: ' + durationText + ' seconds\n' +
+                    '- total frames captured: ' + runbookData.steps.length + '\n' +
+                    'Each line below is a time range in seconds. Frame counts describe sampling ' +
+                    'density only - never infer duration from them.\n\n';
+                const lines = compactSteps(runbookData.steps);
+                aiWrite('Compacted ' + runbookData.steps.length + ' steps into ' + lines.length + ' distinct segments.\n');
+
+                const chunks = await packChunks(session, header, lines);
+                aiWrite('Buffered into ' + chunks.length + ' context-sized chunk(s).\n\n');
+
+                // Map: digest each chunk on a clone so context never accumulates.
+                const digests = [];
+                for (let i = 0; i < chunks.length; i++) {
+                    if (aiAbort.signal.aborted) throw new DOMException('Aborted', 'AbortError');
+                    aiWrite('--- chunk ' + (i + 1) + '/' + chunks.length + ' ---\n');
+                    const scoped = await session.clone({ signal: aiAbort.signal });
+                    try {
+                        const stream = scoped.promptStreaming(
+                            header + chunks[i].join('\n') +
+                            '\n\nDigest this segment in two or three sentences. State only what the ' +
+                            'telemetry shows. Do not restate the ground facts as new findings.',
+                            { signal: aiAbort.signal }
+                        );
+                        const acc = await streamWithWatchdog(stream, aiWrite, 120000);
+                        digests.push(acc.trim());
+                    } finally {
+                        scoped.destroy();
+                    }
+                    aiWrite('\n\n');
+                }
+
+                // Reduce: one schema-constrained answer over the digests.
+                if (aiAbort.signal.aborted) throw new DOMException('Aborted', 'AbortError');
+                const question = document.getElementById('aiQuestion').value.trim() ||
+                    'Summarize this recording session.';
+
+                aiWrite('Checking structured-output support...\n');
+                const constrained = await probeResponseConstraint(session);
+                aiWrite(constrained
+                    ? 'Using schema-constrained decoding.\n\n'
+                    : 'Schema-constrained decoding unavailable on this build; using instructed JSON.\n\n');
+
+                const basePrompt =
+                    'Segment digests from the recording:\n' +
+                    digests.map((d, i) => (i + 1) + '. ' + d).join('\n') +
+                    '\n\nGround facts (authoritative):' +
+                    '\n- source: ' + (runbookData.source || 'unknown') +
+                    '\n- duration: ' + durationText + ' seconds' +
+                    '\n- frames: ' + runbookData.steps.length +
+                    '\n\nQuestion: ' + question;
+
+                const jsonInstruction =
+                    '\n\nRespond with a single JSON object and nothing else, in this exact shape:' +
+                    '\n{"summary": "...", "activities": ["..."], "anomalies": ["..."]}';
+
+                aiWrite('--- final answer ---\n');
+                const finalStream = session.promptStreaming(
+                    constrained ? basePrompt : basePrompt + jsonInstruction,
+                    constrained
+                        ? { responseConstraint: AI_SCHEMA, signal: aiAbort.signal }
+                        : { signal: aiAbort.signal }
+                );
+                const final = await streamWithWatchdog(finalStream, aiWrite, 120000);
+
+                const obj = extractJsonObject(final);
+                if (obj) {
+                    aiWrite('\n\n--- structured ---\n' + JSON.stringify(obj, null, 2));
+                } else {
+                    aiWrite('\n\n(No parseable JSON object in the response; raw text shown above.)');
+                }
+
+                status.textContent = 'Done. Context used: ' + session.contextUsage + '/' + session.contextWindow + ' tokens.';
+            } catch (err) {
+                if (err && err.name === 'AbortError') {
+                    aiWrite('\n\nCancelled.');
+                } else if (err && err.name === 'NotAllowedError') {
+                    aiWrite('\n\nBlocked: the model download requires a direct user gesture. Click Analyze again.');
+                } else {
+                    aiWrite('\n\nError: ' + (err && err.message ? err.message : String(err)));
+                }
+            } finally {
+                if (session) { try { session.destroy(); } catch (e) { /* already gone */ } }
+                aiAbort = null;
+                runBtn.disabled = false;
+                cancelBtn.disabled = true;
+                progWrap.style.display = 'none';
+            }
+        }
+
+        // ---------------------------------------------------------------
+        // Continuous context - resident session, streaming ingest, hot swap
+        // ---------------------------------------------------------------
+        // Measured on Edge 152 + Aion-1.0-Instruct (T1000, WebGPU):
+        //   first create 3727ms, fresh create while resident 3ms, clone 0ms,
+        //   append 1ms, ~25 tokens per telemetry line, contextWindow 8192.
+        // Ingest is therefore effectively free and a swap costs one distillation
+        // plus ~3ms, so analysis can run past the context window indefinitely.
+
+        const CC_SYSTEM = 'You track a live screen-recording telemetry feed. ' +
+            'Segments arrive in time order. Be factual and concise. ' +
+            'Never invent activity that the telemetry does not show.';
+
+        class ContinuousContext {
+            constructor(opts) {
+                this.highWaterPct = opts.highWaterPct;
+                this.onEvent = opts.onEvent || (() => {});
+                this.session = null;
+                this.carryOver = '';
+                this.stats = { appended: 0, swaps: 0, swapMs: 0, overflows: 0 };
+                // Deterministic rolling state. Continuity must not depend on the
+                // model: a small model echoes its input instead of compressing,
+                // which produced a carry-over larger than the swap threshold and
+                // caused every subsequent ingest to re-trigger a swap.
+                this.rolling = { count: 0, firstTs: null, lastTs: null, states: new Map() };
+                this.sinceSwap = 0;
+            }
+
+            observe(signature, ts) {
+                const r = this.rolling;
+                r.count++;
+                if (r.firstTs === null) r.firstTs = ts;
+                r.lastTs = ts;
+                const hit = r.states.get(signature);
+                if (hit) { hit.count++; hit.lastTs = ts; }
+                else { r.states.set(signature, { count: 1, firstTs: ts, lastTs: ts }); }
+            }
+
+            // Bounded, exact, and instant - cannot hallucinate and cannot grow
+            // without limit, so it can never exceed the swap threshold.
+            buildCarryOver(maxStates) {
+                const r = this.rolling;
+                const span = (r.firstTs || 0).toFixed(2) + 's..' + (r.lastTs || 0).toFixed(2) + 's';
+                const ranked = [...r.states.entries()]
+                    .sort((a, b) => b[1].count - a[1].count)
+                    .slice(0, maxStates);
+                const lines = ranked.map(([sig, v]) =>
+                    '- ' + v.count + ' frames (' + v.firstTs.toFixed(2) + 's..' + v.lastTs.toFixed(2) + 's): ' +
+                    sig.slice(0, 160));
+                return 'Carry-over state for this recording (exact, machine-generated):\n' +
+                    '- coverage: ' + span + ' across ' + r.count + ' frames\n' +
+                    '- distinct observed states: ' + r.states.size + '\n' +
+                    lines.join('\n');
+            }
+
+            async hotSwap() {
+                const tS = performance.now();
+                const previous = this.session;
+                const next = this.wire(await LanguageModel.create({
+                    initialPrompts: [{ role: 'system', content: CC_SYSTEM }]
+                }));
+
+                // Shrink the carry-over until it comfortably fits below the
+                // threshold, otherwise the next append would swap again at once.
+                const ceiling = Math.floor(next.contextWindow * this.highWaterPct * 0.5);
+                let maxStates = 8;
+                let text = this.buildCarryOver(maxStates);
+                while (maxStates > 0 && (await next.measureContextUsage(text)) > ceiling) {
+                    maxStates -= 2;
+                    text = this.buildCarryOver(Math.max(0, maxStates));
+                }
+                this.carryOver = text;
+                await next.append(text);
+
+                this.session = next;
+                previous.destroy();
+                this.sinceSwap = 0;
+                const swapMs = Math.round(performance.now() - tS);
+                this.stats.swaps++;
+                this.stats.swapMs += swapMs;
+                this.onEvent('swap', { swapMs, usage: next.contextUsage, carryOver: this.carryOver });
+            }
+
+            async ingest(line, signature, ts) {
+                await this.session.append(line);
+                this.stats.appended++;
+                this.sinceSwap++;
+                this.observe(signature === undefined ? line : signature, ts || 0);
+                const s = this.session;
+                // A minimum run between swaps is a second guard against thrash.
+                if (s.contextUsage / s.contextWindow >= this.highWaterPct && this.sinceSwap >= 4) {
+                    await this.hotSwap();
+                }
+                return this.session.contextUsage;
+            }
+
+            wire(session) {
+                session.oncontextoverflow = () => {
+                    this.stats.overflows++;
+                    this.onEvent('overflow', { usage: session.contextUsage });
+                };
+                return session;
+            }
+
+            async open() {
+                const t0 = performance.now();
+                this.session = this.wire(await LanguageModel.create({
+                    initialPrompts: [{ role: 'system', content: CC_SYSTEM }]
+                }));
+                this.onEvent('open', {
+                    ms: Math.round(performance.now() - t0),
+                    contextWindow: this.session.contextWindow
+                });
+            }
+
+            // Queries run on a clone (0ms) so a question never enters the
+            // ingest trunk and cannot displace telemetry from the window.
+            async ask(question, onPiece) {
+                const view = await this.session.clone();
+                try {
+                    return await streamWithWatchdog(view.promptStreaming(question), onPiece, 120000);
+                } finally {
+                    view.destroy();
+                }
+            }
+
+            close() {
+                if (this.session) { try { this.session.destroy(); } catch (e) { /* already gone */ } }
+                this.session = null;
+            }
+        }
+
+        function stepLine(s) {
+            const t = (typeof s.offsetSeconds === 'number' ? s.offsetSeconds : 0).toFixed(2);
+            const parts = ['t=' + t + 's'];
+            const txt = (s.observedText || '').trim();
+            if (txt) parts.push('text="' + txt.slice(0, 200) + '"');
+            const aff = (s.affordances || [])
+                .map(x => (typeof x === 'string' ? x : (x.name || x.label || '')))
+                .filter(Boolean);
+            if (aff.length) parts.push('ui=[' + aff.join(', ').slice(0, 200) + ']');
+            parts.push('graph=' + (s.graphNodeCount || 0) + 'n/' + (s.graphEdgeCount || 0) + 'e');
+            return parts.join(' | ');
+        }
+
+        let ccEngine = null;
+        let ccRunning = false;
+
+        function ccWrite(text) {
+            const el = document.getElementById('ccStream');
+            el.textContent += text;
+            el.scrollTop = el.scrollHeight;
+        }
+
+        function ccRender() {
+            const s = ccEngine && ccEngine.session;
+            const gauge = document.getElementById('ccGauge');
+            const stats = document.getElementById('ccStats');
+            if (!s) { gauge.style.width = '0%'; return; }
+            const pct = Math.min(100, Math.round(100 * s.contextUsage / s.contextWindow));
+            gauge.style.width = pct + '%';
+            stats.textContent =
+                'context ' + s.contextUsage + '/' + s.contextWindow + ' (' + pct + '%)' +
+                ' | segments ' + ccEngine.stats.appended +
+                ' | swaps ' + ccEngine.stats.swaps +
+                ' | overflows ' + ccEngine.stats.overflows;
+        }
+
+        async function startContinuous() {
+            if (!runbookData) { ccWrite('Load a runbook JSON first.\n'); return; }
+            if (ccRunning) return;
+
+            const startBtn = document.getElementById('ccStartBtn');
+            const stopBtn = document.getElementById('ccStopBtn');
+            const badge = document.getElementById('ccBadge');
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+            ccRunning = true;
+            document.getElementById('ccStream').textContent = '';
+
+            const interval = Math.max(0, Number(document.getElementById('ccInterval').value) || 0);
+            const highWater = Math.min(0.95, Math.max(0.05,
+                (Number(document.getElementById('ccHighWater').value) || 70) / 100));
+            const question = document.getElementById('ccQuestion').value.trim() ||
+                'What is happening most recently?';
+
+            ccEngine = new ContinuousContext({
+                highWaterPct: highWater,
+                onEvent: (kind, data) => {
+                    if (kind === 'open') {
+                        ccWrite('Session open in ' + data.ms + 'ms, window ' + data.contextWindow + ' tokens.\n\n');
+                    } else if (kind === 'swap') {
+                        ccWrite('\n[HOT SWAP] new session in ' + data.swapMs +
+                            'ms, deterministic carry-over seeded at ' + data.usage + ' tokens.\n' +
+                            data.carryOver + '\n\n');
+                    } else if (kind === 'overflow') {
+                        ccWrite('\n[CONTEXT OVERFLOW] at ' + data.usage + ' tokens.\n');
+                    }
+                }
+            });
+
+            try {
+                badge.textContent = 'LOADING';
+                badge.className = 'ai-badge warn';
+                await ccEngine.open();
+                badge.textContent = 'STREAMING';
+                badge.className = 'ai-badge ok';
+
+                const steps = runbookData.steps;
+                for (let i = 0; i < steps.length && ccRunning; i++) {
+                    const line = stepLine(steps[i]);
+                    const signature = line.replace(/^t=[\d.]+s \| /, '');
+                    const ts = typeof steps[i].offsetSeconds === 'number' ? steps[i].offsetSeconds : 0;
+                    await ccEngine.ingest(line, signature, ts);
+                    ccRender();
+                    if (interval) await new Promise(res => setTimeout(res, interval));
+                }
+
+                if (ccRunning) {
+                    ccWrite('\n--- rolling analysis over ' + ccEngine.stats.appended + ' segments ---\n');
+                    await ccEngine.ask(question, ccWrite);
+                    ccWrite('\n');
+                }
+                badge.textContent = ccRunning ? 'DONE' : 'STOPPED';
+                badge.className = 'ai-badge' + (ccRunning ? ' ok' : '');
+            } catch (err) {
+                ccWrite('\nError: ' + (err && err.message ? err.message : String(err)) + '\n');
+                badge.textContent = 'ERROR';
+                badge.className = 'ai-badge bad';
+            } finally {
+                ccRunning = false;
+                ccRender();
+                if (ccEngine) ccEngine.close();
+                startBtn.disabled = false;
+                stopBtn.disabled = true;
+            }
+        }
+
+        function stopContinuous() {
+            ccRunning = false;
+        }
+
+        detectOnDeviceModel();
     </script>
 </body>
 </html>

@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <WindowsPackageType>None</WindowsPackageType>
+    <WindowsAppSdkBootstrapInitialize>false</WindowsAppSdkBootstrapInitialize>
+    <WindowsAppSdkUndockedRegFreeWinRTInitialize>false</WindowsAppSdkUndockedRegFreeWinRTInitialize>
+    <UseWindowsForms>true</UseWindowsForms>
+    <AssemblyName>Yumlog.Native.Cli</AssemblyName>
+    <RootNamespace>Yumlog.Native</RootNamespace>
+    <Nullable>enable</Nullable>
+    <!-- Nullness analysis is clean; keep it that way. -->
+    <WarningsAsErrors>FS3261;FS3265</WarningsAsErrors>
+    <Optimize>true</Optimize>
+    <Deterministic>true</Deterministic>
+    <Version>0.4.1</Version>
+    <Authors>Darbot Labs</Authors>
+    <Description>Command-line automation host for Yumlog Native.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.WindowsAppSDK.AI" Version="2.3.4" />
+    <!-- Pinned to the versions NuGet already resolves. The AI package requests
+         Foundation 2.3.2 / InteractiveExperiences 2.1.1, which were never published,
+         so restore silently floats upward (NU1603). Pinning makes restore deterministic. -->
+    <PackageReference Include="Microsoft.WindowsAppSDK.Foundation" Version="2.3.5" />
+    <PackageReference Include="Microsoft.WindowsAppSDK.InteractiveExperiences" Version="2.1.3" />
+    <!-- CPU execution provider for the on-device model (OnDeviceLlm.fs). The base
+         package is portable; the .DirectML / .Cuda variants would be needed for the
+         dml or cuda provider options. -->
+    <PackageReference Include="Microsoft.ML.OnnxRuntimeGenAI" Version="0.15.1" />
+  </ItemGroup>
+
+  <!-- Single shared source list - see ..\Yumlog.Native\Yumlog.Native.Core.props.
+       This project deliberately omits NativeUi.fs (WinExe-only). -->
+  <Import Project="..\Yumlog.Native\Yumlog.Native.Core.props" />
+  <Import Project="..\Yumlog.Native\Yumlog.Native.Tail.props" />
+
+  <ItemGroup>
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+</Project>

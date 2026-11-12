@@ -26,3 +26,9 @@ jobs:
         run: dotnet build apps/Paperboy.Desktop/Paperboy.Desktop.csproj -c Release
       - name: Build Paperboy MCP app
         run: dotnet build apps/Paperboy.Mcp/Paperboy.Mcp.csproj -c Release
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+      - name: Check Yumlog NPU emulator
+        run: cargo check --manifest-path apps/Yumlog.NpuEmulator/src-tauri/Cargo.toml
+      - name: Test Yumlog NPU emulator
+        run: cargo test --manifest-path apps/Yumlog.NpuEmulator/src-tauri/Cargo.toml

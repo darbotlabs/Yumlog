@@ -3,6 +3,8 @@ node_modules/
 package-lock.json
 package.json
 playwright.config.ts
+!apps/Yumlog.NpuEmulator/package.json
+!apps/Yumlog.NpuEmulator/package-lock.json
 
 # .NET
 bin/
@@ -11,6 +13,12 @@ obj/
 publish/
 dist/
 .dotnet*/
+
+# Rust
+target/
+Cargo.lock
+!apps/Yumlog.NpuEmulator/src-tauri/Cargo.lock
+apps/Yumlog.NpuEmulator/src-tauri/gen/
 
 # Playwright
 playwright-report/

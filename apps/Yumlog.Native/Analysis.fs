@@ -8,9 +8,7 @@ module NativeAnalysis =
         set [ ".png"; ".jpg"; ".jpeg"; ".bmp" ]
 
     let isImage (path: string) =
-        match Path.GetExtension(path) with
-        | null -> false
-        | extension -> imageExtensions.Contains(extension.ToLowerInvariant())
+        imageExtensions.Contains(Path.GetExtension(path).ToLowerInvariant())
 
     let analyzeImage (config: AnalyzeConfig) (path: string) =
         if not (File.Exists(path)) then
